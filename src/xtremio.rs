@@ -862,15 +862,11 @@ fn get_data<T>(
 where
     T: DeserializeOwned + Debug + IntoPoint,
 {
-    let j: T = client
-        .get(&format!(
-            "https://{}/api/json/v2/types/{}?full=1",
-            config.endpoint, api_endpoint,
-        ))
-        .basic_auth(config.user.clone(), Some(config.password.clone()))
-        .send()?
-        .error_for_status()?
-        .json()?;
+    let url = format!(
+        "https://{}/api/json/v2/types/{}?full=1",
+        config.endpoint, api_endpoint,
+    );
+    let j: T = crate::get(&client, &url, &config.user, Some(&config.password))?;
 
     Ok(j.into_point(Some(point_name)))
 }

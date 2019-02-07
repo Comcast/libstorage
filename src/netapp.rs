@@ -9,6 +9,7 @@ use crate::IntoPoint;
 use crate::ir::{TsPoint, TsValue};
 use chrono::offset::Utc;
 use chrono::DateTime;
+use log::debug;
 use reqwest::header::{HeaderValue, CONTENT_TYPE};
 use reqwest::Client;
 use treexml::Document;

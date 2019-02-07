@@ -1,17 +1,18 @@
 #[macro_use]
-extern crate log;
-#[macro_use]
 extern crate nom;
 #[macro_use]
 extern crate point_derive;
 #[macro_use]
 extern crate serde_derive;
 #[macro_use]
-extern crate serde_json;
-#[macro_use]
 extern crate xml_attributes_derive;
 
-use serde::de::Deserialize;
+use crate::error::MetricsResult;
+use std::fmt::Debug;
+
+use log::trace;
+use reqwest::header::ACCEPT;
+use serde::de::{Deserialize, DeserializeOwned};
 use serde::Deserializer;
 
 pub mod brocade;
@@ -71,4 +72,26 @@ where
         StringOrFloat::String(s) => s.parse().map_err(|e| D::Error::custom(e)),
         StringOrFloat::Float(i) => Ok(i),
     }
+}
+
+pub fn get<T>(
+    client: &reqwest::Client,
+    endpoint: &str,
+    user: &str,
+    pass: Option<&str>,
+) -> MetricsResult<T>
+where
+    T: DeserializeOwned + Debug,
+{
+    let res = client
+        .get(endpoint)
+        .basic_auth(user, pass)
+        .header(ACCEPT, "application/json")
+        .send()?
+        .error_for_status()?
+        .text()?;
+    trace!("server returned: {}", res);
+    let json: Result<T, serde_json::Error> = serde_json::from_str(&res);
+    trace!("json result: {:?}", json);
+    Ok(json?)
 }

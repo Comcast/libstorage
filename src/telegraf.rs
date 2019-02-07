@@ -144,7 +144,7 @@ pub fn get_metrics(
     let url = format!("http://{}:{}/metrics", endpoint, config.port);
     let text = client
         .get(&url)
-        .basic_auth(config.user.clone(), Some(config.password.clone()))
+        .basic_auth(&config.user, Some(&config.password))
         .send()?
         .error_for_status()?
         .text()?;

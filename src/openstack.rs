@@ -5,8 +5,10 @@ use crate::error::{MetricsResult, StorageError};
 use crate::ir::{TsPoint, TsValue};
 use crate::IntoPoint;
 
+use log::debug;
 use reqwest::{header::HeaderName, header::HeaderValue, StatusCode};
 use serde::de::DeserializeOwned;
+use serde_json::json;
 
 #[derive(Clone, Deserialize, Debug)]
 pub struct OpenstackConfig {
