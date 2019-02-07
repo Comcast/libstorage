@@ -18,6 +18,7 @@ use std::str;
 
 use chrono::offset::Utc;
 use chrono::DateTime;
+use log::{debug, trace};
 use nom::IResult;
 use reqwest::header::CONTENT_TYPE;
 use serde::de::DeserializeOwned;
