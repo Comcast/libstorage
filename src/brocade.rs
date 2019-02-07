@@ -3,8 +3,20 @@ use crate::ir::{TsPoint, TsValue};
 use crate::IntoPoint;
 use chrono::offset::Utc;
 use chrono::DateTime;
+use hex::FromHex;
 use reqwest::header::{HeaderMap, HeaderValue, ACCEPT};
-use serde::de::DeserializeOwned;
+use serde::de::{Deserialize, DeserializeOwned};
+use serde::Serialize;
+
+use std::fmt;
+use std::str::FromStr;
+
+#[derive(Serialize, Debug)]
+#[serde(rename_all = "UPPERCASE")]
+pub enum Action {
+    Add,
+    Remove,
+}
 
 #[derive(Clone, Deserialize, Debug)]
 pub struct BrocadeConfig {
@@ -84,14 +96,16 @@ pub struct FcFabrics {
 #[derive(Deserialize, Debug, IntoPoint)]
 pub struct FcFabric {
     pub key: String,
-    pub seed_switch_wwn: String,
+    #[serde(deserialize_with = "deserialize_wwn")]
+    pub seed_switch_wwn: Option<Wwn>,
     pub name: String,
     pub secure: bool,
     pub ad_environment: bool,
     pub contact: Option<String>,
     pub location: Option<String>,
     pub description: Option<String>,
-    pub principal_switch_wwn: String,
+    #[serde(deserialize_with = "deserialize_wwn")]
+    pub principal_switch_wwn: Option<Wwn>,
     pub fabric_name: String,
     pub virtual_fabric_id: i32,
     pub seed_switch_ip_address: String,
@@ -123,7 +137,8 @@ fn parse_fc_ports() {
 #[derive(Deserialize, Debug, IntoPoint)]
 pub struct FcPort {
     key: String,
-    wwn: String,
+    #[serde(deserialize_with = "deserialize_wwn")]
+    wwn: Option<Wwn>,
     name: String,
     slot_number: u64,
     port_number: u64,
@@ -144,8 +159,10 @@ pub struct FcPort {
     estimated_distance: u64,
     actual_distance: u64,
     long_distance_setting: u64,
-    remote_node_wwn: String,
-    remote_port_wwn: String,
+    #[serde(deserialize_with = "deserialize_wwn")]
+    remote_node_wwn: Option<Wwn>,
+    #[serde(deserialize_with = "deserialize_wwn")]
+    remote_port_wwn: Option<Wwn>,
     licensed: bool,
     swapped: bool,
     trunked: bool,
@@ -205,7 +222,8 @@ pub struct FcSwitch {
     #[serde(rename = "type")]
     pub fc_type: u64,
     pub name: String,
-    pub wwn: String,
+    #[serde(deserialize_with = "deserialize_wwn")]
+    pub wwn: Option<Wwn>,
     pub virtual_fabric_id: i64,
     pub domain_id: u64,
     pub base_switch: bool,
@@ -439,6 +457,334 @@ pub enum TimeSeries {
     FcIp(FcIpTimeSeries),
 }
 
+#[derive(Deserialize)]
+pub struct Zones {
+    pub zones: Vec<Zone>,
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct Zone {
+    pub key: String,
+    pub name: String,
+    #[serde(rename = "type")]
+    pub zone_type: String,
+    pub active: bool,
+    #[serde(rename = "aliasNames")]
+    pub alias_names: Option<Vec<String>>,
+    #[serde(rename = "memberNames")]
+    #[serde(deserialize_with = "deserialize_wwn_list")]
+    pub member_names: Vec<Wwn>,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ZoneNames<'a> {
+    pub name: &'a str,
+    pub zone_names: Vec<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ZoneAlias {
+    pub name: String,
+    pub key: Option<String>,
+    #[serde(deserialize_with = "deserialize_wwn_list")]
+    pub member_names: Vec<Wwn>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ZoneAliases {
+    pub zone_aliases: Vec<ZoneAlias>,
+}
+
+#[test]
+fn test_zone_aliases() {
+    let s = include_str!("../tests/brocade/zone-aliases.json");
+    let res: ZoneAliases = serde_json::from_str(&s).unwrap();
+    println!("{:#?}", res);
+}
+
+// TODO: Test this this is what brocade actually returns
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ZoneTransactionResponse {
+    pub zone_transaction_response: Vec<serde_json::Value>,
+}
+
+/// Initiator or Target Zoneset
+pub struct ZoneSet {
+    pub alias: String,
+    pub wwn: Wwn,
+}
+
+pub struct ZoneTransaction<'a: 'b, 'b> {
+    // Zone transaction is active
+    pub active: bool,
+    client: &'a reqwest::Client,
+    config: &'b BrocadeConfig,
+    // FC fabric ID
+    fc_key: &'b str,
+    // zone transaction ID
+    transaction_id: &'b str,
+    // Zone transaction type
+    lsan_zone: bool,
+    timeout: u64,
+    ws_token: &'b str,
+}
+
+impl<'a, 'b> ZoneTransaction<'a, 'b> {
+    /// Starts a new zone transaction.  Transactions will automatically be committed when this
+    /// struct goes out of scope
+    pub fn new(
+        client: &'a reqwest::Client,
+        config: &'b BrocadeConfig,
+        ws_token: &'b str,
+        fc_key: &'b str,
+        lsan_zone: bool,
+    ) -> MetricsResult<Self> {
+        let uri = format!(
+            "resourcegroups/All/fcfabrics/{fcfkey}/controlzonetransaction",
+            fcfkey = fc_key,
+        );
+        let body = json!({
+            "lsanZoning": lsan_zone,
+            "action": "START",
+        });
+        let resp: ZoneTransactionResponse =
+            post_server_response(&client, &config, &uri, &ws_token, &body)?;
+
+        Ok(ZoneTransaction {
+            active: true,
+            client,
+            config,
+            fc_key,
+            transaction_id: "".into(),
+            lsan_zone: lsan_zone,
+            timeout: 0,
+            ws_token: ws_token,
+        })
+    }
+
+    fn activate_zone(&self, zone_name: &str) -> MetricsResult<()> {
+        let uri = format!(
+            "resourcegroups/All/fcfabrics/{fcfkey}/zonesets/{zskey}/activate",
+            fcfkey = self.fc_key,
+            zskey = zone_name
+        );
+        post_server_response(&self.client, &self.config, &uri, &self.ws_token, &json!({}))?;
+        Ok(())
+    }
+
+    fn commit(&self) -> MetricsResult<()> {
+        let uri = format!(
+            "resourcegroups/All/fcfabrics/{fcfkey}/controlzonetransaction",
+            fcfkey = self.fc_key
+        );
+        let body = json!({
+            "lsanZoning": "false".to_string(),
+            "action": "COMMIT",
+        });
+        let res: serde_json::Value =
+            post_server_response(&self.client, &self.config, &uri, &self.ws_token, &body)?;
+        Ok(())
+    }
+
+    pub fn create_zone(
+        &self,
+        zones: &[Zone],
+        zone_aliases: &[ZoneAlias],
+        zone_sets: &[ZoneNames],
+    ) -> MetricsResult<()> {
+        let uri = format!(
+            "resourcegroups/All/fcfabrics/{fcfkey}/createzoningobject",
+            fcfkey = self.fc_key
+        );
+        let body = json!({
+            "zones": zones,
+            "zoneAliases": zone_aliases
+            }
+        );
+        let res: serde_json::Value =
+            post_server_response(&self.client, &self.config, &uri, &self.ws_token, &body)?;
+        self.update_zone(&Action::Add, zone_sets)?;
+        self.commit()?;
+        self.activate_zone("")?;
+        Ok(())
+    }
+
+    fn deactivate_zone(&self, zone_name: &str) -> MetricsResult<()> {
+        let uri = format!(
+            "resourcegroups/All/fcfabrics/{fcfkey}/zonesets/{zskey}/deactivate",
+            fcfkey = self.fc_key,
+            zskey = zone_name
+        );
+        post_server_response(&self.client, &self.config, &uri, &self.ws_token, &json!({}))?;
+
+        Ok(())
+    }
+
+    pub fn delete_zone(
+        &self,
+        zone_names: &[ZoneNames],
+        zone_sets: &[ZoneNames],
+        zone_aliases: &[String],
+    ) -> MetricsResult<()> {
+        self.update_zone(&Action::Remove, zone_sets)?;
+        let uri = format!(
+            "resourcegroups/All/fcfabrics/{fcfkey}/deletezoningobject",
+            fcfkey = self.fc_key
+        );
+        let body = json!({
+            "zoneNames": zone_names,
+            "zoneAliasNames": zone_aliases,
+        });
+        let res: serde_json::Value =
+            post_server_response(&self.client, &self.config, &uri, &self.ws_token, &body)?;
+        self.commit()?;
+        self.activate_zone("")?;
+
+        Ok(())
+    }
+
+    fn update_zone(&self, action: &Action, zone_sets: &[ZoneNames]) -> MetricsResult<()> {
+        let uri = format!(
+            "resourcegroups/All/fcfabrics/{fcfkey}/updatezoningobject",
+            fcfkey = self.fc_key
+        );
+        let body = json!({
+            "action": action,
+            "zoneSets": zone_sets
+        });
+        let res: serde_json::Value =
+            post_server_response(&self.client, &self.config, &uri, &self.ws_token, &body)?;
+        Ok(())
+    }
+}
+
+/// World Wide Name
+#[derive(Clone, Debug)]
+pub struct Wwn {
+    wwn: Vec<u8>,
+}
+
+impl fmt::Display for Wwn {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let hex_strs: Vec<String> = self.wwn.iter().map(|x| format!("{:02X}", x)).collect();
+        write!(f, "{}", hex_strs.join(":"))
+    }
+}
+
+impl FromStr for Wwn {
+    type Err = StorageError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        // : separated octets
+        if s.contains(':') {
+            //Guard against invalid length wwn strings
+            if s.len() != 23 {
+                return Err(StorageError::new(format!(
+                    "Invalid wwn {}. Length should be 23",
+                    s
+                )));
+            }
+            let s = s.replace(":", "");
+            let wwn = Vec::from_hex(s)?;
+            Ok(Wwn { wwn })
+        } else {
+            //Guard against invalid length wwn strings
+            if s.len() != 16 {
+                return Err(StorageError::new(format!(
+                    "Invalid wwn {}. Length should be 16",
+                    s
+                )));
+            }
+            let wwn = Vec::from_hex(s)?;
+            Ok(Wwn { wwn })
+        }
+    }
+}
+
+fn deserialize_wwn<'de, D>(deserializer: D) -> Result<Option<Wwn>, D::Error>
+where
+    D: serde::de::Deserializer<'de>,
+{
+    let s: &str = Deserialize::deserialize(deserializer)?;
+    if s.is_empty() {
+        return Ok(None);
+    }
+    let res = Wwn::from_str(&s).map_err(serde::de::Error::custom)?;
+    Ok(Some(res))
+}
+
+fn deserialize_wwn_list<'de, D>(deserializer: D) -> Result<Vec<Wwn>, D::Error>
+where
+    D: serde::de::Deserializer<'de>,
+{
+    let mut wwns: Vec<Wwn> = Vec::new();
+    let wwn_strs: Vec<&str> = Deserialize::deserialize(deserializer)?;
+    for wwn_str in wwn_strs {
+        wwns.push(Wwn::from_str(wwn_str).map_err(serde::de::Error::custom)?);
+    }
+    Ok(wwns)
+}
+
+impl Serialize for Wwn {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+#[test]
+fn test_wwn_parser() {
+    let test_data = "50:01:43:80:33:0d:40:82";
+    let w = Wwn::from_str(test_data).unwrap();
+    println!("wwn: {}", w);
+    let wwns: Vec<Wwn> = vec![w.clone(), w.clone()];
+    let za = ZoneAlias {
+        name: "test".to_string(),
+        key: None,
+        member_names: wwns,
+    };
+    println!("{:#?}", serde_json::to_string(&za));
+}
+
+fn post_server_response<T, I>(
+    client: &reqwest::Client,
+    config: &BrocadeConfig,
+    api_call: &str,
+    ws_token: &str,
+    input: &I,
+) -> MetricsResult<T>
+where
+    I: Serialize,
+    T: DeserializeOwned,
+{
+    let url = format!(
+        "{}://{}/rest/{}",
+        match config.certificate {
+            Some(_) => "https",
+            None => "http",
+        },
+        config.endpoint,
+        api_call
+    );
+    let resp = client
+        .post(&url)
+        .header(
+            ACCEPT,
+            "application/vnd.brocade.networkadvisor+json;version=v1",
+        )
+        .header("WStoken", HeaderValue::from_str(&ws_token)?)
+        .json(&input)
+        .send()?
+        .error_for_status()?
+        .json()?;
+    Ok(resp)
+}
+
 fn get_server_response<T>(
     client: &reqwest::Client,
     config: &BrocadeConfig,
@@ -523,6 +869,20 @@ pub fn logout(client: &reqwest::Client, config: &BrocadeConfig, token: &str) -> 
         .send()?
         .error_for_status()?;
     Ok(())
+}
+
+pub fn get_fabrics(
+    client: &reqwest::Client,
+    config: &BrocadeConfig,
+    ws_token: &str,
+) -> MetricsResult<FcFabrics> {
+    let result = get_server_response::<FcFabrics>(
+        &client,
+        &config,
+        "resourcegroups/All/fcfabrics",
+        ws_token,
+    )?;
+    Ok(result)
 }
 
 pub fn get_fc_fabrics(
@@ -682,5 +1042,39 @@ pub fn get_resource_groups(
 ) -> MetricsResult<ResourceGroups> {
     let result =
         get_server_response::<ResourceGroups>(&client, &config, "resourcegroups", ws_token)?;
+    Ok(result)
+}
+
+pub fn get_zones(
+    client: &reqwest::Client,
+    config: &BrocadeConfig,
+    ws_token: &str,
+    fabric_key: &str,
+) -> MetricsResult<Zones> {
+    let result = get_server_response::<Zones>(
+        &client,
+        &config,
+        &format!("resourcegroups/All/fcfabrics/{}/zones", fabric_key),
+        ws_token,
+    )?;
+    Ok(result)
+}
+
+pub fn get_zone_aliases(
+    client: &reqwest::Client,
+    config: &BrocadeConfig,
+    ws_token: &str,
+    fabric_key: &str,
+    zone_key: &str,
+) -> MetricsResult<ZoneAliases> {
+    let result = get_server_response::<ZoneAliases>(
+        &client,
+        &config,
+        &format!(
+            "resourcegroups/All/fcfabrics/{}/zones/{}/zonealiases",
+            fabric_key, zone_key
+        ),
+        ws_token,
+    )?;
     Ok(result)
 }

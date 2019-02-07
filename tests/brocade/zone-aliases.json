@@ -1,0 +1,39 @@
+{
+    "zoneAliases": [
+        {
+            "key": "foo",
+            "name": "foo",
+            "memberNames": [
+                "50:02:18:84:36:61:19:3D"
+            ]
+        },
+        {
+            "key": "bar",
+            "name": "bar",
+            "memberNames": [
+                "50:02:18:83:36:61:19:3D"
+            ]
+        },
+        {
+            "key": "baz",
+            "name": "baz",
+            "memberNames": [
+                "50:02:18:84:36:60:19:3D"
+            ]
+        },
+        {
+            "key": "foo2",
+            "name": "foo2",
+            "memberNames": [
+                "50:02:18:83:36:60:19:3D"
+            ]
+        },
+        {
+            "key": "bar2",
+            "name": "bar2",
+            "memberNames": [
+                "10:00:FC:15:B4:43:5F:82"
+            ]
+        }
+    ]
+}
