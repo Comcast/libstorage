@@ -10,6 +10,7 @@ use std::string::{FromUtf8Error, ParseError};
 
 use cookie::ParseError as CookieParseError;
 use csv::Error as CsvError;
+use hex::FromHexError;
 use influx_db_client::error::Error as InfluxError;
 #[cfg(feature = "isilon-library")]
 use isilon::apis::Error as IsilonError;
@@ -33,6 +34,7 @@ pub enum StorageError {
     Error(String),
     FromUtf8Error(FromUtf8Error),
     HttpError(ReqwestError),
+    HexError(FromHexError),
     InfluxError(InfluxError),
     InvalidHeaderName(InvalidHeaderName),
     InvalidHeaderValue(InvalidHeaderValue),
@@ -66,6 +68,7 @@ impl err for StorageError {
             StorageError::CsvError(ref e) => e.description(),
             StorageError::Error(ref e) => &e,
             StorageError::FromUtf8Error(ref e) => e.description(),
+            StorageError::HexError(ref e) => e.description(),
             StorageError::HttpError(ref e) => e.description(),
             StorageError::InfluxError(ref e) => match *e {
                 InfluxError::SyntaxError(ref s) => s,
@@ -101,6 +104,7 @@ impl err for StorageError {
             StorageError::CsvError(ref e) => e.cause(),
             StorageError::Error(_) => None,
             StorageError::FromUtf8Error(ref e) => e.cause(),
+            StorageError::HexError(ref e) => e.cause(),
             StorageError::HttpError(ref e) => e.cause(),
             StorageError::InfluxError(ref _e) => None,
             StorageError::InvalidHeaderName(ref e) => e.cause(),
@@ -136,6 +140,7 @@ impl StorageError {
             StorageError::CsvError(ref err) => err.to_string(),
             StorageError::Error(ref err) => err.to_string(),
             StorageError::FromUtf8Error(ref err) => err.utf8_error().to_string(),
+            StorageError::HexError(ref err) => err.description().to_string(),
             StorageError::HttpError(ref err) => err.description().to_string(),
             StorageError::InfluxError(ref err) => err.to_string(),
             StorageError::InvalidHeaderName(ref err) => err.description().to_string(),
@@ -180,6 +185,12 @@ impl From<Error> for StorageError {
 impl From<FromUtf8Error> for StorageError {
     fn from(err: FromUtf8Error) -> StorageError {
         StorageError::FromUtf8Error(err)
+    }
+}
+
+impl From<FromHexError> for StorageError {
+    fn from(err: FromHexError) -> StorageError {
+        StorageError::HexError(err)
     }
 }
 

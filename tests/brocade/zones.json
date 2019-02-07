@@ -1,0 +1,37 @@
+{
+    "zones": [
+        {
+            "key": "foo-true",
+            "name": "foo",
+            "type": "STANDARD",
+            "active": true,
+            "aliasNames": null,
+            "memberNames": [
+                "50:02:18:84:36:61:19:3D",
+                "50:01:43:80:33:0D:47:B2"
+            ]
+        },
+        {
+            "key": "bar-true",
+            "name": "bar",
+            "type": "STANDARD",
+            "active": true,
+            "aliasNames": null,
+            "memberNames": [
+                "50:01:43:80:33:0D:46:98",
+                "50:02:18:83:36:60:19:3D"
+            ]
+        },
+        {
+            "key": "baz-true",
+            "name": "baz",
+            "type": "STANDARD",
+            "active": true,
+            "aliasNames": null,
+            "memberNames": [
+                "50:01:43:80:33:0D:46:96",
+                "50:02:18:83:36:61:19:3D"
+            ]
+        }
+    ]
+}
