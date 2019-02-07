@@ -15,7 +15,6 @@ use influx_db_client::error::Error as InfluxError;
 use isilon::apis::Error as IsilonError;
 use native_tls::Error as NativeTlsError;
 use quick_xml::Error as QuickXmlError;
-use r2d2::Error as R2D2Error;
 use rayon::ThreadPoolBuildError;
 use reqwest::header::{InvalidHeaderName, InvalidHeaderValue, ToStrError};
 use reqwest::Error as ReqwestError;
@@ -46,7 +45,6 @@ pub enum StorageError {
     ParseFloatError(ParseFloatError),
     ParseIntError(ParseIntError),
     PostgresError(postgres::Error),
-    R2D2Error(R2D2Error),
     ThreadPoolBuildError(ThreadPoolBuildError),
     ToStrError(ToStrError),
     TreeXmlError(TreeXmlError),
@@ -87,7 +85,6 @@ impl err for StorageError {
             StorageError::ParseFloatError(ref e) => e.description(),
             StorageError::ParseIntError(ref e) => e.description(),
             StorageError::PostgresError(ref e) => e.description(),
-            StorageError::R2D2Error(ref e) => e.description(),
             StorageError::ThreadPoolBuildError(ref e) => e.description(),
             StorageError::TreeXmlError(ref e) => e.description(),
             StorageError::ToStrError(ref e) => e.description(),
@@ -115,7 +112,6 @@ impl err for StorageError {
             StorageError::ParseFloatError(ref e) => e.cause(),
             StorageError::ParseIntError(ref e) => e.cause(),
             StorageError::PostgresError(ref e) => e.cause(),
-            StorageError::R2D2Error(ref e) => e.cause(),
             StorageError::ThreadPoolBuildError(ref e) => e.cause(),
             StorageError::TreeXmlError(ref e) => e.cause(),
             StorageError::ToStrError(ref e) => e.cause(),
@@ -150,7 +146,6 @@ impl StorageError {
             StorageError::ParseFloatError(ref err) => err.description().to_string(),
             StorageError::ParseIntError(ref err) => err.description().to_string(),
             StorageError::PostgresError(ref err) => err.description().to_string(),
-            StorageError::R2D2Error(ref err) => err.description().to_string(),
             StorageError::ThreadPoolBuildError(ref err) => err.description().to_string(),
             StorageError::TreeXmlError(ref err) => err.description().to_string(),
             StorageError::ToStrError(ref err) => err.description().to_string(),
@@ -247,12 +242,6 @@ impl From<ParseIntError> for StorageError {
 impl From<postgres::Error> for StorageError {
     fn from(err: postgres::Error) -> StorageError {
         StorageError::PostgresError(err)
-    }
-}
-
-impl From<R2D2Error> for StorageError {
-    fn from(err: R2D2Error) -> StorageError {
-        StorageError::R2D2Error(err)
     }
 }
 
