@@ -1,0 +1,17 @@
+{
+    "f_bavail": 253424334215,
+    "f_bfree": 256037184130,
+    "f_blocks": 349448120748,
+    "f_bsize": 8192,
+    "f_ffree": 3320459808387,
+    "f_files": 4220738499348,
+    "f_flags": 268439556,
+    "f_fstypename": "efs",
+    "f_iosize": 8192,
+    "f_mntfromname": "OneFS",
+    "f_mntonname": "/ifs",
+    "f_namemax": 255,
+    "f_owner": 0,
+    "f_type": 101,
+    "f_version": 537068824
+}

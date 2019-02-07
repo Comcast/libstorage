@@ -1,0 +1,45 @@
+{
+    "id": null,
+    "result": {
+        "nodes": [
+            {
+                "nodeID": 1,
+                "result": {
+                    "driveHardware": [
+                        {
+                            "canonicalName": "sdb",
+                            "connected": true,
+                            "dev": 2064,
+                            "devPath": "/dev/slot0",
+                            "driveType": "Slice",
+                            "lifeRemainingPercent": 100,
+                            "lifetimeReadBytes": 14465174975021056,
+                            "lifetimeWriteBytes": 4477211348303872,
+                            "name": "scsi-SATA_SDLFNCAR-960G-1_0007A58C",
+                            "path": "/dev/sdb",
+                            "pathLink": "/dev/slot0",
+                            "powerOnHours": 20139,
+                            "product": "SDLFNCAR-960G-1HA2",
+                            "reallocatedSectors": 0,
+                            "reserveCapacityPercent": 100,
+                            "scsiCompatId": "scsi-SATA_SDLFNCAR-960G-1_0007A58C",
+                            "scsiState": "Running",
+                            "securityAtMaximum": false,
+                            "securityEnabled": false,
+                            "securityFrozen": false,
+                            "securityLocked": false,
+                            "securitySupported": true,
+                            "serial": "0007A58C",
+                            "size": 960197124096,
+                            "slot": 0,
+                            "uncorrectableErrors": 0,
+                            "uuid": "b51ac3af-9006-eecc-e6b1-34d5de0657dd",
+                            "vendor": "SanDisk",
+                            "version": "ZZ39RC93"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

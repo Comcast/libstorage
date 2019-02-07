@@ -1,0 +1,94 @@
+{
+    "portGroupInfo": [
+        {
+            "portGroupId": "FA2d8_3d9_5d8_6d9",
+            "firstAvailableDate": 1523542200000,
+            "lastAvailableDate": 1524839700000
+        },
+        {
+            "portGroupId": "FA1d26_3d25_5d26_6d25",
+            "firstAvailableDate": 1523542200000,
+            "lastAvailableDate": 1524839700000
+        },
+        {
+            "portGroupId": "FA1d4_4d4_2d5_5d5",
+            "firstAvailableDate": 1523542200000,
+            "lastAvailableDate": 1524839700000
+        },
+        {
+            "portGroupId": "FA1d6_2d7_4d6_5d7",
+            "firstAvailableDate": 1523542200000,
+            "lastAvailableDate": 1524839700000
+        },
+        {
+            "portGroupId": "FA1d9_3d4_4d9_6d4",
+            "firstAvailableDate": 1523542200000,
+            "lastAvailableDate": 1524839700000
+        },
+        {
+            "portGroupId": "FA2d10_3d11_5d10_6d11",
+            "firstAvailableDate": 1523542200000,
+            "lastAvailableDate": 1524839700000
+        },
+        {
+            "portGroupId": "FA1d24_2d25_4d24_5d25",
+            "firstAvailableDate": 1523542200000,
+            "lastAvailableDate": 1524839700000
+        },
+        {
+            "portGroupId": "FA1d5_2d4_4d5_5d4",
+            "firstAvailableDate": 1523542200000,
+            "lastAvailableDate": 1524839700000
+        },
+        {
+            "portGroupId": "FA2d11_3d10_5d11_6d10",
+            "firstAvailableDate": 1523542200000,
+            "lastAvailableDate": 1524839700000
+        },
+        {
+            "portGroupId": "FA2d24_3d27_4d26_6d27",
+            "firstAvailableDate": 1523542200000,
+            "lastAvailableDate": 1524839700000
+        },
+        {
+            "portGroupId": "FA1d10_3d7_4d10_6d7",
+            "firstAvailableDate": 1523542200000,
+            "lastAvailableDate": 1524839700000
+        },
+        {
+            "portGroupId": "FA1d25_3d24_4d25_6d24",
+            "firstAvailableDate": 1523542200000,
+            "lastAvailableDate": 1524839700000
+        },
+        {
+            "portGroupId": "FA2d9_3d8_5d9_6d8",
+            "firstAvailableDate": 1523542200000,
+            "lastAvailableDate": 1524839700000
+        },
+        {
+            "portGroupId": "FA1d11_3d6_4d11_6d6",
+            "firstAvailableDate": 1523542200000,
+            "lastAvailableDate": 1524839700000
+        },
+        {
+            "portGroupId": "FA2d27_3d26_5d27_6d26",
+            "firstAvailableDate": 1523542200000,
+            "lastAvailableDate": 1524839700000
+        },
+        {
+            "portGroupId": "FA1d7_2d6_4d7_5d6",
+            "firstAvailableDate": 1523542200000,
+            "lastAvailableDate": 1524839700000
+        },
+        {
+            "portGroupId": "FA1d8_3d5_4d8_6d5",
+            "firstAvailableDate": 1523542200000,
+            "lastAvailableDate": 1524839700000
+        },
+        {
+            "portGroupId": "FA1d27_2d26_4d27_5d24",
+            "firstAvailableDate": 1523542200000,
+            "lastAvailableDate": 1524839700000
+        }
+    ]
+}

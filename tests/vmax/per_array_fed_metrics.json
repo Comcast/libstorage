@@ -1,0 +1,48 @@
+{
+    "resultList": {
+        "result": [
+            {
+                "AvgWPDiscTime": 0,
+                "AvgReadMissResponseTime": 1.20875,
+                "PercentBusy": 4.7190676,
+                "HostIOs": 3250.56,
+                "HostMBs": 300.04776,
+                "Reqs": 4948.1,
+                "ReadReqs": 2912.28,
+                "WriteReqs": 2035.82,
+                "HitReqs": 3758.2166,
+                "ReadHitReqs": 2035.8634,
+                "WriteHitReqs": 1722.3531,
+                "MissReqs": 1189.8834,
+                "ReadMissReqs": 876.4166,
+                "WriteMissReqs": 313.4668,
+                "PercentReadReqs": 58.85653,
+                "PercentWriteReqs": 41.143467,
+                "PercentHitReqs": 75.95272,
+                "PercentReadReqHit": 69.906166,
+                "SystemWPEvents": 0,
+                "DeviceWPEvents": 0,
+                "AvgTimePerSyscall": 0.012999999,
+                "SlotCollisions": 346.09332,
+                "PercentWriteReqHit": 84.602425,
+                "TotalReadCount": 1678.73,
+                "TotalWriteCount": 1591.3334,
+                "ReadResponseTime": 1.7603374,
+                "WriteResponseTime": 1.0126619,
+                "HostIOLimitIOs": 0,
+                "HostIOLimitMBs": 0,
+                "OptimizedReadMisses": 201.28334,
+                "OptimizedMBReadMisses": 2.1062403,
+                "AvgOptimizedReadMissSize": 10.715194,
+                "QueueDepthUtilization": 7.8469706,
+                "timestamp": 1522597500000
+            }
+        ],
+        "from": 1,
+        "to": 289
+    },
+    "id": "c9fef88e-ef7e-452a-8194-208e53cd2628_0",
+    "count": 289,
+    "expirationTime": 1522771257068,
+    "maxPageSize": 1000
+}

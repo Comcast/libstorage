@@ -1,0 +1,1680 @@
+{
+    "errors": [],
+    "nodes": [
+        {
+            "batterystatus": {
+                "last_test_time1": "Tue Jul 17 22:03:25 2018",
+                "last_test_time2": "Wed Jul 18 00:14:31 2018",
+                "next_test_time1": "Sat Sep 15 23:03:25 2018",
+                "next_test_time2": "Sun Sep 16 00:14:31 2018",
+                "present": true,
+                "result1": "passed",
+                "result2": "passed",
+                "status1": "Good (10) ",
+                "status2": "Good (10) ",
+                "supported": true
+            },
+            "capacity": [
+                {
+                    "bytes": 153931627888640,
+                    "count": 35,
+                    "type": "HDD"
+                },
+                {
+                    "bytes": 1759218604441,
+                    "count": 1,
+                    "type": "SSD"
+                }
+            ],
+            "cpu": {
+                "model": "Intel(R) Xeon(R) CPU E5-2640 v2 @ 2.00GHz",
+                "overtemp": "Normal",
+                "proc": "Dual-proc, Octa-HT-core",
+                "speed_limit": "100.00"
+            },
+            "id": 1,
+            "lnn": 1,
+            "nvram": {
+                "batteries": [
+                    {
+                        "color": "GREEN",
+                        "id": 1,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    },
+                    {
+                        "color": "GREEN",
+                        "id": 2,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    }
+                ],
+                "battery_count": 2,
+                "charge_status": "GREEN",
+                "charge_status_number": 1,
+                "device": "/dev/mnv0",
+                "present": true,
+                "present_flash": true,
+                "present_size": 2113798144,
+                "present_type": "LX4381",
+                "ship_mode": 0,
+                "supported": true,
+                "supported_flash": true,
+                "supported_size": 17179869184,
+                "supported_type": "LX4381"
+            },
+            "powersupplies": {
+                "count": 2,
+                "failures": 0,
+                "has_cff": true,
+                "status": "Power Supplies OK",
+                "supplies": [
+                    {
+                        "chassis": 0,
+                        "firmware": "03.03",
+                        "good": "Good",
+                        "id": 1,
+                        "name": "PS1 (type=ACBEL POLYTECH , fw=03.03)",
+                        "status": "Power Supply 1 good",
+                        "type": "ACBEL POLYTECH "
+                    },
+                    {
+                        "chassis": 0,
+                        "firmware": "03.03",
+                        "good": "Good",
+                        "id": 2,
+                        "name": "PS2 (type=ACBEL POLYTECH , fw=03.03)",
+                        "status": "Power Supply 2 good",
+                        "type": "ACBEL POLYTECH "
+                    }
+                ],
+                "supports_cff": true
+            },
+            "release": "v8.1.0.4",
+            "uptime": 2420257,
+            "version": "Isilon OneFS v8.1.0.4 B_MR_8_1_0_4_057(RELEASE): 0x801005000400039:Wed Jun 13 13:42:50 PDT 2018    root@sea-build10-110:/b/mnt/obj/b/mnt/src/sys/IQ.amd64.release   FreeBSD clang version 3.3 (tags/RELEASE_33/final 183502) 20130610"
+        },
+        {
+            "batterystatus": {
+                "last_test_time1": "Tue Jul 17 22:45:06 2018",
+                "last_test_time2": "Wed Jul 18 00:50:30 2018",
+                "next_test_time1": "Sat Sep 15 23:45:06 2018",
+                "next_test_time2": "Sun Sep 16 00:50:30 2018",
+                "present": true,
+                "result1": "passed",
+                "result2": "passed",
+                "status1": "Good (10) ",
+                "status2": "Good (10) ",
+                "supported": true
+            },
+            "capacity": [
+                {
+                    "bytes": 153931627888640,
+                    "count": 35,
+                    "type": "HDD"
+                },
+                {
+                    "bytes": 1759218604441,
+                    "count": 1,
+                    "type": "SSD"
+                }
+            ],
+            "cpu": {
+                "model": "Intel(R) Xeon(R) CPU E5-2640 v2 @ 2.00GHz",
+                "overtemp": "Normal",
+                "proc": "Dual-proc, Octa-HT-core",
+                "speed_limit": "100.00"
+            },
+            "id": 2,
+            "lnn": 2,
+            "nvram": {
+                "batteries": [
+                    {
+                        "color": "GREEN",
+                        "id": 1,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    },
+                    {
+                        "color": "GREEN",
+                        "id": 2,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    }
+                ],
+                "battery_count": 2,
+                "charge_status": "GREEN",
+                "charge_status_number": 1,
+                "device": "/dev/mnv0",
+                "present": true,
+                "present_flash": true,
+                "present_size": 2113798144,
+                "present_type": "LX4381",
+                "ship_mode": 0,
+                "supported": true,
+                "supported_flash": true,
+                "supported_size": 17179869184,
+                "supported_type": "LX4381"
+            },
+            "powersupplies": {
+                "count": 2,
+                "failures": 0,
+                "has_cff": true,
+                "status": "Power Supplies OK",
+                "supplies": [
+                    {
+                        "chassis": 0,
+                        "firmware": "03.03",
+                        "good": "Good",
+                        "id": 1,
+                        "name": "PS1 (type=ACBEL POLYTECH , fw=03.03)",
+                        "status": "Power Supply 1 good",
+                        "type": "ACBEL POLYTECH "
+                    },
+                    {
+                        "chassis": 0,
+                        "firmware": "03.03",
+                        "good": "Good",
+                        "id": 2,
+                        "name": "PS2 (type=ACBEL POLYTECH , fw=03.03)",
+                        "status": "Power Supply 2 good",
+                        "type": "ACBEL POLYTECH "
+                    }
+                ],
+                "supports_cff": true
+            },
+            "release": "v8.1.0.4",
+            "uptime": 2419090,
+            "version": "Isilon OneFS v8.1.0.4 B_MR_8_1_0_4_057(RELEASE): 0x801005000400039:Wed Jun 13 13:42:50 PDT 2018    root@sea-build10-110:/b/mnt/obj/b/mnt/src/sys/IQ.amd64.release   FreeBSD clang version 3.3 (tags/RELEASE_33/final 183502) 20130610"
+        },
+        {
+            "batterystatus": {
+                "last_test_time1": "Tue Jul 17 22:59:06 2018",
+                "last_test_time2": "Wed Jul 18 01:18:34 2018",
+                "next_test_time1": "Sat Sep 15 23:59:06 2018",
+                "next_test_time2": "Sun Sep 16 01:18:34 2018",
+                "present": true,
+                "result1": "passed",
+                "result2": "passed",
+                "status1": "Good (10) ",
+                "status2": "Good (10) ",
+                "supported": true
+            },
+            "capacity": [
+                {
+                    "bytes": 153931627888640,
+                    "count": 35,
+                    "type": "HDD"
+                },
+                {
+                    "bytes": 1759218604441,
+                    "count": 1,
+                    "type": "SSD"
+                }
+            ],
+            "cpu": {
+                "model": "Intel(R) Xeon(R) CPU E5-2640 v2 @ 2.00GHz",
+                "overtemp": "Normal",
+                "proc": "Dual-proc, Octa-HT-core",
+                "speed_limit": "100.00"
+            },
+            "id": 3,
+            "lnn": 3,
+            "nvram": {
+                "batteries": [
+                    {
+                        "color": "GREEN",
+                        "id": 1,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    },
+                    {
+                        "color": "GREEN",
+                        "id": 2,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    }
+                ],
+                "battery_count": 2,
+                "charge_status": "GREEN",
+                "charge_status_number": 1,
+                "device": "/dev/mnv0",
+                "present": true,
+                "present_flash": true,
+                "present_size": 2113798144,
+                "present_type": "LX4381",
+                "ship_mode": 0,
+                "supported": true,
+                "supported_flash": true,
+                "supported_size": 17179869184,
+                "supported_type": "LX4381"
+            },
+            "powersupplies": {
+                "count": 2,
+                "failures": 0,
+                "has_cff": true,
+                "status": "Power Supplies OK",
+                "supplies": [
+                    {
+                        "chassis": 0,
+                        "firmware": "03.03",
+                        "good": "Good",
+                        "id": 1,
+                        "name": "PS1 (type=ACBEL POLYTECH , fw=03.03)",
+                        "status": "Power Supply 1 good",
+                        "type": "ACBEL POLYTECH "
+                    },
+                    {
+                        "chassis": 0,
+                        "firmware": "03.03",
+                        "good": "Good",
+                        "id": 2,
+                        "name": "PS2 (type=ACBEL POLYTECH , fw=03.03)",
+                        "status": "Power Supply 2 good",
+                        "type": "ACBEL POLYTECH "
+                    }
+                ],
+                "supports_cff": true
+            },
+            "release": "v8.1.0.4",
+            "uptime": 2417903,
+            "version": "Isilon OneFS v8.1.0.4 B_MR_8_1_0_4_057(RELEASE): 0x801005000400039:Wed Jun 13 13:42:50 PDT 2018    root@sea-build10-110:/b/mnt/obj/b/mnt/src/sys/IQ.amd64.release   FreeBSD clang version 3.3 (tags/RELEASE_33/final 183502) 20130610"
+        },
+        {
+            "batterystatus": {
+                "last_test_time1": "Tue Jul 17 23:37:57 2018",
+                "last_test_time2": "Wed Jul 18 01:50:08 2018",
+                "next_test_time1": "Sun Sep 16 00:37:57 2018",
+                "next_test_time2": "Sun Sep 16 01:50:08 2018",
+                "present": true,
+                "result1": "passed",
+                "result2": "passed",
+                "status1": "Good (10) ",
+                "status2": "Good (10) ",
+                "supported": true
+            },
+            "capacity": [
+                {
+                    "bytes": 153931627888640,
+                    "count": 35,
+                    "type": "HDD"
+                },
+                {
+                    "bytes": 1759218604441,
+                    "count": 1,
+                    "type": "SSD"
+                }
+            ],
+            "cpu": {
+                "model": "Intel(R) Xeon(R) CPU E5-2640 v2 @ 2.00GHz",
+                "overtemp": "Normal",
+                "proc": "Dual-proc, Octa-HT-core",
+                "speed_limit": "100.00"
+            },
+            "id": 4,
+            "lnn": 4,
+            "nvram": {
+                "batteries": [
+                    {
+                        "color": "GREEN",
+                        "id": 1,
+                        "status": "Good (10) ",
+                        "voltage": "3.9"
+                    },
+                    {
+                        "color": "GREEN",
+                        "id": 2,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    }
+                ],
+                "battery_count": 2,
+                "charge_status": "GREEN",
+                "charge_status_number": 1,
+                "device": "/dev/mnv0",
+                "present": true,
+                "present_flash": true,
+                "present_size": 2113798144,
+                "present_type": "LX4381",
+                "ship_mode": 0,
+                "supported": true,
+                "supported_flash": true,
+                "supported_size": 17179869184,
+                "supported_type": "LX4381"
+            },
+            "powersupplies": {
+                "count": 2,
+                "failures": 0,
+                "has_cff": true,
+                "status": "Power Supplies OK",
+                "supplies": [
+                    {
+                        "chassis": 0,
+                        "firmware": "03.03",
+                        "good": "Good",
+                        "id": 1,
+                        "name": "PS1 (type=ACBEL POLYTECH , fw=03.03)",
+                        "status": "Power Supply 1 good",
+                        "type": "ACBEL POLYTECH "
+                    },
+                    {
+                        "chassis": 0,
+                        "firmware": "03.03",
+                        "good": "Good",
+                        "id": 2,
+                        "name": "PS2 (type=ACBEL POLYTECH , fw=03.03)",
+                        "status": "Power Supply 2 good",
+                        "type": "ACBEL POLYTECH "
+                    }
+                ],
+                "supports_cff": true
+            },
+            "release": "v8.1.0.4",
+            "uptime": 2416691,
+            "version": "Isilon OneFS v8.1.0.4 B_MR_8_1_0_4_057(RELEASE): 0x801005000400039:Wed Jun 13 13:42:50 PDT 2018    root@sea-build10-110:/b/mnt/obj/b/mnt/src/sys/IQ.amd64.release   FreeBSD clang version 3.3 (tags/RELEASE_33/final 183502) 20130610"
+        },
+        {
+            "batterystatus": {
+                "last_test_time1": "Wed Jul 11 16:23:27 2018",
+                "last_test_time2": "Wed Jul 11 20:23:45 2018",
+                "next_test_time1": "Sun Sep  9 17:23:27 2018",
+                "next_test_time2": "Sun Sep  9 20:23:45 2018",
+                "present": true,
+                "result1": "passed",
+                "result2": "passed",
+                "status1": "Good (10) ",
+                "status2": "Good (10) ",
+                "supported": true
+            },
+            "capacity": [
+                {
+                    "bytes": 153931627888640,
+                    "count": 35,
+                    "type": "HDD"
+                },
+                {
+                    "bytes": 1759218604441,
+                    "count": 1,
+                    "type": "SSD"
+                }
+            ],
+            "cpu": {
+                "model": "Intel(R) Xeon(R) CPU E5-2640 v2 @ 2.00GHz",
+                "overtemp": "Normal",
+                "proc": "Dual-proc, Octa-HT-core",
+                "speed_limit": "100.00"
+            },
+            "id": 7,
+            "lnn": 5,
+            "nvram": {
+                "batteries": [
+                    {
+                        "color": "GREEN",
+                        "id": 1,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    },
+                    {
+                        "color": "GREEN",
+                        "id": 2,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    }
+                ],
+                "battery_count": 2,
+                "charge_status": "GREEN",
+                "charge_status_number": 1,
+                "device": "/dev/mnv0",
+                "present": true,
+                "present_flash": true,
+                "present_size": 2113798144,
+                "present_type": "LX4381",
+                "ship_mode": 0,
+                "supported": true,
+                "supported_flash": true,
+                "supported_size": 17179869184,
+                "supported_type": "LX4381"
+            },
+            "powersupplies": {
+                "count": 2,
+                "failures": 0,
+                "has_cff": true,
+                "status": "Power Supplies OK",
+                "supplies": [
+                    {
+                        "chassis": 0,
+                        "firmware": "03.03",
+                        "good": "Good",
+                        "id": 1,
+                        "name": "PS1 (type=ACBEL POLYTECH , fw=03.03)",
+                        "status": "Power Supply 1 good",
+                        "type": "ACBEL POLYTECH "
+                    },
+                    {
+                        "chassis": 0,
+                        "firmware": "03.03",
+                        "good": "Good",
+                        "id": 2,
+                        "name": "PS2 (type=ACBEL POLYTECH , fw=03.03)",
+                        "status": "Power Supply 2 good",
+                        "type": "ACBEL POLYTECH "
+                    }
+                ],
+                "supports_cff": true
+            },
+            "release": "v8.1.0.4",
+            "uptime": 2415442,
+            "version": "Isilon OneFS v8.1.0.4 B_MR_8_1_0_4_057(RELEASE): 0x801005000400039:Wed Jun 13 13:42:50 PDT 2018    root@sea-build10-110:/b/mnt/obj/b/mnt/src/sys/IQ.amd64.release   FreeBSD clang version 3.3 (tags/RELEASE_33/final 183502) 20130610"
+        },
+        {
+            "batterystatus": {
+                "last_test_time1": "Sat Jul 28 21:04:39 2018",
+                "last_test_time2": "Sun Jul 29 05:06:31 2018",
+                "next_test_time1": "Wed Sep 26 22:04:39 2018",
+                "next_test_time2": "Thu Sep 27 05:06:31 2018",
+                "present": true,
+                "result1": "passed",
+                "result2": "passed",
+                "status1": "Good (10) ",
+                "status2": "Good (10) ",
+                "supported": true
+            },
+            "capacity": [
+                {
+                    "bytes": 230897441832960,
+                    "count": 35,
+                    "type": "HDD"
+                },
+                {
+                    "bytes": 858993459200,
+                    "count": 1,
+                    "type": "SSD"
+                }
+            ],
+            "cpu": {
+                "model": "Intel(R) Xeon(R) CPU E5-2407 v2 @ 2.40GHz",
+                "overtemp": "Normal",
+                "proc": "Single-proc, Quad-core",
+                "speed_limit": "100.00"
+            },
+            "id": 8,
+            "lnn": 6,
+            "nvram": {
+                "batteries": [
+                    {
+                        "color": "GREEN",
+                        "id": 1,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    },
+                    {
+                        "color": "GREEN",
+                        "id": 2,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    }
+                ],
+                "battery_count": 2,
+                "charge_status": "GREEN",
+                "charge_status_number": 1,
+                "device": "/dev/mnv0",
+                "present": true,
+                "present_flash": true,
+                "present_size": 2113798144,
+                "present_type": "LX4381",
+                "ship_mode": 0,
+                "supported": true,
+                "supported_flash": true,
+                "supported_size": 17179869184,
+                "supported_type": "LX4381"
+            },
+            "powersupplies": {
+                "count": 2,
+                "failures": 0,
+                "has_cff": true,
+                "status": "Power Supplies OK",
+                "supplies": [
+                    {
+                        "chassis": 0,
+                        "firmware": "02.02",
+                        "good": "Good",
+                        "id": 1,
+                        "name": "PS1 (type=ACBEL POLYTECH , fw=02.02)",
+                        "status": "Power Supply 1 good",
+                        "type": "ACBEL POLYTECH "
+                    },
+                    {
+                        "chassis": 0,
+                        "firmware": "02.02",
+                        "good": "Good",
+                        "id": 2,
+                        "name": "PS2 (type=ACBEL POLYTECH , fw=02.02)",
+                        "status": "Power Supply 2 good",
+                        "type": "ACBEL POLYTECH "
+                    }
+                ],
+                "supports_cff": true
+            },
+            "release": "v8.1.0.4",
+            "uptime": 2414413,
+            "version": "Isilon OneFS v8.1.0.4 B_MR_8_1_0_4_057(RELEASE): 0x801005000400039:Wed Jun 13 13:42:50 PDT 2018    root@sea-build10-110:/b/mnt/obj/b/mnt/src/sys/IQ.amd64.release   FreeBSD clang version 3.3 (tags/RELEASE_33/final 183502) 20130610"
+        },
+        {
+            "batterystatus": {
+                "last_test_time1": "Thu Jul 26 00:30:45 2018",
+                "last_test_time2": "Thu Jul 26 06:22:11 2018",
+                "next_test_time1": "Mon Sep 24 01:30:45 2018",
+                "next_test_time2": "Mon Sep 24 06:22:11 2018",
+                "present": true,
+                "result1": "passed",
+                "result2": "passed",
+                "status1": "Good (10) ",
+                "status2": "Good (10) ",
+                "supported": true
+            },
+            "capacity": [
+                {
+                    "bytes": 230897441832960,
+                    "count": 35,
+                    "type": "HDD"
+                },
+                {
+                    "bytes": 858993459200,
+                    "count": 1,
+                    "type": "SSD"
+                }
+            ],
+            "cpu": {
+                "model": "Intel(R) Xeon(R) CPU E5-2407 v2 @ 2.40GHz",
+                "overtemp": "Normal",
+                "proc": "Single-proc, Quad-core",
+                "speed_limit": "100.00"
+            },
+            "id": 9,
+            "lnn": 7,
+            "nvram": {
+                "batteries": [
+                    {
+                        "color": "GREEN",
+                        "id": 1,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    },
+                    {
+                        "color": "GREEN",
+                        "id": 2,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    }
+                ],
+                "battery_count": 2,
+                "charge_status": "GREEN",
+                "charge_status_number": 1,
+                "device": "/dev/mnv0",
+                "present": true,
+                "present_flash": true,
+                "present_size": 2113798144,
+                "present_type": "LX4381",
+                "ship_mode": 0,
+                "supported": true,
+                "supported_flash": true,
+                "supported_size": 17179869184,
+                "supported_type": "LX4381"
+            },
+            "powersupplies": {
+                "count": 2,
+                "failures": 0,
+                "has_cff": true,
+                "status": "Power Supplies OK",
+                "supplies": [
+                    {
+                        "chassis": 0,
+                        "firmware": "02.02",
+                        "good": "Good",
+                        "id": 1,
+                        "name": "PS1 (type=ACBEL POLYTECH , fw=02.02)",
+                        "status": "Power Supply 1 good",
+                        "type": "ACBEL POLYTECH "
+                    },
+                    {
+                        "chassis": 0,
+                        "firmware": "02.02",
+                        "good": "Good",
+                        "id": 2,
+                        "name": "PS2 (type=ACBEL POLYTECH , fw=02.02)",
+                        "status": "Power Supply 2 good",
+                        "type": "ACBEL POLYTECH "
+                    }
+                ],
+                "supports_cff": true
+            },
+            "release": "v8.1.0.4",
+            "uptime": 2413396,
+            "version": "Isilon OneFS v8.1.0.4 B_MR_8_1_0_4_057(RELEASE): 0x801005000400039:Wed Jun 13 13:42:50 PDT 2018    root@sea-build10-110:/b/mnt/obj/b/mnt/src/sys/IQ.amd64.release   FreeBSD clang version 3.3 (tags/RELEASE_33/final 183502) 20130610"
+        },
+        {
+            "batterystatus": {
+                "last_test_time1": "Wed Jul 11 20:42:27 2018",
+                "last_test_time2": "Thu Jul 12 00:44:31 2018",
+                "next_test_time1": "Sun Sep  9 21:42:27 2018",
+                "next_test_time2": "Mon Sep 10 00:44:31 2018",
+                "present": true,
+                "result1": "passed",
+                "result2": "passed",
+                "status1": "Good (10) ",
+                "status2": "Good (10) ",
+                "supported": true
+            },
+            "capacity": [
+                {
+                    "bytes": 230897441832960,
+                    "count": 35,
+                    "type": "HDD"
+                },
+                {
+                    "bytes": 858993459200,
+                    "count": 1,
+                    "type": "SSD"
+                }
+            ],
+            "cpu": {
+                "model": "Intel(R) Xeon(R) CPU E5-2407 v2 @ 2.40GHz",
+                "overtemp": "Normal",
+                "proc": "Single-proc, Quad-core",
+                "speed_limit": "100.00"
+            },
+            "id": 10,
+            "lnn": 8,
+            "nvram": {
+                "batteries": [
+                    {
+                        "color": "GREEN",
+                        "id": 1,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    },
+                    {
+                        "color": "GREEN",
+                        "id": 2,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    }
+                ],
+                "battery_count": 2,
+                "charge_status": "GREEN",
+                "charge_status_number": 1,
+                "device": "/dev/mnv0",
+                "present": true,
+                "present_flash": true,
+                "present_size": 2113798144,
+                "present_type": "LX4381",
+                "ship_mode": 0,
+                "supported": true,
+                "supported_flash": true,
+                "supported_size": 17179869184,
+                "supported_type": "LX4381"
+            },
+            "powersupplies": {
+                "count": 2,
+                "failures": 0,
+                "has_cff": true,
+                "status": "Power Supplies OK",
+                "supplies": [
+                    {
+                        "chassis": 0,
+                        "firmware": "02.02",
+                        "good": "Good",
+                        "id": 1,
+                        "name": "PS1 (type=ACBEL POLYTECH , fw=02.02)",
+                        "status": "Power Supply 1 good",
+                        "type": "ACBEL POLYTECH "
+                    },
+                    {
+                        "chassis": 0,
+                        "firmware": "02.02",
+                        "good": "Good",
+                        "id": 2,
+                        "name": "PS2 (type=ACBEL POLYTECH , fw=02.02)",
+                        "status": "Power Supply 2 good",
+                        "type": "ACBEL POLYTECH "
+                    }
+                ],
+                "supports_cff": true
+            },
+            "release": "v8.1.0.4",
+            "uptime": 2412426,
+            "version": "Isilon OneFS v8.1.0.4 B_MR_8_1_0_4_057(RELEASE): 0x801005000400039:Wed Jun 13 13:42:50 PDT 2018    root@sea-build10-110:/b/mnt/obj/b/mnt/src/sys/IQ.amd64.release   FreeBSD clang version 3.3 (tags/RELEASE_33/final 183502) 20130610"
+        },
+        {
+            "batterystatus": {
+                "last_test_time1": "Wed Jul 11 21:00:20 2018",
+                "last_test_time2": "Thu Jul 12 00:40:04 2018",
+                "next_test_time1": "Sun Sep  9 22:00:20 2018",
+                "next_test_time2": "Mon Sep 10 00:40:04 2018",
+                "present": true,
+                "result1": "passed",
+                "result2": "passed",
+                "status1": "Good (10) ",
+                "status2": "Good (10) ",
+                "supported": true
+            },
+            "capacity": [
+                {
+                    "bytes": 230897441832960,
+                    "count": 35,
+                    "type": "HDD"
+                },
+                {
+                    "bytes": 858993459200,
+                    "count": 1,
+                    "type": "SSD"
+                }
+            ],
+            "cpu": {
+                "model": "Intel(R) Xeon(R) CPU E5-2407 v2 @ 2.40GHz",
+                "overtemp": "Normal",
+                "proc": "Single-proc, Quad-core",
+                "speed_limit": "100.00"
+            },
+            "id": 11,
+            "lnn": 9,
+            "nvram": {
+                "batteries": [
+                    {
+                        "color": "GREEN",
+                        "id": 1,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    },
+                    {
+                        "color": "GREEN",
+                        "id": 2,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    }
+                ],
+                "battery_count": 2,
+                "charge_status": "GREEN",
+                "charge_status_number": 1,
+                "device": "/dev/mnv0",
+                "present": true,
+                "present_flash": true,
+                "present_size": 2113798144,
+                "present_type": "LX4381",
+                "ship_mode": 0,
+                "supported": true,
+                "supported_flash": true,
+                "supported_size": 17179869184,
+                "supported_type": "LX4381"
+            },
+            "powersupplies": {
+                "count": 2,
+                "failures": 0,
+                "has_cff": true,
+                "status": "Power Supplies OK",
+                "supplies": [
+                    {
+                        "chassis": 0,
+                        "firmware": "02.02",
+                        "good": "Good",
+                        "id": 1,
+                        "name": "PS1 (type=ACBEL POLYTECH , fw=02.02)",
+                        "status": "Power Supply 1 good",
+                        "type": "ACBEL POLYTECH "
+                    },
+                    {
+                        "chassis": 0,
+                        "firmware": "02.02",
+                        "good": "Good",
+                        "id": 2,
+                        "name": "PS2 (type=ACBEL POLYTECH , fw=02.02)",
+                        "status": "Power Supply 2 good",
+                        "type": "ACBEL POLYTECH "
+                    }
+                ],
+                "supports_cff": true
+            },
+            "release": "v8.1.0.4",
+            "uptime": 2411431,
+            "version": "Isilon OneFS v8.1.0.4 B_MR_8_1_0_4_057(RELEASE): 0x801005000400039:Wed Jun 13 13:42:50 PDT 2018    root@sea-build10-110:/b/mnt/obj/b/mnt/src/sys/IQ.amd64.release   FreeBSD clang version 3.3 (tags/RELEASE_33/final 183502) 20130610"
+        },
+        {
+            "batterystatus": {
+                "last_test_time1": "Sat Jul 21 03:25:11 2018",
+                "last_test_time2": "Thu Jul 12 00:41:14 2018",
+                "next_test_time1": "Wed Sep 19 04:25:11 2018",
+                "next_test_time2": "Mon Sep 10 00:41:14 2018",
+                "present": true,
+                "result1": "passed",
+                "result2": "passed",
+                "status1": "Good (10) ",
+                "status2": "Good (10) ",
+                "supported": true
+            },
+            "capacity": [
+                {
+                    "bytes": 230897441832960,
+                    "count": 35,
+                    "type": "HDD"
+                },
+                {
+                    "bytes": 858993459200,
+                    "count": 1,
+                    "type": "SSD"
+                }
+            ],
+            "cpu": {
+                "model": "Intel(R) Xeon(R) CPU E5-2407 v2 @ 2.40GHz",
+                "overtemp": "Normal",
+                "proc": "Single-proc, Quad-core",
+                "speed_limit": "100.00"
+            },
+            "id": 12,
+            "lnn": 10,
+            "nvram": {
+                "batteries": [
+                    {
+                        "color": "GREEN",
+                        "id": 1,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    },
+                    {
+                        "color": "GREEN",
+                        "id": 2,
+                        "status": "Good (10) ",
+                        "voltage": "3.9"
+                    }
+                ],
+                "battery_count": 2,
+                "charge_status": "GREEN",
+                "charge_status_number": 1,
+                "device": "/dev/mnv0",
+                "present": true,
+                "present_flash": true,
+                "present_size": 2113798144,
+                "present_type": "LX4381",
+                "ship_mode": 0,
+                "supported": true,
+                "supported_flash": true,
+                "supported_size": 17179869184,
+                "supported_type": "LX4381"
+            },
+            "powersupplies": {
+                "count": 2,
+                "failures": 0,
+                "has_cff": true,
+                "status": "Power Supplies OK",
+                "supplies": [
+                    {
+                        "chassis": 0,
+                        "firmware": "02.02",
+                        "good": "Good",
+                        "id": 1,
+                        "name": "PS1 (type=ACBEL POLYTECH , fw=02.02)",
+                        "status": "Power Supply 1 good",
+                        "type": "ACBEL POLYTECH "
+                    },
+                    {
+                        "chassis": 0,
+                        "firmware": "02.02",
+                        "good": "Good",
+                        "id": 2,
+                        "name": "PS2 (type=ACBEL POLYTECH , fw=02.02)",
+                        "status": "Power Supply 2 good",
+                        "type": "ACBEL POLYTECH "
+                    }
+                ],
+                "supports_cff": true
+            },
+            "release": "v8.1.0.4",
+            "uptime": 2410360,
+            "version": "Isilon OneFS v8.1.0.4 B_MR_8_1_0_4_057(RELEASE): 0x801005000400039:Wed Jun 13 13:42:50 PDT 2018    root@sea-build10-110:/b/mnt/obj/b/mnt/src/sys/IQ.amd64.release   FreeBSD clang version 3.3 (tags/RELEASE_33/final 183502) 20130610"
+        },
+        {
+            "batterystatus": {
+                "last_test_time1": "Sat Jun 30 22:03:45 2018",
+                "last_test_time2": "Sun Jul  1 01:28:11 2018",
+                "next_test_time1": "Wed Aug 29 23:03:45 2018",
+                "next_test_time2": "Thu Aug 30 01:28:11 2018",
+                "present": true,
+                "result1": "passed",
+                "result2": "passed",
+                "status1": "Good (10) ",
+                "status2": "Good (10) ",
+                "supported": true
+            },
+            "capacity": [
+                {
+                    "bytes": 153931627888640,
+                    "count": 35,
+                    "type": "HDD"
+                },
+                {
+                    "bytes": 1759218604441,
+                    "count": 1,
+                    "type": "SSD"
+                }
+            ],
+            "cpu": {
+                "model": "Intel(R) Xeon(R) CPU E5-2640 v2 @ 2.00GHz",
+                "overtemp": "Normal",
+                "proc": "Dual-proc, Octa-HT-core",
+                "speed_limit": "100.00"
+            },
+            "id": 13,
+            "lnn": 11,
+            "nvram": {
+                "batteries": [
+                    {
+                        "color": "GREEN",
+                        "id": 1,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    },
+                    {
+                        "color": "GREEN",
+                        "id": 2,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    }
+                ],
+                "battery_count": 2,
+                "charge_status": "GREEN",
+                "charge_status_number": 1,
+                "device": "/dev/mnv0",
+                "present": true,
+                "present_flash": true,
+                "present_size": 2113798144,
+                "present_type": "LX4381",
+                "ship_mode": 0,
+                "supported": true,
+                "supported_flash": true,
+                "supported_size": 17179869184,
+                "supported_type": "LX4381"
+            },
+            "powersupplies": {
+                "count": 2,
+                "failures": 0,
+                "has_cff": true,
+                "status": "Power Supplies OK",
+                "supplies": [
+                    {
+                        "chassis": 0,
+                        "firmware": "03.03",
+                        "good": "Good",
+                        "id": 1,
+                        "name": "PS1 (type=ACBEL POLYTECH , fw=03.03)",
+                        "status": "Power Supply 1 good",
+                        "type": "ACBEL POLYTECH "
+                    },
+                    {
+                        "chassis": 0,
+                        "firmware": "03.03",
+                        "good": "Good",
+                        "id": 2,
+                        "name": "PS2 (type=ACBEL POLYTECH , fw=03.03)",
+                        "status": "Power Supply 2 good",
+                        "type": "ACBEL POLYTECH "
+                    }
+                ],
+                "supports_cff": true
+            },
+            "release": "v8.1.0.4",
+            "uptime": 2409139,
+            "version": "Isilon OneFS v8.1.0.4 B_MR_8_1_0_4_057(RELEASE): 0x801005000400039:Wed Jun 13 13:42:50 PDT 2018    root@sea-build10-110:/b/mnt/obj/b/mnt/src/sys/IQ.amd64.release   FreeBSD clang version 3.3 (tags/RELEASE_33/final 183502) 20130610"
+        },
+        {
+            "batterystatus": {
+                "last_test_time1": "Sat Jun 30 21:38:11 2018",
+                "last_test_time2": "Sat Jun 30 22:51:15 2018",
+                "next_test_time1": "Wed Aug 29 22:38:11 2018",
+                "next_test_time2": "Wed Aug 29 22:51:15 2018",
+                "present": true,
+                "result1": "passed",
+                "result2": "passed",
+                "status1": "Good (10) ",
+                "status2": "Good (10) ",
+                "supported": true
+            },
+            "capacity": [
+                {
+                    "bytes": 153931627888640,
+                    "count": 35,
+                    "type": "HDD"
+                },
+                {
+                    "bytes": 1759218604441,
+                    "count": 1,
+                    "type": "SSD"
+                }
+            ],
+            "cpu": {
+                "model": "Intel(R) Xeon(R) CPU E5-2640 v2 @ 2.00GHz",
+                "overtemp": "Normal",
+                "proc": "Dual-proc, Octa-HT-core",
+                "speed_limit": "100.00"
+            },
+            "id": 14,
+            "lnn": 12,
+            "nvram": {
+                "batteries": [
+                    {
+                        "color": "GREEN",
+                        "id": 1,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    },
+                    {
+                        "color": "GREEN",
+                        "id": 2,
+                        "status": "Good (10) ",
+                        "voltage": "3.9"
+                    }
+                ],
+                "battery_count": 2,
+                "charge_status": "GREEN",
+                "charge_status_number": 1,
+                "device": "/dev/mnv0",
+                "present": true,
+                "present_flash": true,
+                "present_size": 2113798144,
+                "present_type": "LX4381",
+                "ship_mode": 0,
+                "supported": true,
+                "supported_flash": true,
+                "supported_size": 17179869184,
+                "supported_type": "LX4381"
+            },
+            "powersupplies": {
+                "count": 2,
+                "failures": 0,
+                "has_cff": true,
+                "status": "Power Supplies OK",
+                "supplies": [
+                    {
+                        "chassis": 0,
+                        "firmware": "03.03",
+                        "good": "Good",
+                        "id": 1,
+                        "name": "PS1 (type=ACBEL POLYTECH , fw=03.03)",
+                        "status": "Power Supply 1 good",
+                        "type": "ACBEL POLYTECH "
+                    },
+                    {
+                        "chassis": 0,
+                        "firmware": "03.03",
+                        "good": "Good",
+                        "id": 2,
+                        "name": "PS2 (type=ACBEL POLYTECH , fw=03.03)",
+                        "status": "Power Supply 2 good",
+                        "type": "ACBEL POLYTECH "
+                    }
+                ],
+                "supports_cff": true
+            },
+            "release": "v8.1.0.4",
+            "uptime": 2408054,
+            "version": "Isilon OneFS v8.1.0.4 B_MR_8_1_0_4_057(RELEASE): 0x801005000400039:Wed Jun 13 13:42:50 PDT 2018    root@sea-build10-110:/b/mnt/obj/b/mnt/src/sys/IQ.amd64.release   FreeBSD clang version 3.3 (tags/RELEASE_33/final 183502) 20130610"
+        },
+        {
+            "batterystatus": {
+                "last_test_time1": "Wed Jul 18 03:21:42 2018",
+                "last_test_time2": "Wed Jul 18 06:02:44 2018",
+                "next_test_time1": "Sun Sep 16 04:21:42 2018",
+                "next_test_time2": "Sun Sep 16 06:02:44 2018",
+                "present": true,
+                "result1": "passed",
+                "result2": "passed",
+                "status1": "Good (10) ",
+                "status2": "Good (10) ",
+                "supported": true
+            },
+            "capacity": [
+                {
+                    "bytes": 153931627888640,
+                    "count": 35,
+                    "type": "HDD"
+                },
+                {
+                    "bytes": 1759218604441,
+                    "count": 1,
+                    "type": "SSD"
+                }
+            ],
+            "cpu": {
+                "model": "Intel(R) Xeon(R) CPU E5-2640 v2 @ 2.00GHz",
+                "overtemp": "Normal",
+                "proc": "Dual-proc, Octa-HT-core",
+                "speed_limit": "100.00"
+            },
+            "id": 15,
+            "lnn": 13,
+            "nvram": {
+                "batteries": [
+                    {
+                        "color": "GREEN",
+                        "id": 1,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    },
+                    {
+                        "color": "GREEN",
+                        "id": 2,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    }
+                ],
+                "battery_count": 2,
+                "charge_status": "GREEN",
+                "charge_status_number": 1,
+                "device": "/dev/mnv0",
+                "present": true,
+                "present_flash": true,
+                "present_size": 2113798144,
+                "present_type": "LX4381",
+                "ship_mode": 0,
+                "supported": true,
+                "supported_flash": true,
+                "supported_size": 17179869184,
+                "supported_type": "LX4381"
+            },
+            "powersupplies": {
+                "count": 2,
+                "failures": 0,
+                "has_cff": true,
+                "status": "Power Supplies OK",
+                "supplies": [
+                    {
+                        "chassis": 0,
+                        "firmware": "03.03",
+                        "good": "Good",
+                        "id": 1,
+                        "name": "PS1 (type=ACBEL POLYTECH , fw=03.03)",
+                        "status": "Power Supply 1 good",
+                        "type": "ACBEL POLYTECH "
+                    },
+                    {
+                        "chassis": 0,
+                        "firmware": "03.03",
+                        "good": "Good",
+                        "id": 2,
+                        "name": "PS2 (type=ACBEL POLYTECH , fw=03.03)",
+                        "status": "Power Supply 2 good",
+                        "type": "ACBEL POLYTECH "
+                    }
+                ],
+                "supports_cff": true
+            },
+            "release": "v8.1.0.4",
+            "uptime": 2407002,
+            "version": "Isilon OneFS v8.1.0.4 B_MR_8_1_0_4_057(RELEASE): 0x801005000400039:Wed Jun 13 13:42:50 PDT 2018    root@sea-build10-110:/b/mnt/obj/b/mnt/src/sys/IQ.amd64.release   FreeBSD clang version 3.3 (tags/RELEASE_33/final 183502) 20130610"
+        },
+        {
+            "batterystatus": {
+                "last_test_time1": "Wed Aug  1 21:11:11 2018",
+                "last_test_time2": "Wed Aug  1 23:38:55 2018",
+                "next_test_time1": "Sun Sep 30 22:11:11 2018",
+                "next_test_time2": "Sun Sep 30 23:38:55 2018",
+                "present": true,
+                "result1": "passed",
+                "result2": "passed",
+                "status1": "Good (10) ",
+                "status2": "Good (10) ",
+                "supported": true
+            },
+            "capacity": [
+                {
+                    "bytes": 153931627888640,
+                    "count": 35,
+                    "type": "HDD"
+                },
+                {
+                    "bytes": 1759218604441,
+                    "count": 1,
+                    "type": "SSD"
+                }
+            ],
+            "cpu": {
+                "model": "Intel(R) Xeon(R) CPU E5-2640 v2 @ 2.00GHz",
+                "overtemp": "Normal",
+                "proc": "Dual-proc, Octa-HT-core",
+                "speed_limit": "100.00"
+            },
+            "id": 16,
+            "lnn": 14,
+            "nvram": {
+                "batteries": [
+                    {
+                        "color": "GREEN",
+                        "id": 1,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    },
+                    {
+                        "color": "GREEN",
+                        "id": 2,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    }
+                ],
+                "battery_count": 2,
+                "charge_status": "GREEN",
+                "charge_status_number": 1,
+                "device": "/dev/mnv0",
+                "present": true,
+                "present_flash": true,
+                "present_size": 2113798144,
+                "present_type": "LX4381",
+                "ship_mode": 0,
+                "supported": true,
+                "supported_flash": true,
+                "supported_size": 17179869184,
+                "supported_type": "LX4381"
+            },
+            "powersupplies": {
+                "count": 2,
+                "failures": 0,
+                "has_cff": true,
+                "status": "Power Supplies OK",
+                "supplies": [
+                    {
+                        "chassis": 0,
+                        "firmware": "02.02",
+                        "good": "Good",
+                        "id": 1,
+                        "name": "PS1 (type=ACBEL POLYTECH , fw=02.02)",
+                        "status": "Power Supply 1 good",
+                        "type": "ACBEL POLYTECH "
+                    },
+                    {
+                        "chassis": 0,
+                        "firmware": "02.02",
+                        "good": "Good",
+                        "id": 2,
+                        "name": "PS2 (type=ACBEL POLYTECH , fw=02.02)",
+                        "status": "Power Supply 2 good",
+                        "type": "ACBEL POLYTECH "
+                    }
+                ],
+                "supports_cff": true
+            },
+            "release": "v8.1.0.4",
+            "uptime": 2405818,
+            "version": "Isilon OneFS v8.1.0.4 B_MR_8_1_0_4_057(RELEASE): 0x801005000400039:Wed Jun 13 13:42:50 PDT 2018    root@sea-build10-110:/b/mnt/obj/b/mnt/src/sys/IQ.amd64.release   FreeBSD clang version 3.3 (tags/RELEASE_33/final 183502) 20130610"
+        },
+        {
+            "batterystatus": {
+                "last_test_time1": "Wed Aug  1 23:33:51 2018",
+                "last_test_time2": "Thu Aug  2 00:03:42 2018",
+                "next_test_time1": "Mon Oct  1 00:33:51 2018",
+                "next_test_time2": "Mon Oct  1 00:03:42 2018",
+                "present": true,
+                "result1": "passed",
+                "result2": "passed",
+                "status1": "Good (10) ",
+                "status2": "Good (10) ",
+                "supported": true
+            },
+            "capacity": [
+                {
+                    "bytes": 153931627888640,
+                    "count": 35,
+                    "type": "HDD"
+                },
+                {
+                    "bytes": 1759218604441,
+                    "count": 1,
+                    "type": "SSD"
+                }
+            ],
+            "cpu": {
+                "model": "Intel(R) Xeon(R) CPU E5-2640 v2 @ 2.00GHz",
+                "overtemp": "Normal",
+                "proc": "Dual-proc, Octa-HT-core",
+                "speed_limit": "100.00"
+            },
+            "id": 17,
+            "lnn": 15,
+            "nvram": {
+                "batteries": [
+                    {
+                        "color": "GREEN",
+                        "id": 1,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    },
+                    {
+                        "color": "GREEN",
+                        "id": 2,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    }
+                ],
+                "battery_count": 2,
+                "charge_status": "GREEN",
+                "charge_status_number": 1,
+                "device": "/dev/mnv0",
+                "present": true,
+                "present_flash": true,
+                "present_size": 2113798144,
+                "present_type": "LX4381",
+                "ship_mode": 0,
+                "supported": true,
+                "supported_flash": true,
+                "supported_size": 17179869184,
+                "supported_type": "LX4381"
+            },
+            "powersupplies": {
+                "count": 2,
+                "failures": 0,
+                "has_cff": true,
+                "status": "Power Supplies OK",
+                "supplies": [
+                    {
+                        "chassis": 0,
+                        "firmware": "02.02",
+                        "good": "Good",
+                        "id": 1,
+                        "name": "PS1 (type=ACBEL POLYTECH , fw=02.02)",
+                        "status": "Power Supply 1 good",
+                        "type": "ACBEL POLYTECH "
+                    },
+                    {
+                        "chassis": 0,
+                        "firmware": "02.02",
+                        "good": "Good",
+                        "id": 2,
+                        "name": "PS2 (type=ACBEL POLYTECH , fw=02.02)",
+                        "status": "Power Supply 2 good",
+                        "type": "ACBEL POLYTECH "
+                    }
+                ],
+                "supports_cff": true
+            },
+            "release": "v8.1.0.4",
+            "uptime": 2404677,
+            "version": "Isilon OneFS v8.1.0.4 B_MR_8_1_0_4_057(RELEASE): 0x801005000400039:Wed Jun 13 13:42:50 PDT 2018    root@sea-build10-110:/b/mnt/obj/b/mnt/src/sys/IQ.amd64.release   FreeBSD clang version 3.3 (tags/RELEASE_33/final 183502) 20130610"
+        },
+        {
+            "batterystatus": {
+                "last_test_time1": "Wed Aug  1 23:17:21 2018",
+                "last_test_time2": "Thu Aug  2 00:47:54 2018",
+                "next_test_time1": "Mon Oct  1 00:17:21 2018",
+                "next_test_time2": "Mon Oct  1 00:47:54 2018",
+                "present": true,
+                "result1": "passed",
+                "result2": "passed",
+                "status1": "Good (10) ",
+                "status2": "Good (10) ",
+                "supported": true
+            },
+            "capacity": [
+                {
+                    "bytes": 153931627888640,
+                    "count": 35,
+                    "type": "HDD"
+                },
+                {
+                    "bytes": 1759218604441,
+                    "count": 1,
+                    "type": "SSD"
+                }
+            ],
+            "cpu": {
+                "model": "Intel(R) Xeon(R) CPU E5-2640 v2 @ 2.00GHz",
+                "overtemp": "Normal",
+                "proc": "Dual-proc, Octa-HT-core",
+                "speed_limit": "100.00"
+            },
+            "id": 18,
+            "lnn": 16,
+            "nvram": {
+                "batteries": [
+                    {
+                        "color": "GREEN",
+                        "id": 1,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    },
+                    {
+                        "color": "GREEN",
+                        "id": 2,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    }
+                ],
+                "battery_count": 2,
+                "charge_status": "GREEN",
+                "charge_status_number": 1,
+                "device": "/dev/mnv0",
+                "present": true,
+                "present_flash": true,
+                "present_size": 2113798144,
+                "present_type": "LX4381",
+                "ship_mode": 0,
+                "supported": true,
+                "supported_flash": true,
+                "supported_size": 17179869184,
+                "supported_type": "LX4381"
+            },
+            "powersupplies": {
+                "count": 2,
+                "failures": 0,
+                "has_cff": true,
+                "status": "Power Supplies OK",
+                "supplies": [
+                    {
+                        "chassis": 0,
+                        "firmware": "02.02",
+                        "good": "Good",
+                        "id": 1,
+                        "name": "PS1 (type=ACBEL POLYTECH , fw=02.02)",
+                        "status": "Power Supply 1 good",
+                        "type": "ACBEL POLYTECH "
+                    },
+                    {
+                        "chassis": 0,
+                        "firmware": "02.02",
+                        "good": "Good",
+                        "id": 2,
+                        "name": "PS2 (type=ACBEL POLYTECH , fw=02.02)",
+                        "status": "Power Supply 2 good",
+                        "type": "ACBEL POLYTECH "
+                    }
+                ],
+                "supports_cff": true
+            },
+            "release": "v8.1.0.4",
+            "uptime": 2403499,
+            "version": "Isilon OneFS v8.1.0.4 B_MR_8_1_0_4_057(RELEASE): 0x801005000400039:Wed Jun 13 13:42:50 PDT 2018    root@sea-build10-110:/b/mnt/obj/b/mnt/src/sys/IQ.amd64.release   FreeBSD clang version 3.3 (tags/RELEASE_33/final 183502) 20130610"
+        },
+        {
+            "batterystatus": {
+                "last_test_time1": "Sat Jun 30 15:32:31 2018",
+                "last_test_time2": "Thu Aug  2 05:13:27 2018",
+                "next_test_time1": "Wed Aug 29 16:32:31 2018",
+                "next_test_time2": "Mon Oct  1 05:13:27 2018",
+                "present": true,
+                "result1": "passed",
+                "result2": "passed",
+                "status1": "Good (10) ",
+                "status2": "Good (10) ",
+                "supported": true
+            },
+            "capacity": [
+                {
+                    "bytes": 153931627888640,
+                    "count": 35,
+                    "type": "HDD"
+                },
+                {
+                    "bytes": 1759218604441,
+                    "count": 1,
+                    "type": "SSD"
+                }
+            ],
+            "cpu": {
+                "model": "Intel(R) Xeon(R) CPU E5-2640 v2 @ 2.00GHz",
+                "overtemp": "Normal",
+                "proc": "Dual-proc, Octa-HT-core",
+                "speed_limit": "100.00"
+            },
+            "id": 19,
+            "lnn": 17,
+            "nvram": {
+                "batteries": [
+                    {
+                        "color": "GREEN",
+                        "id": 1,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    },
+                    {
+                        "color": "GREEN",
+                        "id": 2,
+                        "status": "Good (10) ",
+                        "voltage": "4"
+                    }
+                ],
+                "battery_count": 2,
+                "charge_status": "GREEN",
+                "charge_status_number": 1,
+                "device": "/dev/mnv0",
+                "present": true,
+                "present_flash": true,
+                "present_size": 2113798144,
+                "present_type": "LX4381",
+                "ship_mode": 0,
+                "supported": true,
+                "supported_flash": true,
+                "supported_size": 17179869184,
+                "supported_type": "LX4381"
+            },
+            "powersupplies": {
+                "count": 2,
+                "failures": 0,
+                "has_cff": true,
+                "status": "Power Supplies OK",
+                "supplies": [
+                    {
+                        "chassis": 0,
+                        "firmware": "02.02",
+                        "good": "Good",
+                        "id": 1,
+                        "name": "PS1 (type=ACBEL POLYTECH , fw=02.02)",
+                        "status": "Power Supply 1 good",
+                        "type": "ACBEL POLYTECH "
+                    },
+                    {
+                        "chassis": 0,
+                        "firmware": "02.02",
+                        "good": "Good",
+                        "id": 2,
+                        "name": "PS2 (type=ACBEL POLYTECH , fw=02.02)",
+                        "status": "Power Supply 2 good",
+                        "type": "ACBEL POLYTECH "
+                    }
+                ],
+                "supports_cff": true
+            },
+            "release": "v8.1.0.4",
+            "uptime": 2402446,
+            "version": "Isilon OneFS v8.1.0.4 B_MR_8_1_0_4_057(RELEASE): 0x801005000400039:Wed Jun 13 13:42:50 PDT 2018    root@sea-build10-110:/b/mnt/obj/b/mnt/src/sys/IQ.amd64.release   FreeBSD clang version 3.3 (tags/RELEASE_33/final 183502) 20130610"
+        },
+        {
+            "batterystatus": {
+                "last_test_time1": "Tue Jun 19 21:09:42 2018",
+                "last_test_time2": "Tue Jun 19 20:04:28 2018",
+                "next_test_time1": "Sat Aug 18 22:09:42 2018",
+                "next_test_time2": "Sat Aug 18 20:04:28 2018",
+                "present": true,
+                "result1": "passed",
+                "result2": "passed",
+                "status1": "Good (10) ",
+                "status2": "Good (10) ",
+                "supported": true
+            },
+            "capacity": [
+                {
+                    "bytes": 153931627888640,
+                    "count": 35,
+                    "type": "HDD"
+                },
+                {
+                    "bytes": 1759218604441,
+                    "count": 1,
+                    "type": "SSD"
+                }
+            ],
+            "cpu": {
+                "model": "Intel(R) Xeon(R) CPU E5-2640 v2 @ 2.00GHz",
+                "overtemp": "Normal",
+                "proc": "Dual-proc, Octa-HT-core",
+                "speed_limit": "100.00"
+            },
+            "id": 20,
+            "lnn": 18,
+            "nvram": {
+                "batteries": [
+                    {
+                        "color": "GREEN",
+                        "id": 1,
+                        "status": "Good (10) ",
+                        "voltage": "3.9"
+                    },
+                    {
+                        "color": "GREEN",
+                        "id": 2,
+                        "status": "Good (10) ",
+                        "voltage": "3.9"
+                    }
+                ],
+                "battery_count": 2,
+                "charge_status": "GREEN",
+                "charge_status_number": 1,
+                "device": "/dev/mnv0",
+                "present": true,
+                "present_flash": true,
+                "present_size": 2113798144,
+                "present_type": "LX4381",
+                "ship_mode": 0,
+                "supported": true,
+                "supported_flash": true,
+                "supported_size": 17179869184,
+                "supported_type": "LX4381"
+            },
+            "powersupplies": {
+                "count": 2,
+                "failures": 0,
+                "has_cff": true,
+                "status": "Power Supplies OK",
+                "supplies": [
+                    {
+                        "chassis": 0,
+                        "firmware": "02.02",
+                        "good": "Good",
+                        "id": 1,
+                        "name": "PS1 (type=ACBEL POLYTECH , fw=02.02)",
+                        "status": "Power Supply 1 good",
+                        "type": "ACBEL POLYTECH "
+                    },
+                    {
+                        "chassis": 0,
+                        "firmware": "02.02",
+                        "good": "Good",
+                        "id": 2,
+                        "name": "PS2 (type=ACBEL POLYTECH , fw=02.02)",
+                        "status": "Power Supply 2 good",
+                        "type": "ACBEL POLYTECH "
+                    }
+                ],
+                "supports_cff": true
+            },
+            "release": "v8.1.0.4",
+            "uptime": 2401252,
+            "version": "Isilon OneFS v8.1.0.4 B_MR_8_1_0_4_057(RELEASE): 0x801005000400039:Wed Jun 13 13:42:50 PDT 2018    root@sea-build10-110:/b/mnt/obj/b/mnt/src/sys/IQ.amd64.release   FreeBSD clang version 3.3 (tags/RELEASE_33/final 183502) 20130610"
+        }
+    ],
+    "total": 18
+}

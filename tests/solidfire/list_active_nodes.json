@@ -1,0 +1,32 @@
+{
+    "id": null,
+    "result": {
+        "nodes": [
+            {
+                "associatedFServiceID": 0,
+                "associatedMasterServiceID": 1,
+                "attributes": {},
+                "cip": "192.168.1.2",
+                "cipi": "Bond10G",
+                "fibreChannelTargetPortGroup": null,
+                "mip": "192.168.1.10",
+                "mipi": "Bond10G",
+                "name": "foo-c101",
+                "nodeID": 1,
+                "nodeSlot": "",
+                "platformInfo": {
+                    "chassisType": "R630",
+                    "cpuModel": "Intel(R) Xeon(R) CPU E5-2697 v3 @ 2.60GHz",
+                    "nodeMemoryGB": 384,
+                    "nodeType": "SF19210",
+                    "platformConfigVersion": "10.0.0.282"
+                },
+                "sip": "192.168.1.3",
+                "sipi": "Bond10G",
+                "softwareVersion": "10.0.0.282",
+                "uuid": "44bc3bcd-ac07-43e6-b0d4-f763a9902644",
+                "virtualNetworks": []
+            }
+        ]
+    }
+}

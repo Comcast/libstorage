@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ResponsePacket xmlns="http://www.emc.com/schemas/celerra/xml_api">
+    <Response>
+        <QueryStatus maxSeverity="ok"/>
+        <StoragePool movers="1 2 3" memberVolumes="117 121 124 127 377 380 386 717 993 1000 1003 1006 1009 1030" storageSystems="1" name="Pool 0" description="Mapped Pool Pool 0 on APM00123701049" mayContainSlicesDefault="true" diskType="Mixed" size="70254565" usedSize="66274097" autoSize="70612964" virtualProvisioning="false" isHomogeneous="true" dataServicePolicies="Thin=No,Compressed=No,Mirrored=No,Tiering policy=N/A/Optimize Pool" templatePool="42" stripeCount="5" stripeSize="256" pool="42">
+            <SystemStoragePoolData dynamic="true" greedy="true" potentialAdditionalSize="358399" isBackendPool="true"/>
+        </StoragePool>
+        <StoragePool movers="1 2 3" memberVolumes="221 293 403" storageSystems="1" name="VDI_Pool" description="Mapped Pool VDI_Pool on APM00123701049" mayContainSlicesDefault="true" diskType="Performance" size="13631483" usedSize="12386304" autoSize="13631483" virtualProvisioning="false" isHomogeneous="true" dataServicePolicies="Thin=No,Compressed=No,Mirrored=No,Tiering policy=N/A/Optimize Pool" templatePool="43" stripeCount="5" stripeSize="256" pool="43">
+            <SystemStoragePoolData dynamic="true" greedy="true" potentialAdditionalSize="0" isBackendPool="true"/>
+        </StoragePool>
+    </Response>
+</ResponsePacket>

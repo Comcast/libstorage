@@ -1,0 +1,21 @@
+{
+    "symmetrix": [
+        {
+            "symmetrixId": "000196702346",
+            "device_count": 3338,
+            "ucode": "5977.1125.1125",
+            "model": "VMAX200K",
+            "local": true,
+            "sloCompliance": {
+                "slo_stable": 1,
+                "slo_marginal": 0,
+                "slo_critical": 0
+            },
+            "virtualCapacity": {
+                "used_capacity_gb": 336579.5,
+                "total_capacity_gb": 1096303.4
+            }
+        }
+    ],
+    "success": true
+}

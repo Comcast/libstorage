@@ -1,0 +1,22 @@
+{
+    "systemId": "2232caf10629dc89",
+    "mdmPort": "6611",
+    "snmpResendFrequency": "0",
+    "snmpSamplingFrequency": "30",
+    "featuresEnableSnmp": "false",
+    "cipherSuites": null,
+    "featuresEnableIM": "true",
+    "snmpPort": "162",
+    "bypassCertificateCheck": "true",
+    "mdmUsername": "",
+    "mdmAddresses": [
+        "192.168.1.36",
+        "192.168.1.68",
+        "172",
+        "24",
+        "28",
+        "100"
+    ],
+    "snmpTrapsReceiverIps": null,
+    "allowNonSecureCommunication": "false"
+}

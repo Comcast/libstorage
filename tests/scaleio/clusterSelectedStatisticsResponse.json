@@ -1,0 +1,118 @@
+{
+    "StoragePool": {
+        "5ceba28700000002": {
+            "primaryReadBwc": {
+                "numSeconds": 0,
+                "totalWeightInKb": 0,
+                "numOccured": 0
+            },
+            "primaryWriteBwc": {
+                "numSeconds": 0,
+                "totalWeightInKb": 0,
+                "numOccured": 0
+            },
+            "secondaryWriteBwc": {
+                "numSeconds": 0,
+                "totalWeightInKb": 0,
+                "numOccured": 0
+            },
+            "secondaryReadBwc": {
+                "numSeconds": 0,
+                "totalWeightInKb": 0,
+                "numOccured": 0
+            },
+            "thickCapacityInUseInKb": 0,
+            "numOfDevices": 216,
+            "totalWriteBwc": {
+                "numSeconds": 0,
+                "totalWeightInKb": 0,
+                "numOccured": 0
+            },
+            "numOfVolumes": 0,
+            "thinCapacityInUseInKb": 0,
+            "thinCapacityAllocatedInKm": 0,
+            "capacityLimitInKb": 843570782208,
+            "totalReadBwc": {
+                "numSeconds": 0,
+                "totalWeightInKb": 0,
+                "numOccured": 0
+            }
+        },
+        "5ceba28500000000": {
+            "primaryReadBwc": {
+                "numSeconds": 0,
+                "totalWeightInKb": 0,
+                "numOccured": 0
+            },
+            "primaryWriteBwc": {
+                "numSeconds": 0,
+                "totalWeightInKb": 0,
+                "numOccured": 0
+            },
+            "secondaryWriteBwc": {
+                "numSeconds": 0,
+                "totalWeightInKb": 0,
+                "numOccured": 0
+            },
+            "secondaryReadBwc": {
+                "numSeconds": 0,
+                "totalWeightInKb": 0,
+                "numOccured": 0
+            },
+            "thickCapacityInUseInKb": 0,
+            "numOfDevices": 215,
+            "totalWriteBwc": {
+                "numSeconds": 0,
+                "totalWeightInKb": 0,
+                "numOccured": 0
+            },
+            "numOfVolumes": 0,
+            "thinCapacityInUseInKb": 0,
+            "thinCapacityAllocatedInKm": 0,
+            "capacityLimitInKb": 839665361920,
+            "totalReadBwc": {
+                "numSeconds": 0,
+                "totalWeightInKb": 0,
+                "numOccured": 0
+            }
+        },
+        "5ceba28600000001": {
+            "primaryReadBwc": {
+                "numSeconds": 0,
+                "totalWeightInKb": 0,
+                "numOccured": 0
+            },
+            "primaryWriteBwc": {
+                "numSeconds": 0,
+                "totalWeightInKb": 0,
+                "numOccured": 0
+            },
+            "secondaryWriteBwc": {
+                "numSeconds": 0,
+                "totalWeightInKb": 0,
+                "numOccured": 0
+            },
+            "secondaryReadBwc": {
+                "numSeconds": 0,
+                "totalWeightInKb": 0,
+                "numOccured": 0
+            },
+            "thickCapacityInUseInKb": 0,
+            "numOfDevices": 216,
+            "totalWriteBwc": {
+                "numSeconds": 0,
+                "totalWeightInKb": 0,
+                "numOccured": 0
+            },
+            "numOfVolumes": 0,
+            "thinCapacityInUseInKb": 0,
+            "thinCapacityAllocatedInKm": 0,
+            "capacityLimitInKb": 843570782208,
+            "totalReadBwc": {
+                "numSeconds": 0,
+                "totalWeightInKb": 0,
+                "numOccured": 0
+            }
+        }
+    }
+}

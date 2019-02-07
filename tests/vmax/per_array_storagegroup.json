@@ -1,0 +1,413 @@
+{
+    "storageGroupInfo": [{
+            "storageGroupId": "esx_ch2_0403_0404_0607_0608_gk",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "mandb_ch2_a3s_a4s",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "mandb_ch2_a7s_a8s",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cmdbdb_ch2_a1p_a2p_a3p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "nmtkdb_ch2_1p_2p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "ccm_ch2_a1p_a2p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "smpapp_ch2_a1p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "smpapp_ch2_a2p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "smpapp_ch2_a3p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "smpdb_ch2_a1p_a2p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "indomsdb_ch2_1p_2p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "nads_ch2_01p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "nads_ch2_02p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "nads_ch2_05p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "nads_ch2_06p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "nads_ch2_03p_04p_07p_08p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "clrdb_ch2_1p_2p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "hdmdb_ch2_a1p_a2p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "hdmapp_ch2_a1p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "hdmapp_ch2_a2p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "hdmapp_ch2_a3p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "copasp_ch2_g01p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "gsodb_ch2_a1p_a2p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "opdb_ch2_a1p_a2p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "supdb_ch2_p01a_p01b",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "btdb_ch2_01",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cran_ch2_5p_6p_7p_8p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cmpcol_ch2_15p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cmpcol_ch2_16p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cmpcol_ch2_17p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cmpcol_ch2_18p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cmptrn_ch2_17p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cmptrn_ch2_18p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cmptrn_ch2_13p_14p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cmptrn_ch2_13p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cmptrn_ch2_14p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cmptrn_ch2_11p_12p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cmptrn_ch2_11p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cmptrn_ch2_12p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "emsdb_ch2_s01a_s01b",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cmpd06_ch2_1p_2p_3p_4p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cmpd06_ch2_1p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cmpd06_ch2_2p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cmpd06_ch2_3p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cmpd06_ch2_4p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "flux_rac_node_ch2_01_04",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "trimdb_ch2_1p_2p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "ebldbch2a1p_a2p_eblnasch2a1p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "espdb_ch2_b1s_b2s_b3s_b4s_b5s",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "archdb_ch2_p02a_p02b",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cadmdb_ch2_a1p_a2p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cbhdb_ch2_1p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cpdb_ch2_1p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cpdb_ch2_2p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cramdb_ch2_03p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cramdb_ch2_05p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "dirdb_ch2_p01a_p01b",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "emsdb_ch2_p01a_p01b",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "kandb_ch2_p01a_p01b",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "kandb_ch2_s01a_s01b",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "steelesx_ch2_1p_2p_3p_4p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "smgtdb_ch2_p1a_p1b",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "statsdb_ch2_a1p_a2p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "umdb_ch2_1p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "wvsdb_ch2_1p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "sapapp_ch2_1p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "sapapp_ch2_2p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "sapdb_ch2_1p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "sapdb_ch2_1p_only",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "sapdb_ch2_2p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "sapdb_ch2_2p_only",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "saper_ch2_1p_2p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "saper_ch2_a2p-REMOVE_LATER",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "sapweb_ch2_1p_2p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "sapweb_ch2_a2p-REMOVE_LATER",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "sapxi_ch2_1p_2p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "sapxi_ch2_a2p-REMOVE_LATER",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "nsdb_ch2_1p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "pmlsdb_ch2_a1p_a2p_3p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "cldsdb_ch2_2p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "orabkpdb_ch2_2p_POC",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        },
+        {
+            "storageGroupId": "eblnasch2a1p",
+            "firstAvailableDate": 1523895000000,
+            "lastAvailableDate": 1525193400000
+        }
+    ]
+}

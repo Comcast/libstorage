@@ -1,0 +1,110 @@
+{
+    "params": {
+        "id-property": "vol-id"
+    },
+    "volumes": [
+        {
+            "small-io-alerts": "disabled",
+            "created-by-app": "xms",
+            "small-iops": "0",
+            "wr-latency": "563",
+            "vol-id": [
+                "858a0ae974f34da78ba8b98b8c580788",
+                "data23",
+                24
+            ],
+            "obj-severity": "information",
+            "unaligned-io-alerts": "disabled",
+            "unaligned-rd-bw": "0",
+            "num-of-dest-snaps": 0,
+            "acc-size-of-wr": "9083568951",
+            "iops": "16",
+            "small-io-ratio-level": "ok",
+            "dest-snap-list": [],
+            "guid": "858a0ae974f34da78ba8b98b8c580788",
+            "snapshot-type": "regular",
+            "logical-space-in-use": "490040424",
+            "unaligned-io-ratio-level": "ok",
+            "acc-num-of-rd": "207532412",
+            "index": 24,
+            "lb-size": 512,
+            "naa-name": "514f0c5657600017",
+            "snapset-list": [],
+            "unaligned-wr-bw": "0",
+            "acc-num-of-small-rd": "90212",
+            "unaligned-rd-iops": "0",
+            "snapgrp-id": [
+                "b3125d94273342b79e37abe7753ce24d",
+                "",
+                24
+            ],
+            "acc-num-of-small-wr": "238144",
+            "created-from-volume": "",
+            "ancestor-vol-id": [],
+            "small-wr-iops": "0",
+            "creation-time": "2017-02-13 22:10:35",
+            "rd-bw": "87",
+            "xms-id": [
+                "13eeee97b95b4bae95c1818236c4a447",
+                "xms",
+                1
+            ],
+            "acc-num-of-unaligned-rd": "9749994",
+            "small-wr-bw": "0",
+            "tag-list": [],
+            "unaligned-iops": "0",
+            "num-of-lun-mappings": 3,
+            "vol-access": "write_access",
+            "small-rd-iops": "0",
+            "unaligned-io-ratio": "4",
+            "lun-mapping-list": [
+                [
+                    [
+                        "afb21b52ad1543f0b7d64eeccbe5f398",
+                        "b3p",
+                        3
+                    ],
+                    [
+                        "d5db258b9614418aaa7683bc686dab27",
+                        "Default",
+                        1
+                    ],
+                    23
+                ]
+            ],
+            "vol-size": "524288000",
+            "wr-iops": "8",
+            "manager-guid": null,
+            "sys-id": [
+                "8019bd47a67b4779a5baf8a14fa7d2a4",
+                "xio-0207",
+                3
+            ],
+            "avg-latency": "445",
+            "name": "data23",
+            "vaai-tp-alerts": "disabled",
+            "rd-iops": "8",
+            "rd-latency": "326",
+            "unaligned-bw": "0",
+            "related-consistency-groups": [],
+            "certainty": "ok",
+            "acc-num-of-unaligned-wr": "16968880",
+            "vol-type": "regular",
+            "acc-num-of-wr": "370887214",
+            "small-io-ratio": "0",
+            "acc-size-of-rd": "5612916152",
+            "unaligned-wr-iops": "0",
+            "bw": "243",
+            "small-rd-bw": "0",
+            "alignment-offset": 0,
+            "small-bw": "0",
+            "wr-bw": "156"
+        }
+    ],
+    "links": [
+        {
+            "href": "https://192.168.1.77.168/api/json/v2/types/volumes/",
+            "rel": "self"
+        }
+    ]
+}

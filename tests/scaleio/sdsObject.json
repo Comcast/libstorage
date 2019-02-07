@@ -1,0 +1,64 @@
+{
+    "ipList": [
+        {
+            "ip": "192.168.1.1",
+            "role": "all"
+        }
+    ],
+    "onVmWare": false,
+    "protectionDomainId": "7a91b2ab00000000",
+    "numOfIoBuffers": null,
+    "faultSetId": "977b48c100000000",
+    "softwareVersionInfo": "R2_0.13000.0",
+    "sdsState": "Normal",
+    "membershipState": "Joined",
+    "mdmConnectionState": "Connected",
+    "drlMode": "Volatile",
+    "rmcacheEnabled": true,
+    "rmcacheSizeInKb": 131072,
+    "rmcacheFrozen": false,
+    "rmcacheMemoryAllocationState": "AllocationPending",
+    "rfcacheEnabled": true,
+    "maintenanceState": "NoMaintenance",
+    "sdsDecoupled": null,
+    "sdsConfigurationFailure": null,
+    "sdsReceiveBufferAllocationFailures": null,
+    "rfcacheErrorDeviceDoesNotExist": false,
+    "rfcacheErrorLowResources": false,
+    "rfcacheErrorApiVersionMismatch": false,
+    "rfcacheErrorInconsistentCacheConfiguration": false,
+    "rfcacheErrorInconsistentSourceConfiguration": false,
+    "rfcacheErrorInvalidDriverPath": false,
+    "certificateInfo": null,
+    "authenticationError": "None",
+    "perfProfile": "HighPerformance",
+    "name": "storsrvf1-wc-a01p",
+    "port": 7072,
+    "id": "4fdf0e0700000000",
+    "links": [
+        {
+            "rel": "self",
+            "href": "/api/instances/Sds::4fdf0e0700000000"
+        },
+        {
+            "rel": "/api/Sds/relationship/Statistics",
+            "href": "/api/instances/Sds::4fdf0e0700000000/relationships/Statistics"
+        },
+        {
+            "rel": "/api/Sds/relationship/Device",
+            "href": "/api/instances/Sds::4fdf0e0700000000/relationships/Device"
+        },
+        {
+            "rel": "/api/Sds/relationship/RfcacheDevice",
+            "href": "/api/instances/Sds::4fdf0e0700000000/relationships/RfcacheDevice"
+        },
+        {
+            "rel": "/api/parent/relationship/protectionDomainId",
+            "href": "/api/instances/ProtectionDomain::7a91b2ab00000000"
+        },
+        {
+            "rel": "/api/parent/relationship/faultSetId",
+            "href": "/api/instances/FaultSet::977b48c100000000"
+        }
+    ]
+}

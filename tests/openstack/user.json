@@ -1,0 +1,12 @@
+{
+    "user": {
+        "password_expires_at": null,
+        "links": {
+            "self": "https://server.foo.com:5000/v3/users/f3de25bad884a9628952284e24ad6722bf48c1c30878a1317816ff16ea707535"
+        },
+        "domain_id": "6a6cb26f9ecfdad86ebe1e186258979c",
+        "email": "user@foo.com",
+        "id": "f3de25bad884a9628952284e24ad6722bf48c1c30878a1317816ff16ea707535",
+        "name": "user"
+    }
+}

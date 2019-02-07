@@ -1,0 +1,23 @@
+{
+    "resultList": {
+        "result": [
+            {
+                "Reads": 1293.4147,
+                "Writes": 656.4816,
+                "IOs": 1949.8962,
+                "MBRead": 286.79724,
+                "MBWritten": 8.703164,
+                "MBs": 295.5004,
+                "AvgIOSize": 155.18385,
+                "PercentBusy": 9.017956,
+                "timestamp": 1524521700000
+            }
+        ],
+        "from": 1,
+        "to": 1
+    },
+    "id": "46c2d8ad-e8fa-474f-aa46-6b72a62f08f6_0",
+    "count": 1,
+    "expirationTime": 1524838076601,
+    "maxPageSize": 1000
+}

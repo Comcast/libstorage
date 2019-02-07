@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ResponsePacket 
+    xmlns="http://www.emc.com/schemas/celerra/xml_api">
+    <Response>
+        <QueryStatus maxSeverity="ok"/>
+        <StoragePool movers="1 2 3" memberVolumes="268 279 286 292 295 298 664 748 757 1273 1280 1287 1334 1717 1732 1886 1887 1888 2015 4010 4165 4324 4327 4390 4396 4409 4416 4423 4474 5427 5440 5688 5885 5888 5915 5918 5921 5924 5943 5946 5994 5997 6004 6114 6126 6134 6153 6160 6163 6208 6215 6250 6253 6435 6498 6522 6840 6949 6956 8532 8604 8765 8772 8843 8854 8894 8897 9124 9157 9181 9310 9313 9316 9433 9534 9655 9658 9661 9690 10027 10056 10059" storageSystems="1" name="Pool 0" description="Mapped Pool Pool 0 on APM00121300890" mayContainSlicesDefault="true" diskType="Mixed" size="214957916" usedSize="93945439" autoSize="214957916" virtualProvisioning="false" isHomogeneous="true" dataServicePolicies="Thin=No,Compressed=No,Mirrored=No,Tiering policy=Auto-Tier/Highest Available Tier" templatePool="44" stripeCount="5" stripeSize="256" pool="44">
+            <SystemStoragePoolData dynamic="true" greedy="true" potentialAdditionalSize="0" isBackendPool="true"/>
+        </StoragePool>
+    </Response>
+</ResponsePacket>

@@ -1,0 +1,49 @@
+{
+    "resourceGroups": [
+        {
+            "key": "38_Floor_Lab_Fabric_A",
+            "name": "38_Floor_Lab_Fabric_A",
+            "type": "FC_FABRIC"
+        },
+        {
+            "key": "WC_Fabric_A",
+            "name": "WC_Fabric_A",
+            "type": "FC_FABRIC"
+        },
+        {
+            "key": "38_Floor_Lab_Fabric_B",
+            "name": "38_Floor_Lab_Fabric_B",
+            "type": "FC_FABRIC"
+        },
+        {
+            "key": "WC_Fabric_C",
+            "name": "WC_Fabric_C",
+            "type": "FC_FABRIC"
+        },
+        {
+            "key": "DT_Fabric_B",
+            "name": "DT_Fabric_B",
+            "type": "FC_FABRIC"
+        },
+        {
+            "key": "DT_Fanric_C",
+            "name": "DT_Fanric_C",
+            "type": "FC_FABRIC"
+        },
+        {
+            "key": "WC_Fabric_B",
+            "name": "WC_Fabric_B",
+            "type": "FC_FABRIC"
+        },
+        {
+            "key": "DT_Fabric_A",
+            "name": "DT_Fabric_A",
+            "type": "FC_FABRIC"
+        },
+        {
+            "key": "All",
+            "name": "All",
+            "type": "ALL"
+        }
+    ]
+}

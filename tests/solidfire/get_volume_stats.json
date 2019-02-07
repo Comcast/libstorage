@@ -1,0 +1,46 @@
+{
+    "id": null,
+    "result": {
+        "volumeStats": {
+            "accountID": 1,
+            "actualIOPS": 0,
+            "asyncDelay": null,
+            "averageIOPSize": 0,
+            "burstIOPSCredit": 0,
+            "clientQueueDepth": 0,
+            "desiredMetadataHosts": null,
+            "latencyUSec": 0,
+            "metadataHosts": {
+                "deadSecondaries": [],
+                "liveSecondaries": [
+                    251
+                ],
+                "primary": 360
+            },
+            "nonZeroBlocks": 0,
+            "normalizedIOPS": 0,
+            "readBytes": 0,
+            "readBytesLastSample": 0,
+            "readLatencyUSec": 0,
+            "readLatencyUSecTotal": 0,
+            "readOps": 0,
+            "readOpsLastSample": 0,
+            "samplePeriodMSec": 0,
+            "throttle": 0,
+            "timestamp": "2018-04-06T21:07:47.260684Z",
+            "unalignedReads": 0,
+            "unalignedWrites": 0,
+            "volumeAccessGroups": [],
+            "volumeID": 364,
+            "volumeSize": 3221225472,
+            "volumeUtilization": 0,
+            "writeBytes": 0,
+            "writeBytesLastSample": 0,
+            "writeLatencyUSec": 0,
+            "writeLatencyUSecTotal": 0,
+            "writeOps": 0,
+            "writeOpsLastSample": 0,
+            "zeroBlocks": 786432
+        }
+    }
+}

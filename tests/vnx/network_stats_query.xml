@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ResponsePacket xmlns="http://www.emc.com/schemas/celerra/xml_api">
+<Response>
+	<MoverNetStats mover="1">
+		<Sample time="1520373185" stamp="360">
+			<Ip received="171766156" notForw="0" deliv="171766156" sent="146136014"/>
+			<Tcp sent="114500756" received="142637987" connReq="64264" connLing="276" retransm="1341590" resets="0"/>
+			<Udp deliv="3836420" sent="3735780" badPorts="2836" incomplHdrs="0"/>
+			<DeviceTraffic device="fxg-1-0" in="70246677981611" out="64213683173674"/>
+			<DeviceTraffic device="fxg-1-1" in="38063274" out="0"/>
+			<DeviceTraffic device="mge0" in="4109318506" out="50535778489"/>
+			<DeviceTraffic device="mge1" in="339056995" out="142593148"/>
+            </Sample>
+        </MoverNetStats>
+    </Response>
+</ResponsePacket>

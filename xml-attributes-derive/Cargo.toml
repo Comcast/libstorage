@@ -1,0 +1,15 @@
+[package]
+name = "xml-attributes-derive"
+version = "0.1.0"
+authors = ["Chris Holcombe <christopher_holcombe@comcast.com>"]
+
+[dependencies]
+proc-macro2 = "~0.2"
+syn = "~0.12"
+quote = "~0.4"
+
+[lib]
+proc-macro = true
+
+[dev-dependencies]
+storage-metrics = {path = "../"}

@@ -1,0 +1,37 @@
+{
+    "symmetrixId": "000196702346",
+    "device_count": 3470,
+    "ucode": "5977.1125.1125",
+    "model": "VMAX200K",
+    "local": true,
+    "default_fba_srp": "SRP_1",
+    "system_capacity": {
+        "subscribed_allocated_tb": 439.53,
+        "subscribed_total_tb": 693.84,
+        "snapshot_modified_tb": 0,
+        "snapshot_total_tb": 0,
+        "usable_used_tb": 440.74,
+        "usable_total_tb": 1070.61,
+        "subscribed_usable_capacity_percent": 65
+    },
+    "system_efficiency": {
+        "overall_efficiency_ratio_to_one": 1.6,
+        "data_reduction_enabled_percent": 0,
+        "virtual_provisioning_savings_ratio_to_one": 1.6
+    },
+    "meta_data_usage": {
+        "system_meta_data_used_percent": 56,
+        "replication_cache_used_percent": 0
+    },
+    "sloCompliance": {
+        "slo_stable": 4,
+        "slo_marginal": 0,
+        "slo_critical": 0,
+        "no_slo": 78
+    },
+    "physicalCapacity": {
+        "used_capacity_gb": 1325680.37,
+        "total_capacity_gb": 1325680.37
+    },
+    "host_visible_device_count": 2078
+}

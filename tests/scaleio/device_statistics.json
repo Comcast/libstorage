@@ -1,0 +1,163 @@
+{
+    "rfcacheReadsSkippedInternalError": 0,
+    "pendingMovingInBckRebuildJobs": 0,
+    "avgReadLatencyInMicrosec": 188,
+    "pendingMovingOutBckRebuildJobs": 0,
+    "rfcacheSourceDeviceWrites": 1521455,
+    "rfcacheIoErrors": 0,
+    "normRebuildWriteBwc": {
+        "numSeconds": 0,
+        "totalWeightInKb": 0,
+        "numOccured": 0
+    },
+    "secondaryVacInKb": 253755392,
+    "capacityInUseInKb": 17853440,
+    "rfcacheReadsSkippedLowResources": 0,
+    "rebalanceReadBwc": {
+        "numSeconds": 0,
+        "totalWeightInKb": 0,
+        "numOccured": 0
+    },
+    "rfcacheReadsSkippedMaxIoSize": 15170,
+    "activeMovingOutFwdRebuildJobs": 0,
+    "thinCapacityInUseInKb": 17853440,
+    "secondaryReadFromDevBwc": {
+        "numSeconds": 0,
+        "totalWeightInKb": 0,
+        "numOccured": 0
+    },
+    "bckRebuildWriteBwc": {
+        "numSeconds": 0,
+        "totalWeightInKb": 0,
+        "numOccured": 0
+    },
+    "avgWriteLatencyInMicrosec": 0,
+    "secondaryReadBwc": {
+        "numSeconds": 0,
+        "totalWeightInKb": 0,
+        "numOccured": 0
+    },
+    "secondaryReadFromRmcacheBwc": {
+        "numSeconds": 0,
+        "totalWeightInKb": 0,
+        "numOccured": 0
+    },
+    "rfcacheWritesSkippedInternalError": 0,
+    "rfcacheWritesSkippedStuckIo": 0,
+    "primaryReadFromDevBwc": {
+        "numSeconds": 0,
+        "totalWeightInKb": 0,
+        "numOccured": 0
+    },
+    "BackgroundScannedInMB": 0,
+    "rfcacheReadsFromCache": 846027,
+    "activeMovingOutBckRebuildJobs": 0,
+    "inUseVacInKb": 419430400,
+    "pendingMovingInNormRebuildJobs": 0,
+    "rfcacheWritesSkippedCacheMiss": 1511326,
+    "rfcacheReadsSkippedAlignedSizeTooLarge": 1490,
+    "failedVacInKb": 0,
+    "primaryReadBwc": {
+        "numSeconds": 0,
+        "totalWeightInKb": 0,
+        "numOccured": 0
+    },
+    "pendingMovingInRebalanceJobs": 0,
+    "rfcacheWritesSkippedHeavyLoad": 0,
+    "thickCapacityInUseInKb": 0,
+    "unusedCapacityInKb": 3883400192,
+    "rfcacheAvgReadTime": 18395,
+    "activeMovingInRebalanceJobs": 0,
+    "BackgroundScanCompareCount": 0,
+    "totalReadBwc": {
+        "numSeconds": 0,
+        "totalWeightInKb": 0,
+        "numOccured": 0
+    },
+    "snapCapacityInUseInKb": 4166656,
+    "rfcacheWriteMiss": 1511326,
+    "rfcacheWritesSkippedLowResources": 0,
+    "primaryReadFromRmcacheBwc": {
+        "numSeconds": 0,
+        "totalWeightInKb": 0,
+        "numOccured": 0
+    },
+    "fwdRebuildReadBwc": {
+        "numSeconds": 0,
+        "totalWeightInKb": 0,
+        "numOccured": 0
+    },
+    "totalWriteBwc": {
+        "numSeconds": 0,
+        "totalWeightInKb": 0,
+        "numOccured": 0
+    },
+    "rfcacheWritesReceived": 1521455,
+    "rfacheReadHit": 846027,
+    "rmPendingAllocatedInKb": 0,
+    "rfcacheIosOutstanding": 0,
+    "rfcacheSkippedUnlinedWrite": 0,
+    "protectedVacInKb": 419430400,
+    "activeMovingInFwdRebuildJobs": 0,
+    "activeMovingRebalanceJobs": 0,
+    "rfcacheAvgWriteTime": 67,
+    "pendingMovingRebalanceJobs": 0,
+    "pendingMovingOutNormrebuildJobs": 0,
+    "degradedHealthyVacInKb": 0,
+    "rfcacheSourceDeviceReads": 46360,
+    "avgWriteSizeInBytes": 0,
+    "primaryWriteBwc": {
+        "numSeconds": 0,
+        "totalWeightInKb": 0,
+        "numOccured": 0
+    },
+    "rfcacheReadsPending": 0,
+    "semiProtectedVacInKb": 0,
+    "rfcacheReadsSkippedHeavyLoad": 0,
+    "fwdRebuildWriteBwc": {
+        "numSeconds": 0,
+        "totalWeightInKb": 0,
+        "numOccured": 0
+    },
+    "rfcacheReadMiss": 47850,
+    "avgReadSizeInBytes": 1024,
+    "activeMovingInBckRebuildJobs": 0,
+    "rfcacheReadsSkippedLockIos": 1245,
+    "unreachableUnusedCapacityInKb": 0,
+    "pendingMovingInFwdRebuildJobs": 0,
+    "rfcacheReadsReceived": 910292,
+    "activeMovingInNormRebuildJobs": 0,
+    "rfcacheIosSkipped": 1531794,
+    "inMaintenanceVacInKb": 0,
+    "rfcacheReadsSkipped": 17905,
+    "snapCapacityInUseOccupiedInKb": 0,
+    "pendingMovingOutFwdRebuildJobs": 0,
+    "rfcacheReadsSkippedStuckIo": 0,
+    "activeMovingOutNormRebuildJobs": 0,
+    "secondaryWriteBwc": {
+        "numSeconds": 0,
+        "totalWeightInKb": 0,
+        "numOccured": 0
+    },
+    "rfcacheWritesSkippedMaxIoSize": 55056,
+    "normRebuildReadBwc": {
+        "numSeconds": 0,
+        "totalWeightInKb": 0,
+        "numOccured": 0
+    },
+    "rfcacheWritePending": 0,
+    "fixedReadErrorCount": 0,
+    "degradedFailedVacInKb": 0,
+    "thinCapacityAllocatedInKm": 419430400,
+    "bckRebuildReadBwc": {
+        "numSeconds": 0,
+        "totalWeightInKb": 0,
+        "numOccured": 0
+    },
+    "rebalanceWriteBwc": {
+        "numSeconds": 0,
+        "totalWeightInKb": 0,
+        "numOccured": 0
+    },
+    "primaryVacInKb": 165675008
+}

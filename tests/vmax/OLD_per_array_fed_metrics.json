@@ -1,0 +1,27 @@
+{
+    "resultList": {
+        "result": [
+            {
+                "AvgWPDiscTime": 0,
+                "AvgRDFSWriteResponseTime": 0,
+                "AvgReadMissResponseTime": 0.8705455,
+                "PercentBusy": 3.2387078,
+                "HostIOs": 3071.6833,
+                "HostMBs": 167.21706,
+                "HitReqs": 3364.0234,
+                "MissReqs": 592.3799,
+                "PercentReadReqs": 42.87792,
+                "PercentWriteReqs": 57.12208,
+                "DeviceWPEvents": 0,
+                "AvgTimePerSyscall": 0.013499999,
+                "timestamp": 1520622300000
+            }
+        ],
+        "from": 1,
+        "to": 12
+    },
+    "id": "c7272e97-271f-4856-92c6-73ac7c396371_0",
+    "count": 12,
+    "expirationTime": 1520892094611,
+    "maxPageSize": 1000
+}

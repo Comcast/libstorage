@@ -1,0 +1,59 @@
+{
+    "id": null,
+    "result": {
+        "volumes": [
+            {
+                "access": "readWrite",
+                "accountID": 1,
+                "attributes": {
+                    "cloned_count": 57,
+                    "image_info": {
+                        "image_created_at": "2017-03-21T21:57:20+00:00",
+                        "image_id": "1aa6f4bb-4fcc-4e7b-b9c5-c4be6d48958b",
+                        "image_name": "trusty",
+                        "image_updated_at": "2017-03-21T21:57:25+00:00"
+                    }
+                },
+                "blockSize": 4096,
+                "createTime": "2017-04-03T14:23:12Z",
+                "deleteTime": "",
+                "enable512e": true,
+                "enableSnapMirrorReplication": false,
+                "iqn": "iqn.2010-01.com.solidfire:l0c1.c8d1a087-0243-4d95-a1f9-ec379f64166f.364",
+                "lastAccessTime": null,
+                "lastAccessTimeIO": null,
+                "name": "foo",
+                "purgeTime": "",
+                "qos": {
+                    "burstIOPS": 200000,
+                    "burstTime": 60,
+                    "curve": {
+                        "1048576": 15000,
+                        "131072": 1950,
+                        "16384": 270,
+                        "262144": 3900,
+                        "32768": 500,
+                        "4096": 100,
+                        "524288": 7600,
+                        "65536": 1000,
+                        "8192": 160
+                    },
+                    "maxIOPS": 200000,
+                    "minIOPS": 1500
+                },
+                "qosPolicyID": null,
+                "scsiEUIDeviceID": "6c3063310000016cf47acc0100000000",
+                "scsiNAADeviceID": "6f47acc1000000006c3063310000016c",
+                "sliceCount": 1,
+                "status": "active",
+                "totalSize": 3221225472,
+                "virtualVolumeID": null,
+                "volumeAccessGroups": [],
+                "volumeConsistencyGroupUUID": "8d6b4829-fe9a-4c58-b404-52ba867faf00",
+                "volumeID": 364,
+                "volumePairs": [],
+                "volumeUUID": "7e0348e8-03a5-4a11-8dce-7e67148c1353"
+            }
+        ]
+    }
+}

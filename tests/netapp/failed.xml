@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE netapp SYSTEM 'file:/etc/netapp_gx.dtd'>
+<netapp version='1.110' 
+    xmlns='http://www.netapp.com/filer/admin'>
+    <results reason="Extra input: system-get-ontapi-version" status="failed" errno="13115"/>
+</netapp>

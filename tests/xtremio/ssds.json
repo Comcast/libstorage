@@ -1,0 +1,87 @@
+{
+    "ssds": [
+        {
+            "ssd-size": "781422768",
+            "fru-lifecycle-state": "healthy",
+            "smart-error-ascq": 0,
+            "ssd-failure-reason": "none",
+            "percent-endurance-remaining": 100,
+            "obj-severity": "information",
+            "rd-bw": "0",
+            "part-number": "118000045",
+            "serial-number": "0x5000cca04f23e4ec",
+            "rg-id": [
+                "5350655bebe34b8e88339ccef65f9d41",
+                "X1-DPG",
+                1
+            ],
+            "health-state": null,
+            "guid": "dab53d3825cf4864b32c9df7591f0e63",
+            "index": 24,
+            "ssd-id": [
+                "dab53d3825cf4864b32c9df7591f0e63",
+                "wwn-0x5000cca04f23e4ec",
+                24
+            ],
+            "model-name": "HITACHI  HUSMM118 CLAR800",
+            "fw-version-error": "no_error",
+            "ssd-space-in-use": "0",
+            "last-io-error-timestamp": 0,
+            "slot-num": 23,
+            "identify-led": "off",
+            "io-error-ascq": 0,
+            "hw-revision": "",
+            "ssd-link2-health-state": "level_1_clear",
+            "io-error-asc": 0,
+            "num-bad-sectors": 0,
+            "xms-id": [
+                "13eeee97b95b4bae95c1818236c4a447",
+                "xms",
+                1
+            ],
+            "ssd-link1-health-state": "level_1_clear",
+            "percent-endurance-remaining-level": "ok",
+            "io-error-vendor-specific": 0,
+            "tag-list": [],
+            "io-error-sense-code": 0,
+            "bw": "0",
+            "ssd-uid": "wwn-0x5000cca04f23e4ec",
+            "smart-error-asc": 0,
+            "wr-iops": "0",
+            "swap-led": "off",
+            "sys-id": [
+                "3eeae47cb5fc404f89512a976a4dde78",
+                "wc-xio-1330",
+                2
+            ],
+            "last-io-error-type": "none",
+            "iops": "0",
+            "diagnostic-health-state": "level_1_clear",
+            "name": "wwn-0x5000cca04f23e4ec",
+            "brick-id": [
+                "37fece662bf0486a9974ffb795831e35",
+                "X1",
+                1
+            ],
+            "ssd-size-in-kb": 781422768,
+            "certainty": "ok",
+            "status-led": "off",
+            "enabled-state": "enabled",
+            "encryption-status": "enc_supported_locked_cluster_pin",
+            "ssd-rg-state": "in_rg",
+            "fw-version": "C250",
+            "rd-iops": "0",
+            "wr-bw": "0",
+            "useful-ssd-space": "781422768"
+        }
+    ],
+    "params": {
+        "id-property": "ssd-id"
+    },
+    "links": [
+        {
+            "href": "https://192.168.1.168/api/json/v2/types/ssds/",
+            "rel": "self"
+        }
+    ]
+}

@@ -1,0 +1,33 @@
+[
+    {
+        "sdcApproved": false,
+        "mdmConnectionState": "Connected",
+        "memoryAllocationFailure": null,
+        "socketAllocationFailure": null,
+        "sdcGuid": "fb0af725-a882-48bd-b4b9-6619331314b3",
+        "sdcIp": "192.168.1.1",
+        "perfProfile": "Default",
+        "versionInfo": "R2_0.13000.0",
+        "systemId": "168b4ec8153eb8aa",
+        "name": null,
+        "id": "2170149600000000",
+        "links": [
+            {
+                "rel": "self",
+                "href": "/api/instances/Sdc::2170149600000000"
+            },
+            {
+                "rel": "/api/Sdc/relationship/Statistics",
+                "href": "/api/instances/Sdc::2170149600000000/relationships/Statistics"
+            },
+            {
+                "rel": "/api/Sdc/relationship/Volume",
+                "href": "/api/instances/Sdc::2170149600000000/relationships/Volume"
+            },
+            {
+                "rel": "/api/parent/relationship/systemId",
+                "href": "/api/instances/System::168b4ec8153eb8aa"
+            }
+        ]
+    }
+]

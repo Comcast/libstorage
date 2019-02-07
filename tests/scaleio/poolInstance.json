@@ -1,0 +1,56 @@
+{
+    "rebuildIoPriorityPolicy": "unlimited",
+    "rebalanceIoPriorityPolicy": "unlimited",
+    "rebuildIoPriorityNumOfConcurrentIosPerDevice": null,
+    "rebalanceIoPriorityNumOfConcurrentIosPerDevice": null,
+    "rebuildIoPriorityBwLimitPerDeviceInKbps": null,
+    "rebalanceIoPriorityBwLimitPerDeviceInKbps": null,
+    "rebuildIoPriorityAppIopsPerDeviceThreshold": null,
+    "rebalanceIoPriorityAppIopsPerDeviceThreshold": null,
+    "rebuildIoPriorityAppBwPerDeviceThresholdInKbps": null,
+    "rebalanceIoPriorityAppBwPerDeviceThresholdInKbps": null,
+    "rebuildIoPriorityQuietPeriodInMsec": null,
+    "rebalanceIoPriorityQuietPeriodInMsec": null,
+    "zeroPaddingEnabled": false,
+    "useRmcache": false,
+    "backgroundScannerMode": "Disabled",
+    "backgroundScannerBWLimitKBps": 0,
+    "protectionDomainId": "7a91b2ad00000002",
+    "sparePercentage": 34,
+    "rmcacheWriteHandlingMode": "Cached",
+    "checksumEnabled": false,
+    "useRfcache": true,
+    "rebuildEnabled": true,
+    "rebalanceEnabled": true,
+    "numOfParallelRebuildRebalanceJobsPerDevice": 2,
+    "capacityAlertHighThreshold": 80,
+    "capacityAlertCriticalThreshold": 90,
+    "name": "pool1-wc-pd3",
+    "id": "5ceba28700000002",
+    "links": [
+        {
+            "rel": "self",
+            "href": "/api/instances/StoragePool::5ceba28700000002"
+        },
+        {
+            "rel": "/api/StoragePool/relationship/Statistics",
+            "href": "/api/instances/StoragePool::5ceba28700000002/relationships/Statistics"
+        },
+        {
+            "rel": "/api/StoragePool/relationship/Volume",
+            "href": "/api/instances/StoragePool::5ceba28700000002/relationships/Volume"
+        },
+        {
+            "rel": "/api/StoragePool/relationship/Device",
+            "href": "/api/instances/StoragePool::5ceba28700000002/relationships/Device"
+        },
+        {
+            "rel": "/api/StoragePool/relationship/VTree",
+            "href": "/api/instances/StoragePool::5ceba28700000002/relationships/VTree"
+        },
+        {
+            "rel": "/api/parent/relationship/protectionDomainId",
+            "href": "/api/instances/ProtectionDomain::7a91b2ad00000002"
+        }
+    ]
+}

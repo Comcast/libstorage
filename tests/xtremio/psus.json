@@ -1,0 +1,1261 @@
+{
+    "params": {
+        "id-property": "node-psu-id"
+    }, 
+    "storage-controller-psus": [
+        {
+            "index": 1, 
+            "guid": "61abd73c2425439883076f33f7d4967d", 
+            "name": "X1-SC1-PSU-L", 
+            "brick-id": [
+                "188c9f4d88c54a9a9e402e08f9dcad29", 
+                "X1", 
+                1
+            ], 
+            "node-psu-id": [
+                "61abd73c2425439883076f33f7d4967d", 
+                "X1-SC1-PSU-L", 
+                1
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "ea69392db2ea4c118a0e5356417153b4", 
+                "X1-SC1", 
+                1
+            ], 
+            "power-feed": "PWR-B", 
+            "serial-number": "E98791D1514063642", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "left", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "8019bd47a67b4779a5baf8a14fa7d2a4", 
+                "wc-xio-0207", 
+                3
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 3, 
+            "guid": "c454d2428db84f8c9ee8309e35828dbf", 
+            "name": "X1-SC2-PSU-L", 
+            "brick-id": [
+                "188c9f4d88c54a9a9e402e08f9dcad29", 
+                "X1", 
+                1
+            ], 
+            "node-psu-id": [
+                "c454d2428db84f8c9ee8309e35828dbf", 
+                "X1-SC2-PSU-L", 
+                3
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "92fd174d06e043fa9c0ff9a8f0f84047", 
+                "X1-SC2", 
+                2
+            ], 
+            "power-feed": "PWR-B", 
+            "serial-number": "E98791D1509049447", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "left", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "8019bd47a67b4779a5baf8a14fa7d2a4", 
+                "wc-xio-0207", 
+                3
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 2, 
+            "guid": "0fb035a5cfb74300ab774ffeb71a691c", 
+            "name": "X1-SC1-PSU-R", 
+            "brick-id": [
+                "188c9f4d88c54a9a9e402e08f9dcad29", 
+                "X1", 
+                1
+            ], 
+            "node-psu-id": [
+                "0fb035a5cfb74300ab774ffeb71a691c", 
+                "X1-SC1-PSU-R", 
+                2
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "ea69392db2ea4c118a0e5356417153b4", 
+                "X1-SC1", 
+                1
+            ], 
+            "power-feed": "port_1", 
+            "serial-number": "E98791D1514063654", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "right", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "8019bd47a67b4779a5baf8a14fa7d2a4", 
+                "wc-xio-0207", 
+                3
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 5, 
+            "guid": "bdc9fc5d1efd415c8ee3c12b06503cf7", 
+            "name": "X2-SC1-PSU-L", 
+            "brick-id": [
+                "c70dacd00b6e4bc88d4b81b8fecf14f0", 
+                "X2", 
+                2
+            ], 
+            "node-psu-id": [
+                "bdc9fc5d1efd415c8ee3c12b06503cf7", 
+                "X2-SC1-PSU-L", 
+                5
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "13a25bab5f244913a003d4ac00432dde", 
+                "X2-SC1", 
+                3
+            ], 
+            "power-feed": "PWR-A", 
+            "serial-number": "E98791D1509048498", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "left", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "8019bd47a67b4779a5baf8a14fa7d2a4", 
+                "wc-xio-0207", 
+                3
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 4, 
+            "guid": "418efa7f54e24805994e90f4b1a8d0c4", 
+            "name": "X1-SC2-PSU-R", 
+            "brick-id": [
+                "188c9f4d88c54a9a9e402e08f9dcad29", 
+                "X1", 
+                1
+            ], 
+            "node-psu-id": [
+                "418efa7f54e24805994e90f4b1a8d0c4", 
+                "X1-SC2-PSU-R", 
+                4
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "92fd174d06e043fa9c0ff9a8f0f84047", 
+                "X1-SC2", 
+                2
+            ], 
+            "power-feed": "port_2", 
+            "serial-number": "E98791D1509049442", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "right", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "8019bd47a67b4779a5baf8a14fa7d2a4", 
+                "wc-xio-0207", 
+                3
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 7, 
+            "guid": "dbca0ccbb10d42f98bc1676c5ac8513c", 
+            "name": "X2-SC2-PSU-L", 
+            "brick-id": [
+                "c70dacd00b6e4bc88d4b81b8fecf14f0", 
+                "X2", 
+                2
+            ], 
+            "node-psu-id": [
+                "dbca0ccbb10d42f98bc1676c5ac8513c", 
+                "X2-SC2-PSU-L", 
+                7
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "8e3527c5ee3d4e17a8f2f59b5b501ff3", 
+                "X2-SC2", 
+                4
+            ], 
+            "power-feed": "PWR-A", 
+            "serial-number": "E98791D1509056066", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "left", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "8019bd47a67b4779a5baf8a14fa7d2a4", 
+                "wc-xio-0207", 
+                3
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 6, 
+            "guid": "b20f4e894277488591cd8c96eb069fbd", 
+            "name": "X2-SC1-PSU-R", 
+            "brick-id": [
+                "c70dacd00b6e4bc88d4b81b8fecf14f0", 
+                "X2", 
+                2
+            ], 
+            "node-psu-id": [
+                "b20f4e894277488591cd8c96eb069fbd", 
+                "X2-SC1-PSU-R", 
+                6
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "13a25bab5f244913a003d4ac00432dde", 
+                "X2-SC1", 
+                3
+            ], 
+            "power-feed": "port_1", 
+            "serial-number": "E98791D1509048527", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "right", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "8019bd47a67b4779a5baf8a14fa7d2a4", 
+                "wc-xio-0207", 
+                3
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 8, 
+            "guid": "9e753627cbb4496da0e30998860d81e2", 
+            "name": "X2-SC2-PSU-R", 
+            "brick-id": [
+                "c70dacd00b6e4bc88d4b81b8fecf14f0", 
+                "X2", 
+                2
+            ], 
+            "node-psu-id": [
+                "9e753627cbb4496da0e30998860d81e2", 
+                "X2-SC2-PSU-R", 
+                8
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "8e3527c5ee3d4e17a8f2f59b5b501ff3", 
+                "X2-SC2", 
+                4
+            ], 
+            "power-feed": "port_2", 
+            "serial-number": "E98791D1509055957", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "right", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "8019bd47a67b4779a5baf8a14fa7d2a4", 
+                "wc-xio-0207", 
+                3
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 11, 
+            "guid": "befbb4f79d2640879569ec170c96bacb", 
+            "name": "X3-SC2-PSU-L", 
+            "brick-id": [
+                "c809024a304e41829f1dd4407446df8e", 
+                "X3", 
+                3
+            ], 
+            "node-psu-id": [
+                "befbb4f79d2640879569ec170c96bacb", 
+                "X3-SC2-PSU-L", 
+                11
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "3f598d1d9327499b9ec3f8db53ac4fee", 
+                "X3-SC2", 
+                6
+            ], 
+            "power-feed": "PWR-B", 
+            "serial-number": "E98791D1507057009", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "left", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "3eeae47cb5fc404f89512a976a4dde78", 
+                "wc-xio-1330", 
+                2
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 10, 
+            "guid": "a2464fb7eb4d4794b4f229923f559521", 
+            "name": "X3-SC1-PSU-R", 
+            "brick-id": [
+                "c809024a304e41829f1dd4407446df8e", 
+                "X3", 
+                3
+            ], 
+            "node-psu-id": [
+                "a2464fb7eb4d4794b4f229923f559521", 
+                "X3-SC1-PSU-R", 
+                10
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "454c9892f5e341bdbca46b3cf03518c7", 
+                "X3-SC1", 
+                5
+            ], 
+            "power-feed": "port_1", 
+            "serial-number": "E98791D1507038448", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "right", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "3eeae47cb5fc404f89512a976a4dde78", 
+                "wc-xio-1330", 
+                2
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 13, 
+            "guid": "ee9385a93089481bab92c3fd0361717f", 
+            "name": "X4-SC1-PSU-L", 
+            "brick-id": [
+                "c144cde13be0442c93e650ad353a2259", 
+                "X4", 
+                4
+            ], 
+            "node-psu-id": [
+                "ee9385a93089481bab92c3fd0361717f", 
+                "X4-SC1-PSU-L", 
+                13
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "a6ed2d2d3c3d4aebbd50cfa11ccfc2b2", 
+                "X4-SC1", 
+                7
+            ], 
+            "power-feed": "PWR-A", 
+            "serial-number": "E98791D1509050580", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "left", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "3eeae47cb5fc404f89512a976a4dde78", 
+                "wc-xio-1330", 
+                2
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 12, 
+            "guid": "67f2b5f3495649bf83e7c8ecb12447e9", 
+            "name": "X3-SC2-PSU-R", 
+            "brick-id": [
+                "c809024a304e41829f1dd4407446df8e", 
+                "X3", 
+                3
+            ], 
+            "node-psu-id": [
+                "67f2b5f3495649bf83e7c8ecb12447e9", 
+                "X3-SC2-PSU-R", 
+                12
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "3f598d1d9327499b9ec3f8db53ac4fee", 
+                "X3-SC2", 
+                6
+            ], 
+            "power-feed": "port_2", 
+            "serial-number": "E98791D1507057007", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "right", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "3eeae47cb5fc404f89512a976a4dde78", 
+                "wc-xio-1330", 
+                2
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 15, 
+            "guid": "0a97cd5bf3304ca5aca77cdb0da5afbc", 
+            "name": "X4-SC2-PSU-L", 
+            "brick-id": [
+                "c144cde13be0442c93e650ad353a2259", 
+                "X4", 
+                4
+            ], 
+            "node-psu-id": [
+                "0a97cd5bf3304ca5aca77cdb0da5afbc", 
+                "X4-SC2-PSU-L", 
+                15
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "3516eb548acd4162b046f568d6f05ee1", 
+                "X4-SC2", 
+                8
+            ], 
+            "power-feed": "PWR-A", 
+            "serial-number": "E98791D1505032429", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "left", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "3eeae47cb5fc404f89512a976a4dde78", 
+                "wc-xio-1330", 
+                2
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 14, 
+            "guid": "fb8661a82a4d4394b99dce6303342fa1", 
+            "name": "X4-SC1-PSU-R", 
+            "brick-id": [
+                "c144cde13be0442c93e650ad353a2259", 
+                "X4", 
+                4
+            ], 
+            "node-psu-id": [
+                "fb8661a82a4d4394b99dce6303342fa1", 
+                "X4-SC1-PSU-R", 
+                14
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "a6ed2d2d3c3d4aebbd50cfa11ccfc2b2", 
+                "X4-SC1", 
+                7
+            ], 
+            "power-feed": "port_1", 
+            "serial-number": "E98791D1509050579", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "right", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "3eeae47cb5fc404f89512a976a4dde78", 
+                "wc-xio-1330", 
+                2
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 16, 
+            "guid": "b61499c4e271481791f830db220a9b05", 
+            "name": "X4-SC2-PSU-R", 
+            "brick-id": [
+                "c144cde13be0442c93e650ad353a2259", 
+                "X4", 
+                4
+            ], 
+            "node-psu-id": [
+                "b61499c4e271481791f830db220a9b05", 
+                "X4-SC2-PSU-R", 
+                16
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "3516eb548acd4162b046f568d6f05ee1", 
+                "X4-SC2", 
+                8
+            ], 
+            "power-feed": "port_2", 
+            "serial-number": "E98791D1505032310", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "right", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "3eeae47cb5fc404f89512a976a4dde78", 
+                "wc-xio-1330", 
+                2
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 1, 
+            "guid": "2c20f43275b04d359903788fbb8f10e6", 
+            "name": "X1-SC1-PSU-L", 
+            "brick-id": [
+                "37fece662bf0486a9974ffb795831e35", 
+                "X1", 
+                1
+            ], 
+            "node-psu-id": [
+                "2c20f43275b04d359903788fbb8f10e6", 
+                "X1-SC1-PSU-L", 
+                1
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "03dae8e2b04c4a4ca44871bee449ea74", 
+                "X1-SC1", 
+                1
+            ], 
+            "power-feed": "PWR-B", 
+            "serial-number": "E98791D1409030640", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "left", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "04  ", 
+            "sys-id": [
+                "3eeae47cb5fc404f89512a976a4dde78", 
+                "wc-xio-1330", 
+                2
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 3, 
+            "guid": "ebd8cf39db9644fab90ea0cca23b6443", 
+            "name": "X1-SC2-PSU-L", 
+            "brick-id": [
+                "37fece662bf0486a9974ffb795831e35", 
+                "X1", 
+                1
+            ], 
+            "node-psu-id": [
+                "ebd8cf39db9644fab90ea0cca23b6443", 
+                "X1-SC2-PSU-L", 
+                3
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "caf77f7cdd5e4ba097f7e3ea8541b439", 
+                "X1-SC2", 
+                2
+            ], 
+            "power-feed": "PWR-B", 
+            "serial-number": "E98791D1507037838", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "left", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "3eeae47cb5fc404f89512a976a4dde78", 
+                "wc-xio-1330", 
+                2
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 2, 
+            "guid": "e062cd05315740999b4eab3a4b82d27d", 
+            "name": "X1-SC1-PSU-R", 
+            "brick-id": [
+                "37fece662bf0486a9974ffb795831e35", 
+                "X1", 
+                1
+            ], 
+            "node-psu-id": [
+                "e062cd05315740999b4eab3a4b82d27d", 
+                "X1-SC1-PSU-R", 
+                2
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "03dae8e2b04c4a4ca44871bee449ea74", 
+                "X1-SC1", 
+                1
+            ], 
+            "power-feed": "port_1", 
+            "serial-number": "E98791D1409019366", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "right", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "04  ", 
+            "sys-id": [
+                "3eeae47cb5fc404f89512a976a4dde78", 
+                "wc-xio-1330", 
+                2
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 5, 
+            "guid": "7237697ab4f64d7f972e961ce436e56f", 
+            "name": "X2-SC1-PSU-L", 
+            "brick-id": [
+                "d5fb6d458fb2438b8c3e3a3bf0e2c14b", 
+                "X2", 
+                2
+            ], 
+            "node-psu-id": [
+                "7237697ab4f64d7f972e961ce436e56f", 
+                "X2-SC1-PSU-L", 
+                5
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "661184351c6946f3954f01c61c23ebaa", 
+                "X2-SC1", 
+                3
+            ], 
+            "power-feed": "PWR-A", 
+            "serial-number": "E98791D1509047450", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "left", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "3eeae47cb5fc404f89512a976a4dde78", 
+                "wc-xio-1330", 
+                2
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 4, 
+            "guid": "e6fe06a38690485589eb68120829be7f", 
+            "name": "X1-SC2-PSU-R", 
+            "brick-id": [
+                "37fece662bf0486a9974ffb795831e35", 
+                "X1", 
+                1
+            ], 
+            "node-psu-id": [
+                "e6fe06a38690485589eb68120829be7f", 
+                "X1-SC2-PSU-R", 
+                4
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "caf77f7cdd5e4ba097f7e3ea8541b439", 
+                "X1-SC2", 
+                2
+            ], 
+            "power-feed": "port_2", 
+            "serial-number": "E98791D1507037828", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "right", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "3eeae47cb5fc404f89512a976a4dde78", 
+                "wc-xio-1330", 
+                2
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 7, 
+            "guid": "cebaffcea5b74ec29d0c508985846d76", 
+            "name": "X2-SC2-PSU-L", 
+            "brick-id": [
+                "d5fb6d458fb2438b8c3e3a3bf0e2c14b", 
+                "X2", 
+                2
+            ], 
+            "node-psu-id": [
+                "cebaffcea5b74ec29d0c508985846d76", 
+                "X2-SC2-PSU-L", 
+                7
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "d48a040d09f4435ca696649a7d356f0b", 
+                "X2-SC2", 
+                4
+            ], 
+            "power-feed": "PWR-A", 
+            "serial-number": "E98791D1509046480", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "left", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "3eeae47cb5fc404f89512a976a4dde78", 
+                "wc-xio-1330", 
+                2
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 6, 
+            "guid": "cd66b13f777d4ba184def3803884179f", 
+            "name": "X2-SC1-PSU-R", 
+            "brick-id": [
+                "d5fb6d458fb2438b8c3e3a3bf0e2c14b", 
+                "X2", 
+                2
+            ], 
+            "node-psu-id": [
+                "cd66b13f777d4ba184def3803884179f", 
+                "X2-SC1-PSU-R", 
+                6
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "661184351c6946f3954f01c61c23ebaa", 
+                "X2-SC1", 
+                3
+            ], 
+            "power-feed": "port_1", 
+            "serial-number": "E98791D1509048090", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "right", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "3eeae47cb5fc404f89512a976a4dde78", 
+                "wc-xio-1330", 
+                2
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 9, 
+            "guid": "fea5190095cf4655a00fa73dba83eb3b", 
+            "name": "X3-SC1-PSU-L", 
+            "brick-id": [
+                "c809024a304e41829f1dd4407446df8e", 
+                "X3", 
+                3
+            ], 
+            "node-psu-id": [
+                "fea5190095cf4655a00fa73dba83eb3b", 
+                "X3-SC1-PSU-L", 
+                9
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "454c9892f5e341bdbca46b3cf03518c7", 
+                "X3-SC1", 
+                5
+            ], 
+            "power-feed": "PWR-B", 
+            "serial-number": "E98791D1507038461", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "left", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "3eeae47cb5fc404f89512a976a4dde78", 
+                "wc-xio-1330", 
+                2
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 8, 
+            "guid": "3988d30a07134e5295d2822fa202fec6", 
+            "name": "X2-SC2-PSU-R", 
+            "brick-id": [
+                "d5fb6d458fb2438b8c3e3a3bf0e2c14b", 
+                "X2", 
+                2
+            ], 
+            "node-psu-id": [
+                "3988d30a07134e5295d2822fa202fec6", 
+                "X2-SC2-PSU-R", 
+                8
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "d48a040d09f4435ca696649a7d356f0b", 
+                "X2-SC2", 
+                4
+            ], 
+            "power-feed": "port_2", 
+            "serial-number": "E98791D1509046442", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "right", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "3eeae47cb5fc404f89512a976a4dde78", 
+                "wc-xio-1330", 
+                2
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 1, 
+            "guid": "f3ec78e59c7c49f7a04991264744e7a6", 
+            "name": "X1-SC1-PSU-L", 
+            "brick-id": [
+                "3fb8fe3c59f64fc0ae0daf0bd2176749", 
+                "X1", 
+                1
+            ], 
+            "node-psu-id": [
+                "f3ec78e59c7c49f7a04991264744e7a6", 
+                "X1-SC1-PSU-L", 
+                1
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "228831c39d054de4bb3591fe5e698757", 
+                "X1-SC1", 
+                1
+            ], 
+            "power-feed": "PWR-B", 
+            "serial-number": "E98791D1509045900", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "left", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "30e0723e9d564f3ba2910dd3f213e280", 
+                "wc-xio-1895", 
+                1
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 3, 
+            "guid": "165cb7e724b044d7a1dc0cc2745be562", 
+            "name": "X1-SC2-PSU-L", 
+            "brick-id": [
+                "3fb8fe3c59f64fc0ae0daf0bd2176749", 
+                "X1", 
+                1
+            ], 
+            "node-psu-id": [
+                "165cb7e724b044d7a1dc0cc2745be562", 
+                "X1-SC2-PSU-L", 
+                3
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "165df17efaa74728a5957d39b290f4be", 
+                "X1-SC2", 
+                2
+            ], 
+            "power-feed": "PWR-B", 
+            "serial-number": "E98791D1509048361", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "left", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "30e0723e9d564f3ba2910dd3f213e280", 
+                "wc-xio-1895", 
+                1
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 2, 
+            "guid": "c81d25062eb84314989e00e074c93465", 
+            "name": "X1-SC1-PSU-R", 
+            "brick-id": [
+                "3fb8fe3c59f64fc0ae0daf0bd2176749", 
+                "X1", 
+                1
+            ], 
+            "node-psu-id": [
+                "c81d25062eb84314989e00e074c93465", 
+                "X1-SC1-PSU-R", 
+                2
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "228831c39d054de4bb3591fe5e698757", 
+                "X1-SC1", 
+                1
+            ], 
+            "power-feed": "port_1", 
+            "serial-number": "E98791D1509045776", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "right", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "30e0723e9d564f3ba2910dd3f213e280", 
+                "wc-xio-1895", 
+                1
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 5, 
+            "guid": "19532274cba5429298eeae399e58e324", 
+            "name": "X2-SC1-PSU-L", 
+            "brick-id": [
+                "ec65d3e7ed034710ad7f77e03652551b", 
+                "X2", 
+                2
+            ], 
+            "node-psu-id": [
+                "19532274cba5429298eeae399e58e324", 
+                "X2-SC1-PSU-L", 
+                5
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "b248e0bbaa3b44b7b714cb90f6d25414", 
+                "X2-SC1", 
+                3
+            ], 
+            "power-feed": "PWR-A", 
+            "serial-number": "E98791D1509048301", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "left", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "30e0723e9d564f3ba2910dd3f213e280", 
+                "wc-xio-1895", 
+                1
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 4, 
+            "guid": "6418fc67ba58470f9d457d0104c981f4", 
+            "name": "X1-SC2-PSU-R", 
+            "brick-id": [
+                "3fb8fe3c59f64fc0ae0daf0bd2176749", 
+                "X1", 
+                1
+            ], 
+            "node-psu-id": [
+                "6418fc67ba58470f9d457d0104c981f4", 
+                "X1-SC2-PSU-R", 
+                4
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "165df17efaa74728a5957d39b290f4be", 
+                "X1-SC2", 
+                2
+            ], 
+            "power-feed": "port_2", 
+            "serial-number": "E98791D1509048292", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "right", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "30e0723e9d564f3ba2910dd3f213e280", 
+                "wc-xio-1895", 
+                1
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 7, 
+            "guid": "7e10af0c11804bea8c88528d26b037bd", 
+            "name": "X2-SC2-PSU-L", 
+            "brick-id": [
+                "ec65d3e7ed034710ad7f77e03652551b", 
+                "X2", 
+                2
+            ], 
+            "node-psu-id": [
+                "7e10af0c11804bea8c88528d26b037bd", 
+                "X2-SC2-PSU-L", 
+                7
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "07a29b1d6fa947799ab4f61b8b6eca40", 
+                "X2-SC2", 
+                4
+            ], 
+            "power-feed": "PWR-A", 
+            "serial-number": "E98791D1509047751", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "left", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "30e0723e9d564f3ba2910dd3f213e280", 
+                "wc-xio-1895", 
+                1
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 6, 
+            "guid": "abd4b8a8867b48a78e5efef0265add14", 
+            "name": "X2-SC1-PSU-R", 
+            "brick-id": [
+                "ec65d3e7ed034710ad7f77e03652551b", 
+                "X2", 
+                2
+            ], 
+            "node-psu-id": [
+                "abd4b8a8867b48a78e5efef0265add14", 
+                "X2-SC1-PSU-R", 
+                6
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "b248e0bbaa3b44b7b714cb90f6d25414", 
+                "X2-SC1", 
+                3
+            ], 
+            "power-feed": "port_1", 
+            "serial-number": "E98791D1509048312", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "right", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "30e0723e9d564f3ba2910dd3f213e280", 
+                "wc-xio-1895", 
+                1
+            ], 
+            "power-failure": "clear"
+        }, 
+        {
+            "index": 8, 
+            "guid": "9152fad07331468cb211710397d55875", 
+            "name": "X2-SC2-PSU-R", 
+            "brick-id": [
+                "ec65d3e7ed034710ad7f77e03652551b", 
+                "X2", 
+                2
+            ], 
+            "node-psu-id": [
+                "9152fad07331468cb211710397d55875", 
+                "X2-SC2-PSU-R", 
+                8
+            ], 
+            "obj-severity": "information", 
+            "fw-version-error": "no_error", 
+            "status-led": "on", 
+            "enabled-state": "enabled", 
+            "node-id": [
+                "07a29b1d6fa947799ab4f61b8b6eca40", 
+                "X2-SC2", 
+                4
+            ], 
+            "power-feed": "port_2", 
+            "serial-number": "E98791D1509047756", 
+            "fru-lifecycle-state": "healthy", 
+            "location": "right", 
+            "part-number": "*** DPS-750XB A", 
+            "input": "on", 
+            "fru-replace-failure-reason": "", 
+            "model-name": "DPS-750XB A", 
+            "hw-revision": "05  ", 
+            "sys-id": [
+                "30e0723e9d564f3ba2910dd3f213e280", 
+                "wc-xio-1895", 
+                1
+            ], 
+            "power-failure": "clear"
+        }
+    ], 
+    "links": [
+        {
+            "href": "https://172.28.77.168/api/json/v2/types/storage-controller-psus/", 
+            "rel": "self"
+        }
+    ]
+}

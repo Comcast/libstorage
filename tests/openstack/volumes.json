@@ -1,0 +1,50 @@
+{
+    "volumes": [
+        {
+            "attachments": [
+                {
+                    "server_id": "29313bce-5c22-490c-952b-70dc28635a56",
+                    "attachment_id": "fcfde787-2ba0-4add-b3f2-48e532b3ff20",
+                    "attached_at": "2018-08-30T22:12:03.000000",
+                    "host_name": null,
+                    "volume_id": "7249144a-935c-4971-bc96-8dbfc35e7ec6",
+                    "device": "/dev/vde",
+                    "id": "94bc1e99-9663-464d-b9be-5e626d2418f7"
+                }
+            ],
+            "links": [
+                {
+                    "href": "http://server.foo.com:8776/v3/3758f7c8da034ae08ab998c35f9f8a9c/volumes/5de4fef6-50b6-48a1-869c-748d657a148f",
+                    "rel": "self"
+                },
+                {
+                    "href": "http://server.foo.com:8776/3758f7c8da034ae08ab998c35f9f8a9c/volumes/5de4fef6-50b6-48a1-869c-748d657a148f",
+                    "rel": "bookmark"
+                }
+            ],
+            "availability_zone": "nova",
+            "encrypted": false,
+            "updated_at": "2018-08-30T22:12:03.000000",
+            "replication_status": "disabled",
+            "snapshot_id": null,
+            "id": "5de4fef6-50b6-48a1-869c-748d657a148f",
+            "size": 5,
+            "user_id": "f3de25bad884a9628952284e24ad6722bf48c1c30878a1317816ff16ea707535",
+            "os-vol-tenant-attr:tenant_id": "25bad884a9628952284e24ad6722bf48",
+            "metadata": {
+                "readonly": "False",
+                "attached_mode": "rw"
+            },
+            "status": "in-use",
+            "volume_image_metadata": {},
+            "description": "",
+            "multiattach": false,
+            "source_volid": null,
+            "consistencygroup_id": null,
+            "name": "slog",
+            "bootable": "false",
+            "created_at": "2018-08-30T22:11:45.000000",
+            "volume_type": "solid_state_tier_1"
+        }
+    ]
+}

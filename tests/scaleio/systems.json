@@ -1,0 +1,209 @@
+[
+    {
+        "systemVersionName": "EMC ScaleIO Version: R2_0.13000.211",
+        "capacityAlertHighThresholdPercent": 80,
+        "capacityAlertCriticalThresholdPercent": 90,
+        "remoteReadOnlyLimitState": false,
+        "upgradeState": "NoUpgrade",
+        "mdmManagementPort": 6611,
+        "sdcMdmNetworkDisconnectionsCounterParameters": {
+            "shortWindow": {
+                "threshold": 300,
+                "windowSizeInSec": 60
+            },
+            "mediumWindow": {
+                "threshold": 500,
+                "windowSizeInSec": 3600
+            },
+            "longWindow": {
+                "threshold": 700,
+                "windowSizeInSec": 86400
+            }
+        },
+        "sdcSdsNetworkDisconnectionsCounterParameters": {
+            "shortWindow": {
+                "threshold": 800,
+                "windowSizeInSec": 60
+            },
+            "mediumWindow": {
+                "threshold": 4000,
+                "windowSizeInSec": 3600
+            },
+            "longWindow": {
+                "threshold": 20000,
+                "windowSizeInSec": 86400
+            }
+        },
+        "sdcMemoryAllocationFailuresCounterParameters": {
+            "shortWindow": {
+                "threshold": 300,
+                "windowSizeInSec": 60
+            },
+            "mediumWindow": {
+                "threshold": 500,
+                "windowSizeInSec": 3600
+            },
+            "longWindow": {
+                "threshold": 700,
+                "windowSizeInSec": 86400
+            }
+        },
+        "sdcSocketAllocationFailuresCounterParameters": {
+            "shortWindow": {
+                "threshold": 300,
+                "windowSizeInSec": 60
+            },
+            "mediumWindow": {
+                "threshold": 500,
+                "windowSizeInSec": 3600
+            },
+            "longWindow": {
+                "threshold": 700,
+                "windowSizeInSec": 86400
+            }
+        },
+        "sdcLongOperationsCounterParameters": {
+            "shortWindow": {
+                "threshold": 10000,
+                "windowSizeInSec": 60
+            },
+            "mediumWindow": {
+                "threshold": 100000,
+                "windowSizeInSec": 3600
+            },
+            "longWindow": {
+                "threshold": 1000000,
+                "windowSizeInSec": 86400
+            }
+        },
+        "cliPasswordAllowed": true,
+        "managementClientSecureCommunicationEnabled": true,
+        "tlsVersion": "TLSv1.2",
+        "showGuid": true,
+        "authenticationMethod": "NativeAndLdap",
+        "mdmToSdsPolicy": "None",
+        "mdmCluster": {
+            "master": {
+                "opensslVersion": " ",
+                "managementIPs": [
+                    "192.168.1.36"
+                ],
+                "ips": [
+                    "192.168.1.36"
+                ],
+                "versionInfo": "R2_0.13000.0",
+                "virtualInterfaces": [],
+                "role": "Manager",
+                "name": "server-01p",
+                "id": "389eb008503ec2b0",
+                "port": 9011
+            },
+            "slaves": [
+                {
+                    "opensslVersion": " ",
+                    "managementIPs": [
+                        "192.168.1.100"
+                    ],
+                    "ips": [
+                        "192.168.1.100"
+                    ],
+                    "versionInfo": "R2_0.13000.0",
+                    "virtualInterfaces": [],
+                    "role": "Manager",
+                    "status": "Normal",
+                    "name": "serverf3-37p",
+                    "id": "25f1701940f2d1a2",
+                    "port": 9011
+                },
+                {
+                    "opensslVersion": " ",
+                    "managementIPs": [
+                        "192.168.1.68"
+                    ],
+                    "ips": [
+                        "192.168.1.68"
+                    ],
+                    "versionInfo": "R2_0.13000.0",
+                    "virtualInterfaces": [],
+                    "role": "Manager",
+                    "status": "Normal",
+                    "name": "serverf2-19p",
+                    "id": "78a1d74022299b91",
+                    "port": 9011
+                }
+            ],
+            "clusterMode": "FiveNodes",
+            "tieBreakers": [
+                {
+                    "opensslVersion": "N/A",
+                    "managementIPs": [
+                        "192.168.1.69"
+                    ],
+                    "ips": [
+                        "192.168.1.69"
+                    ],
+                    "versionInfo": "R2_0.13000.0",
+                    "role": "TieBreaker",
+                    "status": "Normal",
+                    "name": "serverf2-20p",
+                    "id": "680204c466301e64",
+                    "port": 9011
+                },
+                {
+                    "opensslVersion": "N/A",
+                    "managementIPs": [
+                        "192.168.1.37"
+                    ],
+                    "ips": [
+                        "192.168.1.37"
+                    ],
+                    "versionInfo": "R2_0.13000.0",
+                    "role": "TieBreaker",
+                    "status": "Normal",
+                    "name": "server-02p",
+                    "id": "62eacb8e05ad4193",
+                    "port": 9011
+                }
+            ],
+            "goodNodesNum": 5,
+            "goodReplicasNum": 3,
+            "clusterState": "ClusteredNormal",
+            "name": "SIOHOGRN01",
+            "id": "1624478711854053546"
+        },
+        "perfProfile": "HighPerformance",
+        "installId": "0e5687a95fa1dfff",
+        "daysInstalled": 73,
+        "maxCapacityInGb": "2457600",
+        "capacityTimeLeftInDays": "Unlimited",
+        "enterpriseFeaturesEnabled": true,
+        "isInitialLicense": false,
+        "defaultIsVolumeObfuscated": false,
+        "restrictedSdcModeEnabled": false,
+        "swid": "ELMSIO0218JFB7",
+        "name": "SIOHOGRN01",
+        "id": "168b4ec8153eb8aa",
+        "links": [
+            {
+                "rel": "self",
+                "href": "/api/instances/System::168b4ec8153eb8aa"
+            },
+            {
+                "rel": "/api/System/relationship/Statistics",
+                "href": "/api/instances/System::168b4ec8153eb8aa/relationships/Statistics"
+            },
+            {
+                "rel": "/api/System/relationship/ProtectionDomain",
+                "href": "/api/instances/System::168b4ec8153eb8aa/relationships/ProtectionDomain"
+            },
+            {
+                "rel": "/api/System/relationship/Sdc",
+                "href": "/api/instances/System::168b4ec8153eb8aa/relationships/Sdc"
+            },
+            {
+                "rel": "/api/System/relationship/User",
+                "href": "/api/instances/System::168b4ec8153eb8aa/relationships/User"
+            }
+        ]
+    }
+]

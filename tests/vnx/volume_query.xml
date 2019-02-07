@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ResponsePacket 
+    xmlns="http://www.emc.com/schemas/celerra/xml_api">
+    <Response>
+        <Volume name="v9992" type="meta" size="99647" clientVolumes="5442" virtualProvisioning="false" volume="9992">
+            <MetaVolumeData memberVolumes="9991"/>
+        </Volume>
+    </Response>
+</ResponsePacket>

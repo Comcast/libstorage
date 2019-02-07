@@ -1,0 +1,53 @@
+{
+    "fcSwitches": [
+        {
+            "key": "10:00:00:05:33:7E:C6:CF",
+            "type": 66,
+            "name": "10b",
+            "wwn": "10:00:00:05:33:7E:C6:CF",
+            "virtualFabricId": -1,
+            "domainId": 10,
+            "baseSwitch": false,
+            "role": "PRINCIPAL",
+            "fcsRole": "None",
+            "adCapable": true,
+            "operationalStatus": "HEALTHY",
+            "state": "ONLINE",
+            "statusReason": "Switch Status is HEALTHY. Contributors:",
+            "lfEnabled": false,
+            "defaultLogicalSwitch": true,
+            "fmsMode": false,
+            "dynamicLoadSharingCapable": true,
+            "portBasedRoutingPresent": false,
+            "inOrderDeliveryCapable": false,
+            "persistentDidEnabled": false,
+            "autoSnmpEnabled": true
+        },
+        {
+            "key": "10:00:00:05:33:91:7C:66",
+            "type": 64,
+            "name": "cloud",
+            "wwn": "10:00:00:05:33:91:7C:66",
+            "virtualFabricId": -1,
+            "domainId": 49,
+            "baseSwitch": false,
+            "role": "SUBORDINATE",
+            "fcsRole": "None",
+            "adCapable": true,
+            "operationalStatus": "HEALTHY",
+            "state": "ONLINE",
+            "statusReason": "Switch Status is HEALTHY.",
+            "lfEnabled": false,
+            "defaultLogicalSwitch": true,
+            "fmsMode": false,
+            "dynamicLoadSharingCapable": true,
+            "portBasedRoutingPresent": false,
+            "inOrderDeliveryCapable": true,
+            "persistentDidEnabled": true,
+            "autoSnmpEnabled": true
+        }
+    ],
+    "startIndex": null,
+    "itemsPerPage": null,
+    "totalResults": null
+}

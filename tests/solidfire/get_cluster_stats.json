@@ -1,0 +1,31 @@
+{
+    "id": null,
+    "result": {
+        "clusterStats": {
+            "actualIOPS": 13802,
+            "averageIOPSize": 119903,
+            "clientQueueDepth": 16,
+            "clusterUtilization": 0.08350911736488342,
+            "latencyUSec": 1752,
+            "normalizedIOPS": 82358,
+            "readBytes": 1876951917910528,
+            "readBytesLastSample": 88449024,
+            "readLatencyUSec": 1243,
+            "readLatencyUSecTotal": 68152131257808,
+            "readOps": 28067542519,
+            "readOpsLastSample": 1749,
+            "samplePeriodMsec": 500,
+            "servicesCount": 18,
+            "servicesTotal": 18,
+            "timestamp": "2018-04-11T17:46:14.836769Z",
+            "unalignedReads": 288399,
+            "unalignedWrites": 1017268330,
+            "writeBytes": 6984605649643008,
+            "writeBytesLastSample": 177672704,
+            "writeLatencyUSec": 1481,
+            "writeLatencyUSecTotal": 354486949651393,
+            "writeOps": 101199067359,
+            "writeOpsLastSample": 5152
+        }
+    }
+}

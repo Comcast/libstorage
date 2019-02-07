@@ -1,0 +1,18 @@
+"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ResponsePacket xmlns="http://www.emc.com/schemas/celerra/xml_api">
+    <Response>
+        <MoverNfsStats mover="1">
+            <Sample time="1520354584" stamp="360">
+                <ProcV2Calls null="22849" getattr="0" setattr="0" root="0" lookup="0" readlink="0" read="0" wrcache="0" write="0" create="0" remove="0" link="0" symlink="0" mkdir="0" rmdir="0" readdir="0" fsstat="0"/>
+                <ProcV2Time null="0" getattr="0" setattr="0" root="0" lookup="0" readlink="0" read="0" wrcache="0" write="0" create="0" remove="0" link="0" symlink="0" mkdir="0" rmdir="0" readdir="0" fsstat="0"/>
+                <ProcV2Failures null="0" getattr="0" setattr="0" root="0" lookup="0" readlink="0" read="0" wrcache="0" write="0" create="0" remove="0" link="0" symlink="0" mkdir="0" rmdir="0" readdir="0" fsstat="0"/>
+                <ProcV3Calls v3null="0" v3getattr="461565249" v3setattr="4421904" v3lookup="15693418" v3access="65719110" v3readlink="246" v3read="581011913" v3write="1570754007" v3create="965991" v3mkdir="163" v3symlink="0" v3mknod="0" v3remove="937204" v3rmdir="129" v3rename="72667" v3link="0" v3readdir="1614" v3readdirplus="8137196" v3fsstat="213792688" v3fsinfo="6804" v3pathconf="200" v3commit="280088"/>
+                <ProcV3Time v3null="0" v3getattr="41432344" v3setattr="3466290" v3lookup="6077581" v3access="6158622" v3readlink="39" v3read="1532536125" v3write="3107170110" v3create="897188" v3mkdir="114" v3symlink="0" v3mknod="0" v3remove="1550916" v3rmdir="57" v3rename="67462" v3link="0" v3readdir="2076" v3readdirplus="1582421" v3fsstat="3274743" v3fsinfo="100" v3pathconf="2" v3commit="1274265"/>
+                <ProcV3Failures v3null="0" v3getattr="2" v3setattr="0" v3lookup="1486" v3access="2" v3readlink="0" v3read="0" v3write="0" v3create="0" v3mkdir="0" v3symlink="0" v3mknod="0" v3remove="0" v3rmdir="0" v3rename="0" v3link="0" v3readdir="0" v3readdirplus="0" v3fsstat="10" v3fsinfo="0" v3pathconf="0" v3commit="0"/>
+                <Cache hits="26" misses="0" adds="19941004" nonExistent="0"/>
+                <Rpc calls="0" badData="0" dupl="0" resends="3483839454" badAuth="3606"/>
+            </Sample>
+        </MoverNfsStats>
+    </Response>
+</ResponsePacket>
+"

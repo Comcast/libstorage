@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ResponsePacket xmlns="http://www.emc.com/schemas/celerra/xml_api">
+    <Response>
+        <MoverCifsStats mover="1">
+            <Sample time="1520379485" stamp="360">
+                <SMBCalls mkdir="0" rmdir="0" open="0" create="0" close="34" flush="0" unlink="0" rename="0" getAttr="0" setAttr="0" read="0" write="0" lock="0" unlock="0" createTmp="0" mkNew="0" chkPath="0" exit="0" lseek="0" lockRead="0" writeUnlock="0" readBlockRaw="0" writeBlockRaw="0" setAttrExp="0" getAttrExp="0" lockingX="0" trans="156" transSec="0" copy="0" move="0" echo="72" writeClose="0" openX="0" readX="0" writeX="0" closeTreeDisco="0" trans2Prim="64" trans2Secd="0" findClose2="0" findNotifyClose="0" treeConnect="0" treeDisco="16" negProt="211922" sessSetupX="186" userLogOffX="16" treeConnectX="157" diskAttr="0" search="0" findFirst="0" findUnique="0" findClose="0" transNt="0" transNtSecd="0" createNtX="80" cancelNt="0" sendMessage="0" beginMessage="0" endMessage="0" messageText="0"/>
+                <SMBTime mkdir="0" rmdir="0" open="0" create="0" close="51" flush="0" unlink="0" rename="0" getAttr="0" setAttr="0" read="0" write="0" lock="0" unlock="0" createTmp="0" mkNew="0" chkPath="0" exit="0" lseek="0" lockRead="0" writeUnlock="0" readBlockRaw="0" writeBlockRaw="0" setAttrExp="0" getAttrExp="0" lockingX="0" trans="51" transSec="0" copy="0" move="0" echo="13" writeClose="0" openX="0" readX="0" writeX="0" closeTreeDisco="0" trans2Prim="16" trans2Secd="0" findClose2="0" findNotifyClose="0" treeConnect="0" treeDisco="19" negProt="7080" sessSetupX="9529" userLogOffX="35" treeConnectX="9609" diskAttr="0" search="0" findFirst="0" findUnique="0" findClose="0" transNt="0" transNtSecd="0" createNtX="21530" cancelNt="0" sendMessage="0" beginMessage="0" endMessage="0" messageText="0"/>
+                <Trans2Calls trans2Open="0" trans2FindFirst="0" trans2FindNext="0" trans2QFsInfo="0" trans2QPathInfo="0" trans2SetPathInfo="0" trans2QFileInfo="0" trans2SetFileInfo="0" trans2Mkdir="0"/>
+                <Trans2Time trans2Open="0" trans2FindFirst="0" trans2FindNext="0" trans2QFsInfo="0" trans2QPathInfo="0" trans2SetPathInfo="0" trans2QFileInfo="0" trans2SetFileInfo="0" trans2Mkdir="0"/>
+                <NTCalls ntCreate="0" ntSetSd="0" ntNotifyChange="0" ntRename="0" ntQuerySd="0"/>
+                <NTTime ntCreate="0" ntSetSd="0" ntNotifyChange="0" ntRename="0" ntQuerySd="0"/>
+                <State openConnections="4" openFiles="1"/>
+                <Totals all="212767" smb="212703" trans2="64" nt="0"/>
+            </Sample>
+        </MoverCifsStats>
+    </Response>
+</ResponsePacket>
+

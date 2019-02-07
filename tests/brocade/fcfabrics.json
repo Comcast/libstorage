@@ -1,0 +1,35 @@
+{
+    "fcFabrics": [
+        {
+            "key": "10:00:00:05:1E:9D:1E:00",
+            "seedSwitchWwn": "10:00:00:05:1E:AC:FD:00",
+            "name": "A",
+            "secure": false,
+            "adEnvironment": false,
+            "contact": null,
+            "location": null,
+            "description": null,
+            "principalSwitchWwn": "10:00:00:05:1E:9D:1E:00",
+            "fabricName": "",
+            "virtualFabricId": -1,
+            "seedSwitchIpAddress": "192.168.1.1"
+        },
+        {
+            "key": "10:00:00:05:33:3C:9F:EE",
+            "seedSwitchWwn": "10:00:00:05:33:3C:9F:EE",
+            "name": "C",
+            "secure": false,
+            "adEnvironment": false,
+            "contact": null,
+            "location": null,
+            "description": null,
+            "principalSwitchWwn": "10:00:00:05:33:3C:9F:EE",
+            "fabricName": "",
+            "virtualFabricId": -1,
+            "seedSwitchIpAddress": "192.168.1.2"
+        }
+    ],
+    "startIndex": null,
+    "itemsPerPage": null,
+    "totalResults": null
+}

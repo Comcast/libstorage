@@ -1,0 +1,11 @@
+{
+    "Device": {
+        "aeac502460250233": {
+            "avgWriteSizeInBytes": 0,
+            "avgReadLatencyInMicrosec": 164,
+            "avgWriteLatencyInMicrosec": 0,
+            "fixedReadErrorCount": 0,
+            "avgReadSizeInBytes": 1024
+        }
+    }
+}

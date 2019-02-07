@@ -1,0 +1,28 @@
+    {
+        "srp": [
+            {
+                "srpId": "SRP_1",
+                "num_of_disk_groups": 2,
+                "description": "",
+                "emulation": "FBA",
+                "reserved_cap_percent": 10,
+                "total_usable_cap_gb": 1096303.4,
+                "total_subscribed_cap_gb": 532570.95,
+                "total_allocated_cap_gb": 336314.2,
+                "total_snapshot_allocated_cap_gb": 0.0,
+                "total_srdf_dse_allocated_cap_gb": 0.0,
+                "rdfa_dse": true,
+                "num_of_srp_slo_demands": 1,
+                "num_of_srp_sg_demands": 0,
+                "diskGroupId": [
+                    "1",
+                    "2"
+                ],
+                "srpSgDemandId": [],
+                "srpSloDemandId": [
+                    "None"
+                ]
+            }
+        ],
+        "success": true
+    }

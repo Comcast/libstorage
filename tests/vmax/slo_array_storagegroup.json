@@ -1,0 +1,26 @@
+    {
+        "storageGroup": [
+            {
+                "storageGroupId": "archdb_ch2_p02a_p02b",
+                "slo": "None",
+                "srp": "None",
+                "workload": "NONE",
+                "slo_compliance": "NONE",
+                "num_of_vols": 12,
+                "num_of_child_sgs": 0,
+                "num_of_parent_sgs": 0,
+                "num_of_masking_views": 2,
+                "num_of_snapshots": 0,
+                "cap_gb": 4527.09,
+                "device_emulation": "FBA",
+                "type": "Standalone",
+                "child_storage_group": [],
+                "parent_storage_group": [],
+                "maskingview": [
+                    "archdb_ch2_p02a",
+                    "archdb_ch2_p02b"
+                ]
+            }
+        ],
+        "success": true
+    }

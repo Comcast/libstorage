@@ -1,0 +1,46 @@
+{
+    "id": null,
+    "result": {
+        "nodes": [
+            {
+                "nodeID": 1,
+                "result": {
+                    "driveConfig": {
+                        "drives": [
+                            {
+                                "canonicalName": "sda",
+                                "connected": true,
+                                "dev": 2048,
+                                "devPath": "/dev/slot0",
+                                "driveType": "Slice",
+                                "name": "scsi-SATA_SAMSUNG_MZ7LM1TS2E2NX0H400095",
+                                "path": "/dev/sda",
+                                "pathLink": "/dev/slot0",
+                                "product": "SAMSUNG MZ7LM1T9HCJM-00005",
+                                "scsiCompatId": "scsi-SATA_SAMSUNG_MZ7LM1TS2E2NX0H400095",
+                                "scsiState": "Running",
+                                "securityAtMaximum": false,
+                                "securityEnabled": false,
+                                "securityFrozen": false,
+                                "securityLocked": false,
+                                "securitySupported": true,
+                                "serial": "S2E2NX0H400095",
+                                "size": 1920383410176,
+                                "slot": 0,
+                                "uuid": "db187de8-346f-d70e-165c-b004d7631d67",
+                                "vendor": "Samsung",
+                                "version": "GXT1003Q"
+                            }
+                        ],
+                        "numBlockActual": 9,
+                        "numBlockExpected": 9,
+                        "numSliceActual": 1,
+                        "numSliceExpected": 1,
+                        "numTotalActual": 10,
+                        "numTotalExpected": 10
+                    }
+                }
+            }
+        ]
+    }
+}

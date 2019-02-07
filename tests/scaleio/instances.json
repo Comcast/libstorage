@@ -1,0 +1,38 @@
+[
+    {
+        "deviceCurrentPathName": "/dev/sdk",
+        "deviceOriginalPathName": "/dev/sdk",
+        "rfcacheErrorDeviceDoesNotExist": false,
+        "sdsId": "4fdf0e0700000000",
+        "deviceState": "Normal",
+        "capacityLimitInKb": 3905420288,
+        "maxCapacityInKb": 3905420288,
+        "storagePoolId": "5ceba28500000000",
+        "longSuccessfulIos": {
+            "shortWindow": null,
+            "mediumWindow": null,
+            "longWindow": null
+        },
+        "errorState": "None",
+        "name": null,
+        "id": "ae2f4e2600000009",
+        "links": [
+            {
+                "rel": "self",
+                "href": "/api/instances/Device::ae2f4e2600000009"
+            },
+            {
+                "rel": "/api/Device/relationship/Statistics",
+                "href": "/api/instances/Device::ae2f4e2600000009/relationships/Statistics"
+            },
+            {
+                "rel": "/api/parent/relationship/sdsId",
+                "href": "/api/instances/Sds::4fdf0e0700000000"
+            },
+            {
+                "rel": "/api/parent/relationship/storagePoolId",
+                "href": "/api/instances/StoragePool::5ceba28500000000"
+            }
+        ]
+    }
+]

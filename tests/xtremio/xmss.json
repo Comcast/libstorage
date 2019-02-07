@@ -1,0 +1,400 @@
+{
+    "xmss": [
+        {
+            "max-repeating-alert": 10, 
+            "wr-latency": "532", 
+            "max-recs-in-event-log": 2000000, 
+            "top-n-igs-by-iops": [
+                [
+                    [
+                        "eb6f5f129bda4e599ddb8742464e8c62", 
+                        "lmdb_wc_b1p", 
+                        1
+                    ], 
+                    "1671", 
+                    "3428", 
+                    "188", 
+                    "291", 
+                    "5099", 
+                    "479", 
+                    "wc-xio-0207", 
+                    3
+                ], 
+                [
+                    [
+                        "941874d0d56b425d8b63450c3c88d2b2", 
+                        "rdu_wc_d2p", 
+                        3
+                    ], 
+                    "2093", 
+                    "0", 
+                    "249", 
+                    "0", 
+                    "2093", 
+                    "249", 
+                    "wc-xio-1895", 
+                    1
+                ], 
+                [
+                    [
+                        "cc7f151ac4dc4a5098d7ed85cc39f6a8", 
+                        "lmdb_wc_b2p", 
+                        2
+                    ], 
+                    "264", 
+                    "182", 
+                    "48", 
+                    "21", 
+                    "446", 
+                    "69", 
+                    "wc-xio-0207", 
+                    3
+                ], 
+                [
+                    [
+                        "a1e3755035674de9a07e162d830548a9", 
+                        "rdu_wc_a1p", 
+                        4
+                    ], 
+                    "291", 
+                    "1", 
+                    "53", 
+                    "0", 
+                    "292", 
+                    "53", 
+                    "wc-xio-0207", 
+                    3
+                ], 
+                [
+                    [
+                        "afb21b52ad1543f0b7d64eeccbe5f398", 
+                        "lmdb_wc_b3p", 
+                        3
+                    ], 
+                    "467", 
+                    "177", 
+                    "26", 
+                    "20", 
+                    "644", 
+                    "46", 
+                    "wc-xio-0207", 
+                    3
+                ], 
+                [
+                    [
+                        "e05d4252462d4b4f9575dd133369b636", 
+                        "rdu_wc_f2p", 
+                        6
+                    ], 
+                    "1713", 
+                    "0", 
+                    "32", 
+                    "0", 
+                    "1713", 
+                    "32", 
+                    "wc-xio-1895", 
+                    1
+                ], 
+                [
+                    [
+                        "13febd4894a44b6f8dff06dafc820342", 
+                        "rdu_wc_b1p", 
+                        1
+                    ], 
+                    "269", 
+                    "60", 
+                    "24", 
+                    "3", 
+                    "329", 
+                    "27", 
+                    "wc-xio-1895", 
+                    1
+                ]
+            ], 
+            "xms-gw": "172.28.64.1", 
+            "datetime": "2018-02-12 23:32:44 IST", 
+            "rd-bw-by-block": "3956", 
+            "iops": "1015", 
+            "logs-size": "55877145", 
+            "guid": "13eeee97b95b4bae95c1818236c4a447", 
+            "wr-iops-by-block": "662", 
+            "index": 1, 
+            "uptime": "327 days, 14:14:07.240000", 
+            "wr-bw-by-block": "6963", 
+            "db-version": "4.2.1", 
+            "server-name": "", 
+            "num-of-iscsi-routes": 0, 
+            "allow-empty-password": false, 
+            "ip-version": "ipv4", 
+            "name": "xms", 
+            "xms-num-of-volumes-level": "healthy", 
+            "top-n-volumes-by-latency": [
+                [
+                    [
+                        "2218e3cca5274fbd8d36af5a03f19bf5", 
+                        "lmdb_redo10", 
+                        99
+                    ], 
+                    "0", 
+                    "135", 
+                    "135", 
+                    "0", 
+                    "80", 
+                    "80", 
+                    "wc-xio-0207", 
+                    3
+                ], 
+                [
+                    [
+                        "b372f18a1a4a4613b927d7ad440ba0ea", 
+                        "lmdb_redo3", 
+                        59
+                    ], 
+                    "316", 
+                    "144", 
+                    "255", 
+                    "16", 
+                    "8", 
+                    "24", 
+                    "wc-xio-0207", 
+                    3
+                ], 
+                [
+                    [
+                        "06f85bcc0b614e61949f13c03d61f1bc", 
+                        "rdu_wc_d1p_d2p_vol3", 
+                        9
+                    ], 
+                    "380", 
+                    "0", 
+                    "380", 
+                    "236", 
+                    "0", 
+                    "236", 
+                    "wc-xio-1895", 
+                    1
+                ], 
+                [
+                    [
+                        "33984625e46041778cfa8165d6933e1b", 
+                        "rdu_wc_a1p_2ap_vol4", 
+                        73
+                    ], 
+                    "416", 
+                    "0", 
+                    "416", 
+                    "25", 
+                    "0", 
+                    "25", 
+                    "wc-xio-0207", 
+                    3
+                ], 
+                [
+                    [
+                        "5ff5208d5f6a4a9682b1d8c60c280e51", 
+                        "lmdb_redo14", 
+                        103
+                    ], 
+                    "509", 
+                    "168", 
+                    "322", 
+                    "8", 
+                    "12", 
+                    "20", 
+                    "wc-xio-0207", 
+                    3
+                ], 
+                [
+                    [
+                        "a24bf9050111490aa9639d2a9145c748", 
+                        "lmdb_redo7", 
+                        63
+                    ], 
+                    "666", 
+                    "168", 
+                    "256", 
+                    "4", 
+                    "29", 
+                    "33", 
+                    "wc-xio-0207", 
+                    3
+                ], 
+                [
+                    [
+                        "20984950c2cd4458a871943105966f57", 
+                        "rdu_wc_f1p_f2p_vol3", 
+                        14
+                    ], 
+                    "921", 
+                    "0", 
+                    "921", 
+                    "22", 
+                    "0", 
+                    "22", 
+                    "wc-xio-1895", 
+                    1
+                ]
+            ], 
+            "rd-iops-by-block": "353", 
+            "version": "4.2.1", 
+            "obj-severity": "information", 
+            "top-n-igs-by-bw": [
+                [
+                    [
+                        "eb6f5f129bda4e599ddb8742464e8c62", 
+                        "lmdb_wc_b1p", 
+                        1
+                    ], 
+                    "1671", 
+                    "3428", 
+                    "188", 
+                    "291", 
+                    "5099", 
+                    "479", 
+                    "wc-xio-0207", 
+                    3
+                ], 
+                [
+                    [
+                        "941874d0d56b425d8b63450c3c88d2b2", 
+                        "rdu_wc_d2p", 
+                        3
+                    ], 
+                    "2093", 
+                    "0", 
+                    "249", 
+                    "0", 
+                    "2093", 
+                    "249", 
+                    "wc-xio-1895", 
+                    1
+                ], 
+                [
+                    [
+                        "e05d4252462d4b4f9575dd133369b636", 
+                        "rdu_wc_f2p", 
+                        6
+                    ], 
+                    "1713", 
+                    "0", 
+                    "32", 
+                    "0", 
+                    "1713", 
+                    "32", 
+                    "wc-xio-1895", 
+                    1
+                ], 
+                [
+                    [
+                        "afb21b52ad1543f0b7d64eeccbe5f398", 
+                        "lmdb_wc_b3p", 
+                        3
+                    ], 
+                    "467", 
+                    "177", 
+                    "26", 
+                    "20", 
+                    "644", 
+                    "46", 
+                    "wc-xio-0207", 
+                    3
+                ], 
+                [
+                    [
+                        "cc7f151ac4dc4a5098d7ed85cc39f6a8", 
+                        "lmdb_wc_b2p", 
+                        2
+                    ], 
+                    "264", 
+                    "182", 
+                    "48", 
+                    "21", 
+                    "446", 
+                    "69", 
+                    "wc-xio-0207", 
+                    3
+                ], 
+                [
+                    [
+                        "13febd4894a44b6f8dff06dafc820342", 
+                        "rdu_wc_b1p", 
+                        1
+                    ], 
+                    "269", 
+                    "60", 
+                    "24", 
+                    "3", 
+                    "329", 
+                    "27", 
+                    "wc-xio-1895", 
+                    1
+                ], 
+                [
+                    [
+                        "a1e3755035674de9a07e162d830548a9", 
+                        "rdu_wc_a1p", 
+                        4
+                    ], 
+                    "291", 
+                    "1", 
+                    "53", 
+                    "0", 
+                    "292", 
+                    "53", 
+                    "wc-xio-0207", 
+                    3
+                ]
+            ], 
+            "max-xms-tags-per-object": 10, 
+            "disk-space-secondary-utilization-level": "healthy", 
+            "overall-efficiency-ratio": "2.3891615009", 
+            "bw-by-block": "10919", 
+            "build": "7", 
+            "num-of-igs": 15, 
+            "rd-bw": "3956", 
+            "xms-id": [
+                "13eeee97b95b4bae95c1818236c4a447", 
+                "xms", 
+                1
+            ], 
+            "max-xms-clusters": 8, 
+            "sw-version": "4.2.1-7", 
+            "num-of-systems": 3, 
+            "recs-in-event-log": 28347, 
+            "num-of-user-accounts": 31, 
+            "disk-space-utilization-level": "healthy", 
+            "default-user-inactivity-timeout": 0, 
+            "restapi-protocol-version": "2.1", 
+            "wr-iops": "662", 
+            "thin-provisioning-savings": "13", 
+            "memory-utilization-level": "healthy", 
+            "xms-ip-sn": "255.255.240.0", 
+            "avg-latency": "437", 
+            "ram-usage": "3661424", 
+            "xms-ip": "172.28.77.168", 
+            "max-xms-objects-per-tag": 16384, 
+            "rd-latency": "218", 
+            "days-in-num-event": 364, 
+            "wrong-cn-in-csr": true, 
+            "mgmt-interface": "eth0", 
+            "iops-by-block": "1015", 
+            "bw": "10919", 
+            "ram-total": "8061448", 
+            "mode": "manual", 
+            "ntp-servers": [], 
+            "max-xms-volumes": 8192, 
+            "rd-iops": "353", 
+            "wr-bw": "6963", 
+            "cpu": "20.67"
+        }
+    ], 
+    "params": {
+        "id-property": "xms-id"
+    }, 
+    "links": [
+        {
+            "href": "https://172.28.77.168/api/json/v2/types/xms/", 
+            "rel": "self"
+        }
+    ]
+}

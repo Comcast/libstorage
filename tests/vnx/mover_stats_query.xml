@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ResponsePacket xmlns="http://www.emc.com/schemas/celerra/xml_api">
+    <Response>
+        <MoverResourceUsage mover="1">
+            <Sample cpu="0.0" mem="26.990936" time="1520353386" stamp="360"/>
+        </MoverResourceUsage>
+    </Response>
+</ResponsePacket>
+

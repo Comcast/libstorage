@@ -1,0 +1,14 @@
+    {
+        "num_of_storage_groups": 81,
+        "storageGroupId": [
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+            "g",
+            "h"
+        ],
+        "success": true
+    }

@@ -1,0 +1,34 @@
+{
+    "feDirectorInfo": [
+        {
+            "directorId": "FA-1D",
+            "firstAvailableDate": 1519341000000,
+            "lastAvailableDate": 1520637000000
+        },
+        {
+            "directorId": "FA-2D",
+            "firstAvailableDate": 1519341000000,
+            "lastAvailableDate": 1520637000000
+        },
+        {
+            "directorId": "FA-3D",
+            "firstAvailableDate": 1519341000000,
+            "lastAvailableDate": 1520637000000
+        },
+        {
+            "directorId": "FA-4D",
+            "firstAvailableDate": 1519341000000,
+            "lastAvailableDate": 1520637000000
+        },
+        {
+            "directorId": "FA-5D",
+            "firstAvailableDate": 1519341000000,
+            "lastAvailableDate": 1520637000000
+        },
+        {
+            "directorId": "FA-6D",
+            "firstAvailableDate": 1519341000000,
+            "lastAvailableDate": 1520637000000
+        }
+    ]
+}

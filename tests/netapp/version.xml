@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE netapp SYSTEM 'file:/etc/netapp_gx.dtd'>
+<netapp version='1.110' 
+    xmlns='http://www.netapp.com/filer/admin'>
+    <results status="passed">
+        <build-timestamp>1513868739</build-timestamp>
+        <is-clustered>true</is-clustered>
+        <version>NetApp Release 9.1P11: Thu Dec 21 15:05:39 UTC 2017</version>
+        <version-tuple>
+            <system-version-tuple>
+                <generation>9</generation>
+                <major>1</major>
+                <minor>0</minor>
+            </system-version-tuple>
+        </version-tuple>
+    </results>
+    <results status="passed">
+        <major-version>1</major-version>
+        <minor-version>110</minor-version>
+    </results>
+</netapp>
