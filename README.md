@@ -1,7 +1,7 @@
 # libstorage
 [![Build Status](https://travis-ci.org/Comcast/libstorage.svg?branch=master)](https://travis-ci.org/Comcast/libstorage)
-[![crates.io](https://img.shields.io/crates/v/reqwest.svg)](https://crates.io/crates/libstorage)
-[![Documentation](https://docs.rs/reqwest/badge.svg)](https://docs.rs/libstorage)
+[![crates.io](https://img.shields.io/crates/v/libstorage.svg)](https://crates.io/crates/libstorage)
+[![Documentation](https://docs.rs/libstorage/badge.svg)](https://docs.rs/libstorage)
 Library for all our storage systems
 ----
 
