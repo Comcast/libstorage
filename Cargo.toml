@@ -9,6 +9,11 @@ homepage = "https://github.com/Comcast/libstorage"
 license = "Apache-2.0"
 readme = "README.md"
 
+[workspace]
+members = [
+	"point-derive", "xml-attributes-derive"
+]
+
 [dependencies]
 csv = "~1.0"
 cookie = "~0.11"

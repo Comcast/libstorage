@@ -2,6 +2,11 @@
 name = "xml-attributes-derive"
 version = "0.1.0"
 authors = ["Chris Holcombe <christopher_holcombe@comcast.com>"]
+license = "Apache-2.0"
+description = "Proc macro to help with xml to ts point conversion" 
+documentation = "https://github.com/Comcast/libstorage"
+homepage = "https://github.com/Comcast/libstorage"
+edition = '2018'
 
 [dependencies]
 proc-macro2 = "~0.2"
@@ -10,6 +15,3 @@ quote = "~0.4"
 
 [lib]
 proc-macro = true
-
-[dev-dependencies]
-storage-metrics = {path = "../"}

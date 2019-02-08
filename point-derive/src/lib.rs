@@ -15,8 +15,6 @@
 *
 * SPDX-License-Identifier: Apache-2.0
 */
-
-//#![feature(trace_macros)]
 extern crate proc_macro;
 #[macro_use]
 extern crate quote;
