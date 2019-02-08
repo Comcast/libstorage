@@ -5,7 +5,7 @@
 Library for all our storage systems
 ----
 
-libstorage is a collection of helper functions to make interfacing with storage servers easier.  Under the src/
+libstorage is a collection of helper functions written in RUST to make interfacing with storage servers easier.  Under the src/
 directory there is a module for each storage system the library supports.  
 
 ----
@@ -13,10 +13,11 @@ directory there is a module for each storage system the library supports.
 ## To start using libstorage
 
 libstorage is easy to use in your project.  Just include the dependency in your Cargo.toml and you're ready to roll.
-One thing to note.  The isilon library has been put behind a cargo feature flag because it's so large.
+The isilon library has been put behind a cargo feature flag because it's so large and the feature has to be enabled during the build.
 
 ## Example
 
+The following example shows a sample use of the hitachi module: 
 ```rust
 use libstorage::hitachi::HitachiConfig;
 use reqwest::Client;
