@@ -382,7 +382,7 @@ fn test_node_status() {
 }
 
 // Try to keep these public functions as futures as long as possible to prevent blocking
-pub fn get_cluster_usage<C: hyper::client::Connect>(
+pub fn get_cluster_usage<C: hyper::client::connect::Connect + 'static>(
     rc_config: Rc<configuration::Configuration<C>>,
 ) -> Box<dyn Future<Item = Vec<TsPoint>, Error = StorageError>> {
     let cluster_api = isilon::apis::ClusterApiClient::new(rc_config.clone());
@@ -394,7 +394,7 @@ pub fn get_cluster_usage<C: hyper::client::Connect>(
     )
 }
 
-pub fn get_cluster_performance<C: hyper::client::Connect>(
+pub fn get_cluster_performance<C: hyper::client::connect::Connect + 'static>(
     rc_config: Rc<configuration::Configuration<C>>,
 ) -> Box<dyn Future<Item = Vec<TsPoint>, Error = StorageError>> {
     let stats_api = isilon::apis::StatisticsApiClient::new(rc_config.clone());
@@ -406,7 +406,7 @@ pub fn get_cluster_performance<C: hyper::client::Connect>(
     )
 }
 
-pub fn get_node_status<C: hyper::client::Connect>(
+pub fn get_node_status<C: hyper::client::connect::Connect + 'static>(
     rc_config: Rc<configuration::Configuration<C>>,
 ) -> Box<dyn Future<Item = Vec<TsPoint>, Error = StorageError>> {
     let cluster_api = isilon::apis::ClusterNodesApiClient::new(rc_config.clone());
@@ -418,7 +418,7 @@ pub fn get_node_status<C: hyper::client::Connect>(
     )
 }
 
-pub fn get_cluster_drives<C: hyper::client::Connect>(
+pub fn get_cluster_drives<C: hyper::client::connect::Connect + 'static>(
     rc_config: Rc<configuration::Configuration<C>>,
 ) -> Box<dyn Future<Item = Vec<TsPoint>, Error = StorageError>> {
     let cluster_api = isilon::apis::ClusterApiClient::new(rc_config.clone());
