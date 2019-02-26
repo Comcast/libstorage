@@ -24,10 +24,11 @@ use std::fmt::Debug;
 use std::str;
 
 use crate::ir::{TsPoint, TsValue};
+use log::{debug, trace};
 use reqwest::header::ACCEPT;
 use serde::de::DeserializeOwned;
 use serde::ser::Serialize;
-use serde_json::Value;
+use serde_json::{json, Value};
 
 #[derive(Deserialize, Debug)]
 pub struct VmaxConfig {
@@ -54,18 +55,13 @@ fn get_data<T>(
 where
     T: DeserializeOwned + Debug + IntoPoint,
 {
-    let mut j = client
-        .get(&format!(
-            "https://{}/univmax/restapi/{}",
-            config.endpoint, api_endpoint,
-        ))
-        .basic_auth(config.user.clone(), Some(config.password.clone()))
-        .header(ACCEPT, "application/json")
-        .send()?
-        .error_for_status()?;
-    let deserialized: Result<T, reqwest::Error> = j.json();
-    debug!("deserialized: {:?}", deserialized);
-    Ok(deserialized?.into_point(Some(point_name)))
+    let url = format!(
+        "https://{}/univmax/restapi/{}",
+        config.endpoint, api_endpoint,
+    );
+    let j: T = crate::get(&client, &url, &config.user, Some(&config.password))?;
+
+    Ok(j.into_point(Some(point_name)))
 }
 
 /* Changed the GET to POST and added body parameter to pass additional fields to

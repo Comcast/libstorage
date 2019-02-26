@@ -17,6 +17,7 @@
 */
 
 use std::collections::HashMap;
+use std::fmt::Debug;
 
 use crate::error::MetricsResult;
 use crate::ir::{TsPoint, TsValue};
@@ -24,6 +25,7 @@ use crate::IntoPoint;
 
 use chrono::offset::Utc;
 use chrono::DateTime;
+use log::debug;
 use serde::de::DeserializeOwned;
 use uuid::Uuid;
 
@@ -879,7 +881,7 @@ pub fn get<T>(
     force: bool,
 ) -> MetricsResult<T>
 where
-    T: DeserializeOwned,
+    T: DeserializeOwned+Debug,
 {
     let mut url = format!("https://{}/json-rpc/8.4?method={}", config.endpoint, method);
     if force {
@@ -893,12 +895,8 @@ where
                 .join(""),
         );
     }
-    let j: T = client
-        .get(&url)
-        .basic_auth(config.user.clone(), Some(config.password.clone()))
-        .send()?
-        .error_for_status()?
-        .json()?;
+    let j: T = crate::get(&client, &url, &config.user, Some(&config.password))?;
+
     Ok(j)
 }
 

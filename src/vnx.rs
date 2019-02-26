@@ -27,6 +27,7 @@ use crate::IntoPoint;
 
 use crate::ir::{TsPoint, TsValue};
 use cookie::{Cookie, CookieJar};
+use log::{debug, warn};
 use quick_xml::events::attributes::Attributes;
 use quick_xml::events::Event;
 use quick_xml::Reader;
