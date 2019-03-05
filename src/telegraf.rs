@@ -95,7 +95,7 @@ fn parse_telegraf(output: &str, point_name: Option<&str>) -> MetricsResult<TsPoi
         let (counter_name, counter_value, tags_text) =
             if start_index.is_some() && end_index.is_some() {
                 let counter_name = &line[0..start_index.unwrap()];
-                let counter_value = line[end_index.unwrap() + 1..].trim_left();
+                let counter_value = line[end_index.unwrap() + 1..].trim_start();
                 let tags_text = &line[start_index.unwrap() + 1..end_index.unwrap()];
                 (counter_name, counter_value, Some(tags_text))
             } else {

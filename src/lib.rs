@@ -76,7 +76,7 @@ where
 {
     use serde::de::Error;
     match StringOrInt::deserialize(deserializer)? {
-        StringOrInt::String(s) => s.parse().map_err(|e| D::Error::custom(e)),
+        StringOrInt::String(s) => s.parse().map_err(D::Error::custom),
         StringOrInt::Int(i) => Ok(i),
     }
 }
@@ -87,7 +87,7 @@ where
 {
     use serde::de::Error;
     match StringOrFloat::deserialize(deserializer)? {
-        StringOrFloat::String(s) => s.parse().map_err(|e| D::Error::custom(e)),
+        StringOrFloat::String(s) => s.parse().map_err(D::Error::custom),
         StringOrFloat::Float(i) => Ok(i),
     }
 }
