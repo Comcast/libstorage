@@ -109,31 +109,30 @@ impl err for StorageError {
             StorageError::XmlEmitterError(ref e) => e.description(),
         }
     }
-
-    fn cause(&self) -> Option<&dyn err> {
+    fn source(&self) -> Option<&(dyn err + 'static)> {
         match *self {
-            StorageError::CookieError(ref e) => e.cause(),
-            StorageError::CsvError(ref e) => e.cause(),
+            StorageError::CookieError(ref e) => e.source(),
+            StorageError::CsvError(ref e) => e.source(),
             StorageError::Error(_) => None,
-            StorageError::FromUtf8Error(ref e) => e.cause(),
-            StorageError::HttpError(ref e) => e.cause(),
+            StorageError::FromUtf8Error(ref e) => e.source(),
+            StorageError::HttpError(ref e) => e.source(),
             StorageError::InfluxError(ref _e) => None,
-            StorageError::InvalidHeaderName(ref e) => e.cause(),
-            StorageError::InvalidHeaderValue(ref e) => e.cause(),
-            StorageError::IoError(ref e) => e.cause(),
+            StorageError::InvalidHeaderName(ref e) => e.source(),
+            StorageError::InvalidHeaderValue(ref e) => e.source(),
+            StorageError::IoError(ref e) => e.source(),
             #[cfg(feature = "isilon-library")]
-            StorageError::IsilonError(ref e) => e.cause(),
-            StorageError::JsonError(ref e) => e.cause(),
-            StorageError::NativeTlsError(ref e) => e.cause(),
-            StorageError::ParseBoolError(ref e) => e.cause(),
-            StorageError::ParseError(ref e) => e.cause(),
-            StorageError::ParseFloatError(ref e) => e.cause(),
-            StorageError::ParseIntError(ref e) => e.cause(),
-            StorageError::PostgresError(ref e) => e.cause(),
-            StorageError::ThreadPoolBuildError(ref e) => e.cause(),
-            StorageError::TreeXmlError(ref e) => e.cause(),
-            StorageError::ToStrError(ref e) => e.cause(),
-            StorageError::XmlEmitterError(ref e) => e.cause(),
+            StorageError::IsilonError(ref e) => e.source(),
+            StorageError::JsonError(ref e) => e.source(),
+            StorageError::NativeTlsError(ref e) => e.source(),
+            StorageError::ParseBoolError(ref e) => e.source(),
+            StorageError::ParseError(ref e) => e.source(),
+            StorageError::ParseFloatError(ref e) => e.source(),
+            StorageError::ParseIntError(ref e) => e.source(),
+            StorageError::PostgresError(ref e) => e.source(),
+            StorageError::ThreadPoolBuildError(ref e) => e.source(),
+            StorageError::TreeXmlError(ref e) => e.source(),
+            StorageError::ToStrError(ref e) => e.source(),
+            StorageError::XmlEmitterError(ref e) => e.source(),
         }
     }
 }

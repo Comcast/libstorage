@@ -190,7 +190,7 @@ impl IntoPoint for Mounts {
     fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
         for m in &self.mounts {
-            points.extend(m.into_point(name));
+            points.extend(m.into_point(Some(name.unwrap_or("vnx_mounts"))));
         }
 
         points
