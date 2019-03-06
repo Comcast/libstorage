@@ -2235,12 +2235,18 @@ pub fn filesystem_usage_request(
     Ok(res.into_point(None))
 }
 
+/// A VNX mount is identified by the Data Mover ID and the mount path 
+/// (This is a directory where the file system is mounted. In VNX terminology 
+/// it is called the mount point.) in the root file system of the mover or VDM. 
+/// A mount export is identified by the Data Mover or VDM on which the file 
+/// system is mounted and the mount path. 
 pub fn mount_listing_request(
     client: &Client,
     config: &VnxConfig,
     cookie_jar: &mut CookieJar,
 ) -> MetricsResult<Vec<TsPoint>> {
     let mut output: Vec<u8> = Vec::new();
+    // Create the XML request object to send to the VNX
     {
         let mut writer = EventWriter::new(&mut output);
         begin_query_request(&mut writer)?;
@@ -2248,6 +2254,7 @@ pub fn mount_listing_request(
         end_element(&mut writer, "MountQueryParams")?;
         end_query_request(&mut writer)?;
     }
+    // Request the mount info from the VNX
     let res: Mounts = api_request(&client, &config, output, cookie_jar)?;
     Ok(res.into_point(None))
 }
