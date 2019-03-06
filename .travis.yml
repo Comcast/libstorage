@@ -21,7 +21,7 @@ before_script:
     fi'
 
 script:
-  - cargo check
+  - cargo check --features "isilon-library"
   - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == "$CLIPPY_RUST_VERSION" ]]; then
       cargo clippy -- -D warnings;
     fi'
