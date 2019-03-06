@@ -17,7 +17,6 @@
 *
 * SPDX-License-Identifier: Apache-2.0
 */
-
 use std::collections::HashMap;
 use std::io::Write;
 use std::str::FromStr;
@@ -164,6 +163,118 @@ pub struct DeviceCounter {
     device: String,
     _in: u64,
     out: u64,
+}
+
+#[test]
+fn test_mount_parser() {
+    use std::fs::File;
+    use std::io::Read;
+
+    let data = {
+        let mut s = String::new();
+        let mut f = File::open("tests/vnx/mounts_query.xml").unwrap();
+        f.read_to_string(&mut s).unwrap();
+        s
+    };
+    let res = Mounts::from_xml(&data).unwrap();
+    let points = res.into_point(None);
+    println!("result: {:#?}", points);
+}
+
+#[derive(Clone, Debug)]
+pub struct Mounts {
+    pub mounts: Vec<Mount>,
+}
+
+impl IntoPoint for Mounts {
+    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+        let mut points: Vec<TsPoint> = Vec::new();
+        for m in &self.mounts {
+            points.extend(m.into_point(Some(name.unwrap_or("vnx_mounts"))));
+        }
+
+        points
+    }
+}
+
+#[derive(Clone, Debug, Default, IntoPoint)]
+pub struct Mount {
+    pub disabled: bool,
+    pub file_system: u64,
+    pub path: String,
+    pub mover: u64,
+    pub mover_is_vdm: bool,
+}
+
+impl FromXml for Mounts {
+    fn from_xml(data: &str) -> MetricsResult<Self> {
+        let mut reader = Reader::from_str(data);
+        reader.trim_text(true);
+        let mut buf = Vec::new();
+
+        let mut mounts: Vec<Mount> = Vec::new();
+        loop {
+            match reader.read_event(&mut buf) {
+                Ok(Event::Start(ref e)) => {
+                    if b"Mount" == e.name() {
+                        let mut disabled = false;
+                        let mut file_system: u64 = 0;
+                        let mut path = String::new();
+                        let mut mover: u64 = 0;
+                        let mut mover_is_vdm = false;
+
+                        for a in e.attributes() {
+                            let item = a?;
+                            let val = String::from_utf8_lossy(&item.value);
+                            match item.key {
+                                b"disabled" => {
+                                    disabled = bool::from_str(&val)?;
+                                }
+                                b"fileSystem" => {
+                                    file_system = u64::from_str(&val)?;
+                                }
+                                b"mover" => {
+                                    mover = u64::from_str(&val)?;
+                                }
+                                b"moverIdIsVdm" => {
+                                    mover_is_vdm = bool::from_str(&val)?;
+                                }
+                                b"path" => {
+                                    path = val.to_string();
+                                }
+                                _ => {
+                                    debug!(
+                                        "unknown xml attribute: {} for MoverNetStats",
+                                        String::from_utf8_lossy(item.key)
+                                    );
+                                }
+                            }
+                        }
+                        mounts.push(Mount {
+                            disabled,
+                            file_system,
+                            path,
+                            mover,
+                            mover_is_vdm,
+                        });
+                    }
+                }
+                Ok(Event::End(_e)) => {}
+                Err(e) => {
+                    return Err(StorageError::new(format!(
+                        "invalid xml data  from server at position: {}: {:?}",
+                        reader.buffer_position(),
+                        e
+                    )));
+                }
+                Ok(Event::Eof) => break,
+                _ => (),
+            }
+            buf.clear();
+        }
+
+        Ok(Mounts { mounts })
+    }
 }
 
 #[test]
@@ -2121,6 +2232,30 @@ pub fn filesystem_usage_request(
         end_query_stats_request(&mut writer)?;
     }
     let res: FilesystemUsage = api_request(&client, &config, output, cookie_jar)?;
+    Ok(res.into_point(None))
+}
+
+/// A VNX mount is identified by the Data Mover ID and the mount path 
+/// (This is a directory where the file system is mounted. In VNX terminology 
+/// it is called the mount point.) in the root file system of the mover or VDM. 
+/// A mount export is identified by the Data Mover or VDM on which the file 
+/// system is mounted and the mount path. 
+pub fn mount_listing_request(
+    client: &Client,
+    config: &VnxConfig,
+    cookie_jar: &mut CookieJar,
+) -> MetricsResult<Vec<TsPoint>> {
+    let mut output: Vec<u8> = Vec::new();
+    // Create the XML request object to send to the VNX
+    {
+        let mut writer = EventWriter::new(&mut output);
+        begin_query_request(&mut writer)?;
+        start_element(&mut writer, "MountQueryParams", None, None)?;
+        end_element(&mut writer, "MountQueryParams")?;
+        end_query_request(&mut writer)?;
+    }
+    // Request the mount info from the VNX
+    let res: Mounts = api_request(&client, &config, output, cookie_jar)?;
     Ok(res.into_point(None))
 }
 

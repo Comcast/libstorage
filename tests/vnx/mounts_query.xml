@@ -1,0 +1,14 @@
+<ResponsePacket xmlns="http://www.emc.com/schemas/celerra/xml_api">
+    <Response>
+        <QueryStatus maxSeverity="ok"/>
+        <Mount fileSystem="11434" disabled="false" ntCredential="false" path="/foo-bar" mover="7" moverIdIsVdm="true">
+            <NfsOptions ro="false" virusScan="true" prefetch="true" uncached="false"/>
+            <CifsOptions cifsSyncwrite="false" notify="true" triggerLevel="512" notifyOnAccess="false" notifyOnWrite="false" oplock="true" accessPolicy="NATIVE" lockingPolicy="nolock"/>
+        </Mount>
+        <Mount fileSystem="6372" disabled="false" ntCredential="false" path="/foo-foo-bar" mover="8" moverIdIsVdm="true">
+            <NfsOptions ro="false" virusScan="true" prefetch="true" uncached="false"/>
+            <CifsOptions cifsSyncwrite="false" notify="true" triggerLevel="512" notifyOnAccess="false" notifyOnWrite="false" oplock="true" accessPolicy="NATIVE" lockingPolicy="nolock"/>
+        </Mount>
+    </Response>
+</ResponsePacket>
+
