@@ -1,0 +1,20 @@
+<ResponsePacket xmlns="http://www.emc.com/schemas/celerra/xml_api">
+    <Response>
+        <QueryStatus maxSeverity="ok"/>
+        <FileSystem name="super_fs" type="uxfs" volume="12399" storagePools="44" storages="1" containsSlices="true" internalUse="false" virtualProvisioning="true" dataServicePolicies="Thin=No,Compressed=No,Mirrored=No,Tiering policy=Auto-Tier/Highest Available Tier" fileSystem="8161">
+            <RwFileSystemHosts mover="8" moverIdIsVdm="true"/>
+            <FileSystemAutoExtInfo autoExtEnabled="true" highWaterMark="90" autoExtensionMaxSize="512000"/>
+            <ProductionFileSystemData cwormState="off"/>
+        </FileSystem>
+        <FileSystemCapacityInfo volumeSize="102400" fileSystem="8161">
+            <ResourceUsage spaceTotal="100837" spaceUsed="345" filesTotal="12595198" filesUsed="427"/>
+        </FileSystemCapacityInfo>
+        <FileSystem name="foo_fs" type="uxfs" volume="10" storages="1" containsSlices="true" internalUse="true" virtualProvisioning="false" fileSystem="1">
+            <ProductionFileSystemData cwormState="off"/>
+        </FileSystem>
+        <FileSystemCapacityInfo volumeSize="16" fileSystem="1">
+            <ResourceUsage spaceTotal="15" spaceUsed="15" filesTotal="7870" filesUsed="28"/>
+        </FileSystemCapacityInfo>
+    </Response>
+</ResponsePacket>
+

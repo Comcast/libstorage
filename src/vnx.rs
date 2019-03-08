@@ -165,6 +165,247 @@ pub struct DeviceCounter {
     out: u64,
 }
 
+#[derive(Clone, Debug)]
+pub struct FileSystemCapacities {
+    pub capacity: Vec<FileSystemCapacity>,
+}
+
+#[derive(Clone, Debug, IntoPoint)]
+pub struct FileSystemCapacity {
+    filesystem_id: u64,
+    /// The maximum number of files and/or directories possible on this file
+    /// system.
+    files_total: u64,
+    /// The current number of files and/or directories on this file system.
+    files_used: u64,
+    /// Returns the name (alias) of the file system.
+    /// name is unique among all file systems
+    name: String,
+    /// The total data capacity of the file system.
+    space_total: u64,
+    /// The amount of space currently used by the user data.
+    space_used: u64,
+    /// List of IDs of storages from which this file system was allocated.
+    storages: Vec<u64>,
+    /// The list of IDs of storage pools from which this file system was
+    /// allocated. If the file system was not allocated from storage pools,
+    /// this list is empty.
+    storage_pools: Vec<u64>,
+    /// The ID of the volume object this file system is based on
+    volume: u64,
+    /// The size of the underlying volume. This datum characterizes the
+    /// resources used by this file system in the context of the entire
+    /// Celerra system
+    volume_size: u64,
+}
+
+impl IntoPoint for FileSystemCapacities {
+    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+        let capacity_points: Vec<TsPoint> = self
+            .capacity
+            .iter()
+            .flat_map(|f| f.into_point(name))
+            .collect();
+
+        capacity_points
+    }
+}
+
+impl FromXml for FileSystemCapacities {
+    fn from_xml(data: &str) -> MetricsResult<Self> {
+        let mut reader = Reader::from_str(data);
+        reader.trim_text(true);
+        let mut buf = Vec::new();
+
+        let mut capacity: Vec<FileSystemCapacity> = Vec::new();
+        let mut filesystem_id: u64 = 0;
+
+        loop {
+            match reader.read_event(&mut buf) {
+                Ok(Event::Start(ref e)) => {
+                    if b"FileSystem" == e.name() {
+                        let mut name = String::new();
+                        let mut volume = 0;
+                        let mut storages: Vec<u64> = Vec::new();
+                        let mut storage_pools: Vec<u64> = Vec::new();
+
+                        for a in e.attributes() {
+                            let item = a?;
+                            let val = String::from_utf8_lossy(&item.value);
+                            match item.key {
+                                b"name" => {
+                                    name = val.to_string();
+                                }
+                                b"volume" => {
+                                    volume = u64::from_str(&val)?;
+                                }
+                                b"storagePools" => {
+                                    // TODO: Verify if this is comma or space separated
+                                    // The API docs don't specify
+                                    storage_pools = val
+                                        .split_whitespace()
+                                        .collect::<Vec<&str>>()
+                                        .iter()
+                                        .map(|v| u64::from_str(&v))
+                                        .filter(|num| num.is_ok())
+                                        .map(|num| num.unwrap())
+                                        .collect::<Vec<u64>>();
+                                }
+                                b"storages" => {
+                                    // TODO: Verify if this is comma or space separated
+                                    // The API docs don't specify
+                                    storages = val
+                                        .split_whitespace()
+                                        .collect::<Vec<&str>>()
+                                        .iter()
+                                        .map(|v| u64::from_str(&v))
+                                        .filter(|num| num.is_ok())
+                                        .map(|num| num.unwrap())
+                                        .collect::<Vec<u64>>();
+                                }
+                                b"fileSystem" => {
+                                    filesystem_id = u64::from_str(&val)?;
+                                }
+                                _ => {
+                                    debug!(
+                                        "unknown xml attribute: {} for FileSystem",
+                                        String::from_utf8_lossy(item.key)
+                                    );
+                                }
+                            }
+                        }
+                        capacity.push(FileSystemCapacity {
+                            filesystem_id,
+                            name,
+                            files_total: 0,
+                            files_used: 0,
+                            space_total: 0,
+                            space_used: 0,
+                            storages,
+                            storage_pools,
+                            volume,
+                            volume_size: 0,
+                        });
+                    } else if b"FileSystemCapacityInfo" == e.name() {
+                        let mut volume_size = 0;
+                        for a in e.attributes() {
+                            let item = a?;
+                            let val = String::from_utf8_lossy(&item.value);
+                            match item.key {
+                                b"fileSystem" => {
+                                    filesystem_id = u64::from_str(&val)?;
+                                }
+                                b"volumeSize" => {
+                                    volume_size = u64::from_str(&val)?;
+                                }
+                                _ => {
+                                    debug!(
+                                        "unknown xml attribute: {} for FileSystemCapacityInfo",
+                                        String::from_utf8_lossy(item.key)
+                                    );
+                                }
+                            }
+                        }
+                        // Try to locate an existing struct to update
+                        match capacity
+                            .iter()
+                            .position(|c| c.filesystem_id == filesystem_id)
+                        {
+                            Some(pos) => {
+                                // Update
+                                capacity[pos].volume_size = volume_size;
+                            }
+                            None => {
+                                // Nothing to do here?
+                                warn!("Found FileSystemCapacityInfo element without FileSystem");
+                            }
+                        }
+                    } else {
+                        warn!("Unknown empty tag: {}", String::from_utf8_lossy(e.name()));
+                    }
+                }
+                Ok(Event::Empty(ref e)) => {
+                    if b"ResourceUsage" == e.name() {
+                        let mut space_total = 0;
+                        let mut space_used = 0;
+                        let mut files_total = 0;
+                        let mut files_used = 0;
+                        for a in e.attributes() {
+                            let item = a?;
+                            let val = String::from_utf8_lossy(&item.value);
+                            match item.key {
+                                b"filesUsed" => {
+                                    files_used = u64::from_str(&val)?;
+                                }
+                                b"filesTotal" => {
+                                    files_total = u64::from_str(&val)?;
+                                }
+                                b"spaceUsed" => {
+                                    space_used = u64::from_str(&val)?;
+                                }
+                                b"spaceTotal" => {
+                                    space_total = u64::from_str(&val)?;
+                                }
+                                _ => {
+                                    debug!(
+                                        "unknown xml attribute: {} for FileSystemCapacityInfo",
+                                        String::from_utf8_lossy(item.key)
+                                    );
+                                }
+                            }
+                        }
+                        match capacity
+                            .iter()
+                            .position(|c| c.filesystem_id == filesystem_id)
+                        {
+                            Some(pos) => {
+                                // Update the capacity information
+                                capacity[pos].files_total = files_total;
+                                capacity[pos].files_used = files_used;
+                                capacity[pos].space_total = space_total;
+                                capacity[pos].space_used = space_used;
+                            }
+                            None => {
+                                // Nothing to do here?
+                                warn!("Found ResourceUsage element without FileSystemCapacityInfo");
+                            }
+                        }
+                    }
+                }
+                Ok(Event::End(_e)) => {}
+                Err(e) => {
+                    return Err(StorageError::new(format!(
+                        "invalid xml data from server at position: {}: {:?}",
+                        reader.buffer_position(),
+                        e
+                    )));
+                }
+                Ok(Event::Eof) => break,
+                _ => (),
+            }
+            buf.clear();
+        }
+
+        Ok(FileSystemCapacities { capacity })
+    }
+}
+
+#[test]
+fn test_filesystem_capacity_parser() {
+    use std::fs::File;
+    use std::io::Read;
+
+    let data = {
+        let mut s = String::new();
+        let mut f = File::open("tests/vnx/filesystem_capacity_query.xml").unwrap();
+        f.read_to_string(&mut s).unwrap();
+        s
+    };
+    let res = FileSystemCapacities::from_xml(&data).unwrap();
+    let points = res.into_point(Some("vnx_filesystem_capacity"));
+    println!("result: {:#?}", points);
+}
+
 #[test]
 fn test_mount_parser() {
     use std::fs::File;
@@ -2218,6 +2459,28 @@ pub fn disk_info_request(
     Ok(res.into_point(Some("vnx_disk_info")))
 }
 
+pub fn filesystem_capacity_request(
+    client: &Client,
+    config: &VnxConfig,
+    cookie_jar: &mut CookieJar,
+) -> MetricsResult<Vec<TsPoint>> {
+    let mut output: Vec<u8> = Vec::new();
+    {
+        let mut writer = EventWriter::new(&mut output);
+        begin_query_request(&mut writer)?;
+        start_element(&mut writer, "FileSystemQueryParams", None, None)?;
+        let e = XmlEvent::start_element("AspectSelection")
+            .attr("fileSystems", "true")
+            .attr("fileSystemCapacityInfos", "true");
+        writer.write(e)?;
+        end_element(&mut writer, "AspectSelection")?;
+        end_element(&mut writer, "FileSystemQueryParams")?;
+        end_query_request(&mut writer)?;
+    }
+    let res: FileSystemCapacities = api_request(&client, &config, output, cookie_jar)?;
+    Ok(res.into_point(Some("vnx_filesystem_capacity")))
+}
+
 pub fn filesystem_usage_request(
     client: &Client,
     config: &VnxConfig,
@@ -2235,11 +2498,11 @@ pub fn filesystem_usage_request(
     Ok(res.into_point(None))
 }
 
-/// A VNX mount is identified by the Data Mover ID and the mount path 
-/// (This is a directory where the file system is mounted. In VNX terminology 
-/// it is called the mount point.) in the root file system of the mover or VDM. 
-/// A mount export is identified by the Data Mover or VDM on which the file 
-/// system is mounted and the mount path. 
+/// A VNX mount is identified by the Data Mover ID and the mount path
+/// (This is a directory where the file system is mounted. In VNX terminology
+/// it is called the mount point.) in the root file system of the mover or VDM.
+/// A mount export is identified by the Data Mover or VDM on which the file
+/// system is mounted and the mount path.
 pub fn mount_listing_request(
     client: &Client,
     config: &VnxConfig,
