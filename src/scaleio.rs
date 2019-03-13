@@ -23,7 +23,6 @@
 *
 * SPDX-License-Identifier: Apache-2.0
 */
-
 use crate::deserialize_string_or_int;
 use crate::error::{MetricsResult, StorageError};
 use crate::ir::{TsPoint, TsValue};
@@ -1121,12 +1120,11 @@ impl IntoPoint for SdsObject {
         let mut p = TsPoint::new(name.unwrap_or("scaleio_sds"));
         p.add_field(
             "ip_list",
-            TsValue::String(
+            TsValue::Vector(
                 self.ip_list
                     .iter()
-                    .map(|i| format!("{}", i.ip))
-                    .collect::<Vec<String>>()
-                    .join(","),
+                    .map(|i| TsValue::String(format!("{}", i.ip)))
+                    .collect::<Vec<TsValue>>(),
             ),
         );
         p.add_field("on_vm_ware", TsValue::Boolean(self.on_vm_ware));

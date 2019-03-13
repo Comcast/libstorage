@@ -210,14 +210,16 @@ impl IntoPoint for NodeDrivesNodeDrive {
         if let Some(ref model) = self.model {
             point.add_field("model", TsValue::String(model.clone()));
         }
-        /*
-        if let Some(pending_actions) = drive.pending_actions {
+        if let Some(pending_actions) = &self.pending_actions {
             point.add_field(
                 "pending_actions",
-                TsValue::String(",".join(pending_actions)),
+                TsValue::Vector(pending_actions
+                    .iter()
+                    .map(|action| TsValue::String(action.clone()))
+                    .collect::<Vec<TsValue>>(),
+                )
             );
         }
-        */
         if let Some(physical_block_length) = self.physical_block_length {
             point.add_field(
                 "physical_block_length",

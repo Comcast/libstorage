@@ -1,3 +1,7 @@
+//! Inspiration for these structs came from compiler design.  TsPoint
+//! is an intermediate representation that is used to abstract 
+//! time series data points.  Point is similar but represents 
+//! data points that are not time series.
 /**
 * Copyright 2019 Comcast Cable Communications Management, LLC
 *
@@ -21,8 +25,7 @@ use std::collections::HashMap;
 use chrono::{DateTime, Utc};
 use influx_db_client::keys::{Point, Value};
 
-/// An intermediate representation of the data that
-/// isn't as lossy as influx_db_client's Point enum
+/// An intermediate representation of time series data points
 #[derive(Clone, Debug)]
 pub struct TsPoint {
     pub measurement: String,
@@ -67,6 +70,7 @@ pub enum TsValue {
     Short(u16),
     SignedLong(i64),
     String(String),
+    Vector(Vec<TsValue>),
 }
 
 pub fn point_to_ts(points: Vec<Point>) -> Vec<TsPoint> {
