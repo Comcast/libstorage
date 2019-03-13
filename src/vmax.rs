@@ -261,7 +261,7 @@ pub struct Symmetrix {
 
 impl IntoPoint for Symmetrix {
     fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut p = TsPoint::new(name.unwrap_or("unknown"));
+        let mut p = TsPoint::new(name.unwrap_or("vmax_symmetrix"), true);
         p.add_tag("symmetrixId", TsValue::String(self.symmetrixId.clone()));
         if let Some(d) = self.device_count {
             p.add_field("device_count", TsValue::SignedLong(d));
@@ -1045,7 +1045,7 @@ pub struct VmaxSystemCapacity {
 
 impl IntoPoint for VmaxSystemCapacity {
     fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut p = TsPoint::new(name.unwrap_or("unknown"));
+        let mut p = TsPoint::new(name.unwrap_or("vmax_system_capacity"), true);
         p.add_tag("symmetrix_id", TsValue::String(self.symmetrix_id.clone()));
         p.add_field("device_count", TsValue::Long(self.device_count));
         p.add_field("ucode", TsValue::String(self.ucode.clone()));

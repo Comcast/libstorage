@@ -1,7 +1,6 @@
-//! Inspiration for these structs came from compiler design.  TsPoint
-//! is an intermediate representation that is used to abstract 
-//! time series data points.  Point is similar but represents 
-//! data points that are not time series.
+//! Inspiration for these structs come from compiler design patterns.  TsPoint
+//! is an intermediate representation that is used to abstract
+//! time series data points. 
 /**
 * Copyright 2019 Comcast Cable Communications Management, LLC
 *
@@ -19,7 +18,6 @@
 *
 * SPDX-License-Identifier: Apache-2.0
 */
-
 use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
@@ -31,26 +29,37 @@ pub struct TsPoint {
     pub measurement: String,
     pub tags: HashMap<String, TsValue>,
     pub fields: HashMap<String, TsValue>,
+    /// This field is generally used for indexing
     pub timestamp: Option<DateTime<Utc>>,
+    /// Optionally specify a field that should be used for indexing values.
+    /// If not specified then the timestamp field will be used.
+    pub index_field: Option<String>,
 }
 
 impl TsPoint {
-    pub fn new(measurement: &str) -> TsPoint {
+    pub fn new(measurement: &str, is_time_series: bool) -> TsPoint {
         TsPoint {
             measurement: String::from(measurement),
             tags: HashMap::new(),
             fields: HashMap::new(),
-            timestamp: Some(Utc::now()),
+            timestamp: if is_time_series { Some(Utc::now())} else {None},
+            index_field: None,
         }
-    }
-    /// Add a tag and its value
-    pub fn add_tag<T: ToString>(&mut self, tag: T, value: TsValue) {
-        self.tags.insert(tag.to_string(), value);
     }
 
     /// Add a field and its value
     pub fn add_field<T: ToString>(&mut self, field: T, value: TsValue) {
         self.fields.insert(field.to_string(), value);
+    }
+
+    /// Add a tag and its value
+    pub fn add_tag<T: ToString>(&mut self, tag: T, value: TsValue) {
+        self.tags.insert(tag.to_string(), value);
+    }
+
+    /// Set the field to be used for indexing if supported
+    pub fn set_index_field<T: ToString>(&mut self, f: T)  {
+        self.index_field = Some(f.to_string());
     }
 
     /// Set the timestamp for this time point
@@ -73,10 +82,11 @@ pub enum TsValue {
     Vector(Vec<TsValue>),
 }
 
+/// Convert InfluxDB Points to TsPoints
 pub fn point_to_ts(points: Vec<Point>) -> Vec<TsPoint> {
     let mut ts_points: Vec<TsPoint> = Vec::with_capacity(points.len());
     for p in points {
-        let mut ts = TsPoint::new(&p.measurement);
+        let mut ts = TsPoint::new(&p.measurement, true);
         for (t_name, t_val) in p.tags {
             let v = match t_val {
                 Value::String(s) => TsValue::String(s),

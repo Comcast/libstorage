@@ -407,7 +407,7 @@ pub struct DeviceStatistics {
 
 impl IntoPoint for DeviceStatistics {
     fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut p = TsPoint::new(name.unwrap_or("scaleio_drive_stat"));
+        let mut p = TsPoint::new(name.unwrap_or("scaleio_drive_stat"), true);
         p.add_field(
             "avg_write_size_in_bytes",
             TsValue::Long(self.avg_write_size_in_bytes),
@@ -786,7 +786,7 @@ pub struct SdcMappingInfo {
 
 impl IntoPoint for SdcMappingInfo {
     fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut p = TsPoint::new(name.unwrap_or("scaleio_volume_sdc"));
+        let mut p = TsPoint::new(name.unwrap_or("scaleio_volume_sdc"), true);
         p.add_tag("sdc_id", TsValue::String(self.sdc_id.clone()));
         p.add_tag("sdc_ip", TsValue::String(self.sdc_ip.clone()));
         p.add_field("limit_iops", TsValue::Long(self.limit_iops));
@@ -818,7 +818,7 @@ pub struct SdsVolume {
 impl IntoPoint for SdsVolume {
     fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
-        let mut p = TsPoint::new(name.unwrap_or("scaleio_volume"));
+        let mut p = TsPoint::new(name.unwrap_or("scaleio_volume"), true);
         p.add_tag("id", TsValue::String(self.id.clone()));
         if let Some(ref name) = self.name {
             p.add_tag("name", TsValue::String(name.clone()));
@@ -1117,7 +1117,7 @@ pub struct SdsObject {
 
 impl IntoPoint for SdsObject {
     fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut p = TsPoint::new(name.unwrap_or("scaleio_sds"));
+        let mut p = TsPoint::new(name.unwrap_or("scaleio_sds"), true);
         p.add_field(
             "ip_list",
             TsValue::Vector(

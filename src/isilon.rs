@@ -50,7 +50,7 @@ pub struct IsilonConfig {
 
 impl IntoPoint for ClusterStatfs {
     fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut point = TsPoint::new(name.unwrap_or("isilon_usage"));
+        let mut point = TsPoint::new(name.unwrap_or("isilon_usage"), true);
         point.add_field("f_bavail", TsValue::Long(self.f_bavail));
         point.add_field("f_bfree", TsValue::Long(self.f_bfree));
         point.add_field("f_blocks", TsValue::Long(self.f_blocks));
@@ -76,7 +76,7 @@ impl IntoPoint for NodeStatus {
         let mut points: Vec<TsPoint> = Vec::new();
         if let Some(ref nodes) = self.nodes {
             for node in nodes {
-                let mut point = TsPoint::new(name.unwrap_or("isilon_node_status"));
+                let mut point = TsPoint::new(name.unwrap_or("isilon_node_status"), true);
                 if let Some(ref capacity_items) = node.capacity {
                     for item in capacity_items {
                         if let Some(ref device_type) = item._type {
@@ -161,7 +161,7 @@ impl IntoPoint for NodeStatus {
 
 impl IntoPoint for NodeDrivesNodeDrive {
     fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut point = TsPoint::new(name.unwrap_or("isilon_drives"));
+        let mut point = TsPoint::new(name.unwrap_or("isilon_drives"), true);
 
         if let Some(ref bay_group) = self.bay_group {
             point.add_field("bay_group", TsValue::String(bay_group.clone()));
@@ -261,7 +261,7 @@ impl IntoPoint for NodeDrivesNodeDrive {
 
 impl IntoPoint for SummaryProtocolStats {
     fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut point = TsPoint::new(name.unwrap_or("isilon_perf"));
+        let mut point = TsPoint::new(name.unwrap_or("isilon_perf"), true);
 
         if let Some(ref stats) = self.protocol_stats {
             if let Some(ref cpu) = stats.cpu {

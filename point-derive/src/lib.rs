@@ -69,18 +69,20 @@ fn find_optional_type(field: syn::Field) -> Option<Ident> {
         Ty::Path(_, p) => {
             if let Some(i) = p.segments.clone().into_iter().next() {
                 match i.parameters {
-                    PathParameters::AngleBracketed(a) => for ty in a.types {
-                        match ty {
-                            Ty::Path(_, p2) => {
-                                if let Some(i2) = p2.segments.clone().into_iter().next() {
-                                    return Some(i2.ident);
-                                } else {
-                                    return None;
+                    PathParameters::AngleBracketed(a) => {
+                        for ty in a.types {
+                            match ty {
+                                Ty::Path(_, p2) => {
+                                    if let Some(i2) = p2.segments.clone().into_iter().next() {
+                                        return Some(i2.ident);
+                                    } else {
+                                        return None;
+                                    }
                                 }
+                                _ => return None,
                             }
-                            _ => return None,
                         }
-                    },
+                    }
                     _ => {
                         return None;
                     }
@@ -103,11 +105,13 @@ fn impl_struct_point_fields(
     for field in fields {
         let ident = &field.ident;
         let ident_type = match field.clone().ty {
-            Ty::Path(_, p) => if let Some(i) = p.segments.clone().into_iter().next() {
-                Some(i.ident)
-            } else {
-                None
-            },
+            Ty::Path(_, p) => {
+                if let Some(i) = p.segments.clone().into_iter().next() {
+                    Some(i.ident)
+                } else {
+                    None
+                }
+            }
             _ => None,
         };
         let bwc = Ident::new("BWC");
@@ -115,10 +119,13 @@ fn impl_struct_point_fields(
         let i_32 = Ident::new("i32");
         let i_64 = Ident::new("i64");
         let f_64 = Ident::new("f64");
+        let u_8 = Ident::new("u8");
+        let u_16 = Ident::new("u16");
         let u_64 = Ident::new("u64");
+        let uuid = Ident::new("Uuid");
         let _bool = Ident::new("bool");
-        let value = Ident::new("Value");
-        let _vec = Ident::new("Vec");
+        let _value = Ident::new("Value");
+        let vec = Ident::new("Vec");
         let optional = Ident::new("Option");
 
         // In the case of optional types like Option<String> we need to
@@ -133,44 +140,99 @@ fn impl_struct_point_fields(
             None
         };
 
+        let vec_angle_type: Option<Ident> = if let Some(i_type) = ident_type.clone() {
+            if i_type == vec {
+                find_optional_type(field.clone())
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
         match ident_type {
             Some(i_type) => {
                 if i_type == bwc {
-                    result.push(quote!{
+                    result.push(quote! {
                         p.add_field(stringify!(#ident), TsValue::Long(self.#ident.average()));
                     });
                 } else if i_type == s {
-                    result.push(quote!{
+                    result.push(quote! {
                         if !self.#ident.is_empty(){
                             p.add_tag(stringify!(#ident), TsValue::String(self.#ident.clone()));
                         }
                     });
                 } else if i_type == i_32 {
-                    result.push(quote!{
+                    result.push(quote! {
                         p.add_field(stringify!(#ident), TsValue::Integer(self.#ident));
                     });
                 } else if i_type == i_64 {
-                    result.push(quote!{
+                    result.push(quote! {
                         p.add_field(stringify!(#ident), TsValue::SignedLong(self.#ident));
                     });
+                } else if i_type == uuid {
+                    result.push(quote! {
+                        p.add_field(stringify!(#ident), TsValue::String(self.#ident.to_string()));
+                    });
+                } else if i_type == u_8 {
+                    result.push(quote! {
+                        p.add_field(stringify!(#ident), TsValue::Byte(self.#ident));
+                    });
+                } else if i_type == u_16 {
+                    result.push(quote! {
+                        p.add_field(stringify!(#ident), TsValue::Short(self.#ident));
+                    });
                 } else if i_type == u_64 {
-                    result.push(quote!{
+                    result.push(quote! {
                         p.add_field(stringify!(#ident), TsValue::Long(self.#ident));
                     });
                 } else if i_type == f_64 {
-                    result.push(quote!{
+                    result.push(quote! {
                         p.add_field(stringify!(#ident), TsValue::Float(self.#ident));
                     });
                 } else if i_type == _bool {
-                    result.push(quote!{
+                    result.push(quote! {
                         p.add_field(stringify!(#ident), TsValue::Boolean(self.#ident));
                     });
+                } else if i_type == vec {
+                    match &vec_angle_type {
+                        Some(ref vec_type) => {
+                            if *vec_type == s {
+                                result.push(quote! {
+                                    p.add_tag(stringify!(#ident), TsValue::Vector(
+                                        self.#ident.iter().map(|i| TsValue::String(i.clone())).collect::<Vec<TsValue>>(),
+                                    ));
+                                });
+                            } else if *vec_type == u_64 {
+                                result.push(quote! {
+                                    p.add_tag(stringify!(#ident), TsValue::Vector(
+                                        self.#ident.iter().map(|i| TsValue::Long(*i)).collect::<Vec<TsValue>>(),
+                                    ));
+                                });
+                            } else if *vec_type == uuid {
+                                result.push(quote! {
+                                    p.add_tag(stringify!(#ident), TsValue::Vector(
+                                        self.#ident.iter().map(|i| TsValue::String(i.to_string())).collect::<Vec<TsValue>>(),
+                                    ));
+                                });
+                            } else {
+                                println!("vec found {} with inner: {:?}", i_type, vec_angle_type);
+                            }
+                        }
+                        None => {
+                            // Unable to identify this type
+                            println!(
+                                "Unable to identify vec type for {:?} {:?} {:?}",
+                                ident, i_type, vec_angle_type
+                            );
+                        }
+                    }
                 } else if i_type == optional {
                     //println!("optional type: {:?} {:?} {:?}", ident, i_type, angle_type,);
                     match angle_type {
                         Some(option_type) => {
                             if option_type == s {
-                                result.push(quote!{
+                                result.push(quote! {
                                     if let Some(ref s) = self.#ident{
                                         if !s.is_empty(){
                                             p.add_tag(stringify!(#ident),
@@ -179,48 +241,57 @@ fn impl_struct_point_fields(
                                     }
                                 });
                             } else if option_type == _bool {
-                                result.push(quote!{
+                                result.push(quote! {
                                     if self.#ident.is_some(){
                                         p.add_field(stringify!(#ident),
                                             TsValue::Boolean(self.#ident.unwrap()));
                                     }
                                 });
                             } else if option_type == bwc {
-                                result.push(quote!{
+                                result.push(quote! {
                                     if self.#ident.is_some(){
                                         let bwc_val = self.#ident.clone().unwrap();
-                                        p.add_field(stringify!(#ident), 
+                                        p.add_field(stringify!(#ident),
                                             TsValue::Long(bwc_val.average()));
                                     }
                                 });
                             } else if option_type == i_32 {
-                                result.push(quote!{
+                                result.push(quote! {
                                     if self.#ident.is_some(){
                                         p.add_field(stringify!(#ident),
                                             TsValue::Integer(self.#ident.unwrap()));
                                     }
                                 });
                             } else if option_type == i_64 {
-                                result.push(quote!{
+                                result.push(quote! {
                                     if self.#ident.is_some(){
                                         p.add_field(stringify!(#ident),
                                             TsValue::SignedLong(self.#ident.unwrap()));
                                     }
                                 });
+                            } else if option_type == uuid {
+                                result.push(quote! {
+                                    if self.#ident.is_some(){
+                                        p.add_field(stringify!(#ident),
+                                            TsValue::String(self.#ident.unwrap().to_string()));
+                                    }
+                                });
                             } else if option_type == u_64 {
-                                result.push(quote!{
+                                result.push(quote! {
                                     if self.#ident.is_some(){
                                         p.add_field(stringify!(#ident),
                                             TsValue::Long(self.#ident.unwrap()));
                                     }
                                 });
                             } else if option_type == f_64 {
-                                result.push(quote!{
+                                result.push(quote! {
                                     if self.#ident.is_some(){
                                         p.add_field(stringify!(#ident),
                                             TsValue::Float(self.#ident.unwrap()));
                                     }
                                 });
+                            } else {
+                                //println!("optional else: {:?}", option_type);
                             }
                         }
                         None => {
@@ -254,7 +325,7 @@ fn impl_struct_point_fields(
         quote! {
             impl IntoPoint for #name {
                 fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-                    let mut p = TsPoint::new(name.unwrap_or("unknown"));
+                    let mut p = TsPoint::new(name.unwrap_or("unknown"), true);
                     #(#result)*
                     vec![p]
                 }
@@ -269,21 +340,21 @@ fn impl_enum_point_fields(name: &syn::Ident, variants: &[syn::Variant]) -> quote
         let ident = &variant.ident;
         match variant.discriminant {
             Some(ref val) => {
-                result.push(quote!{
+                result.push(quote! {
                     &#name::#ident => #val.into_point(&mut buff),
                 });
             }
             None => {
-                result.push(quote!{
+                result.push(quote! {
                     &#name::#ident => #ident.into_point(&mut buff),
                 });
             }
         }
     }
-    quote!{
+    quote! {
         impl IntoPoint for #name {
             fn into_point(&self, name: Option<&str>) -> TsPoint {
-                let mut p = TsPoint::new(point_name.unwrap_or("unknown"));
+                let mut p = TsPoint::new(point_name.unwrap_or("unknown"), true);
                 match self {
                     #(#result)*
                 }

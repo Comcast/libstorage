@@ -548,7 +548,7 @@ pub struct NetworkAllSample {
 
 impl IntoPoint for NetworkAllSample {
     fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut p = TsPoint::new(name.unwrap_or("networking_usage"));
+        let mut p = TsPoint::new(name.unwrap_or("networking_usage"), true);
         p.add_tag("mover", TsValue::String(self.mover.clone()));
         // Turn these counters into point arrays, get the first one and merge
         // the fields with this point
@@ -793,7 +793,7 @@ pub struct CifsAllSample {
 
 impl IntoPoint for CifsAllSample {
     fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut p = TsPoint::new(name.unwrap_or("cifs_usage"));
+        let mut p = TsPoint::new(name.unwrap_or("cifs_usage"), true);
         p.add_tag("mover", TsValue::String(self.mover.clone()));
         // Turn these counters into point arrays, get the first one and merge
         // the fields with this point
@@ -1039,7 +1039,7 @@ pub struct NfsAllSample {
 
 impl IntoPoint for NfsAllSample {
     fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut p = TsPoint::new(name.unwrap_or("nfs_usage"));
+        let mut p = TsPoint::new(name.unwrap_or("nfs_usage"), true);
         p.add_tag("mover", TsValue::String(self.mover.clone()));
         // Turn these counters into point arrays, get the first one and merge
         // the fields with this point
@@ -1294,7 +1294,7 @@ pub struct ResourceUsageSample {
 
 impl IntoPoint for ResourceUsageSample {
     fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut p = TsPoint::new(name.unwrap_or("resource_usage"));
+        let mut p = TsPoint::new(name.unwrap_or("resource_usage"), true);
         p.add_tag("mover", TsValue::String(self.mover.clone()));
         p.add_field("cpu", TsValue::Float(self.cpu));
         p.add_field("memory", TsValue::Float(self.mem));
@@ -1422,7 +1422,7 @@ impl IntoPoint for FilesystemUsage {
         let mut points: Vec<TsPoint> = Vec::new();
 
         for f in &self.filesystems {
-            let mut p = TsPoint::new(name.unwrap_or("filesystem_usage"));
+            let mut p = TsPoint::new(name.unwrap_or("filesystem_usage"), true);
             p.add_tag("filesystem_id", TsValue::String(f.filesystem_id.clone()));
             p.add_field("space_total", TsValue::Long(f.space_total));
             p.add_field("space_used", TsValue::Long(f.space_used));
@@ -1561,7 +1561,7 @@ pub struct Volume {
 
 impl IntoPoint for Volume {
     fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut p = TsPoint::new(name.unwrap_or("volume"));
+        let mut p = TsPoint::new(name.unwrap_or("volume"), true);
         match self.vol_type {
             VolumeType::Disk(ref v) => {
                 p.add_tag(
@@ -1951,7 +1951,7 @@ pub struct StoragePool {
 
 impl IntoPoint for StoragePool {
     fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut p = TsPoint::new(name.unwrap_or("pool"));
+        let mut p = TsPoint::new(name.unwrap_or("pool"), true);
         p.add_tag("pool", TsValue::String(self.pool.clone()));
         /* get serial number from description. Assuming this is last token */
         let mut serial_number = self
