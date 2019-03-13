@@ -321,7 +321,7 @@ impl FromXml for FileSystemCapacities {
                             }
                         }
                     } else {
-                        warn!("Unknown empty tag: {}", String::from_utf8_lossy(e.name()));
+                        debug!("Unknown empty tag: {}", String::from_utf8_lossy(e.name()));
                     }
                 }
                 Ok(Event::Empty(ref e)) => {
@@ -633,7 +633,7 @@ impl FromXml for NetworkAllSample {
                         let d = DeviceCounter::from_xml_attributes(e.attributes())?;
                         devices.push(d);
                     } else {
-                        warn!("Unknown empty tag: {}", String::from_utf8_lossy(e.name()));
+                        debug!("Unknown empty tag: {}", String::from_utf8_lossy(e.name()));
                     }
                 }
                 Ok(Event::End(_e)) => {}
@@ -1362,7 +1362,7 @@ impl FromXml for ResourceUsageSample {
                             }
                         }
                     } else {
-                        warn!("Unknown empty tag: {}", String::from_utf8_lossy(e.name()));
+                        debug!("Unknown empty tag: {}", String::from_utf8_lossy(e.name()));
                     }
                 }
                 Ok(Event::End(_e)) => {}
@@ -1489,7 +1489,7 @@ impl FromXml for FilesystemUsage {
                             files_used,
                         })
                     } else {
-                        warn!("Unknown empty tag: {}", String::from_utf8_lossy(e.name()));
+                        debug!("Unknown empty tag: {}", String::from_utf8_lossy(e.name()));
                     }
                 }
                 Ok(Event::End(_e)) => {}
@@ -1877,7 +1877,7 @@ impl FromXml for Volumes {
                             member_volumes,
                         });
                     } else {
-                        warn!("Unknown empty tag: {}", String::from_utf8_lossy(e.name()));
+                        debug!("Unknown empty tag: {}", String::from_utf8_lossy(e.name()));
                     }
                 }
                 Ok(Event::End(e)) => {
