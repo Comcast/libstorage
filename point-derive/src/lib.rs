@@ -216,7 +216,7 @@ fn impl_struct_point_fields(
                                     ));
                                 });
                             } else {
-                                println!("vec found {} with inner: {:?}", i_type, vec_angle_type);
+                                //println!("vec found {} with inner: {:?}", i_type, vec_angle_type);
                             }
                         }
                         None => {
