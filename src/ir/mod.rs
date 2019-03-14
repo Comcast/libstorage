@@ -58,8 +58,8 @@ impl TsPoint {
     }
 
     /// Set the field to be used for indexing if supported
-    pub fn set_index_field<T: ToString>(&mut self, f: T)  {
-        self.index_field = Some(f.to_string());
+    pub fn set_index_field<T: ToString>(&mut self, index_field: T)  {
+        self.index_field = Some(index_field.to_string());
     }
 
     /// Set the timestamp for this time point
