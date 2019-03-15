@@ -1188,3 +1188,70 @@ impl ChildPoint for PhysicalCapacity {
         p.add_field("total_capacity_gb", TsValue::Float(self.total_capacity_gb));
     }
 }
+
+#[allow(non_snake_case)]
+#[derive(Debug, Deserialize)]
+pub struct Volumes {
+    pub all_volumes: Vec<Volume>,
+    pub count: u64,
+}
+
+impl IntoPoint for Volumes {
+    fn into_point(&self, vol_name: Option<&str> -> Vec<TsPoint> {
+        let mut points: Vec<TsPoint> = Vec::new();
+        for v in &self.all_volumes {
+            points.extend(v.into_point(vol_name));
+        }
+        points
+    }
+}
+
+
+#[allow(non_snake_case)]
+#[derive(Debug, Deserialize, IntoPoint)]
+pub struct Volume {
+    #[serde(rename = "volumeId")]
+    pub volume_id: String,
+    #[serde(rename = "type")]
+    pub volume_type: Option<String>,
+    pub emulation: Option<String>,
+    pub ssid: Option<String>,
+    pub allocated_percent: Option<u64>,
+    pub cap_gb: Option<f64>,
+    pub cap_mb: Option<f64>,
+    pub cap_cyl: Option<u64>,
+    pub status: Option<String>,
+    pub reserved: Option<bool>,
+    pub pinned: Option<bool>,
+    pub physical_name: Option<String>,
+    pub volume_identifier: Option<String>,
+    pub wwn: Option<String>,
+    pub encapsulated: Option<bool>,
+    pub num_of_storage_groups: Option<u64>,
+    pub num_of_fron_end_paths: Option<u64>,
+    #[serde(rename = "storageGroupId")]
+    pub storage_group_id: Option<Vec<String>>,
+    #[serde(rename = "symmetrixPortKey")]
+    pub symmetrix_port_key: Option<Vec<SymmetrixPortKey>>,
+    #[serde(rename = "rdfGroupId")]
+    pub rdf_group_id: Option<Vec<u64>>,
+    pub snapvx_source: Option<bool>,
+    pub snapvx_target: Option<bool>,
+    pub cu_image_base_address: Option<String>,
+    pub has_effective_wwn: Option<bool>,
+    pub effective_wwn: Option<String>,
+    pub encapsulated_wwn: Option<String>,
+}
+
+#[allow(non_snake_case)]
+#[derive(Debug, Deserialize, IntoPoint)]
+pub struct SymmetrixPortKey {
+    #[serde(rename = "directorId")]
+    pub director_id: String,
+    #[serde(rename = "portId")]
+    pub port_id: String,
+}
+
+impl IntoPoint for SymmetrixPortKey {
+    
+}
