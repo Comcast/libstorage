@@ -213,10 +213,10 @@ impl IntoPoint for NodeDrivesNodeDrive {
         if let Some(pending_actions) = &self.pending_actions {
             point.add_field(
                 "pending_actions",
-                TsValue::Vector(pending_actions
+                TsValue::StringVec(pending_actions
                     .iter()
-                    .map(|action| TsValue::String(action.clone()))
-                    .collect::<Vec<TsValue>>(),
+                    .map(|action| action.clone())
+                    .collect::<Vec<String>>(),
                 )
             );
         }

@@ -1120,11 +1120,11 @@ impl IntoPoint for SdsObject {
         let mut p = TsPoint::new(name.unwrap_or("scaleio_sds"), true);
         p.add_field(
             "ip_list",
-            TsValue::Vector(
+            TsValue::StringVec(
                 self.ip_list
                     .iter()
-                    .map(|i| TsValue::String(format!("{}", i.ip)))
-                    .collect::<Vec<TsValue>>(),
+                    .map(|i| format!("{}", i.ip))
+                    .collect::<Vec<String>>(),
             ),
         );
         p.add_field("on_vm_ware", TsValue::Boolean(self.on_vm_ware));

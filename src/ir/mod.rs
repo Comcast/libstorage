@@ -72,14 +72,22 @@ impl TsPoint {
 #[derive(Clone, Debug)]
 pub enum TsValue {
     Boolean(bool),
+    BooleanVec(Vec<bool>),
     Byte(u8),
+    ByteVec(Vec<u8>),
     Integer(i32),
+    IntegerVec(Vec<i32>),
     Float(f64),
+    FloatVec(Vec<f64>),
     Long(u64),
+    LongVec(Vec<u64>),
     Short(u16),
+    ShortVec(Vec<u16>),
+    SignedShortVec(Vec<i16>),
     SignedLong(i64),
+    SignedLongVec(Vec<i64>),
     String(String),
-    Vector(Vec<TsValue>),
+    StringVec(Vec<String>),
 }
 
 /// Convert InfluxDB Points to TsPoints

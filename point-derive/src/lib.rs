@@ -132,7 +132,7 @@ fn impl_struct_point_fields(
             _ => None,
         };
 
-        // In the case of OPTIONAL types like Option<String> we need to
+        // In the case of optional types like Option<String> we need to
         // find the second parameter or we won't know what to do below
         let angle_type: Option<Ident> = if let Some(i_type) = ident_type.clone() {
             if i_type == *OPTIONAL {
@@ -203,20 +203,20 @@ fn impl_struct_point_fields(
                         Some(ref vec_type) => {
                             if *vec_type == *STRING {
                                 result.push(quote! {
-                                    p.add_tag(stringify!(#ident), TsValue::Vector(
-                                        self.#ident.iter().map(|i| TsValue::String(i.clone())).collect::<Vec<TsValue>>(),
+                                    p.add_tag(stringify!(#ident), TsValue::StringVec(
+                                        self.#ident.clone()
                                     ));
                                 });
                             } else if *vec_type == *U64 {
                                 result.push(quote! {
-                                    p.add_tag(stringify!(#ident), TsValue::Vector(
-                                        self.#ident.iter().map(|i| TsValue::Long(*i)).collect::<Vec<TsValue>>(),
+                                    p.add_tag(stringify!(#ident), TsValue::LongVec(
+                                        self.#ident.clone()
                                     ));
                                 });
                             } else if *vec_type == *UUID {
                                 result.push(quote! {
-                                    p.add_tag(stringify!(#ident), TsValue::Vector(
-                                        self.#ident.iter().map(|i| TsValue::String(i.to_string())).collect::<Vec<TsValue>>(),
+                                    p.add_tag(stringify!(#ident), TsValue::StringVec(
+                                        self.#ident.iter().map(|i| i.to_string()).collect::<Vec<String>>(),
                                     ));
                                 });
                             } else {
