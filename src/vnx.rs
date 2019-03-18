@@ -200,11 +200,11 @@ pub struct FileSystemCapacity {
 }
 
 impl IntoPoint for FileSystemCapacities {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let capacity_points: Vec<TsPoint> = self
             .capacity
             .iter()
-            .flat_map(|f| f.into_point(name))
+            .flat_map(|f| f.into_point(name, is_time_series))
             .collect();
 
         capacity_points
@@ -428,10 +428,10 @@ pub struct Mounts {
 }
 
 impl IntoPoint for Mounts {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
         for m in &self.mounts {
-            points.extend(m.into_point(Some(name.unwrap_or("vnx_mounts"))));
+            points.extend(m.into_point(Some(name.unwrap_or("vnx_mounts")), is_time_series));
         }
 
         points
@@ -547,14 +547,14 @@ pub struct NetworkAllSample {
 }
 
 impl IntoPoint for NetworkAllSample {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut p = TsPoint::new(name.unwrap_or("networking_usage"), true);
         p.add_tag("mover", TsValue::String(self.mover.clone()));
         // Turn these counters into point arrays, get the first one and merge
         // the fields with this point
-        p.fields.extend(self.ip.into_point(None)[0].fields.clone());
-        p.fields.extend(self.tcp.into_point(None)[0].fields.clone());
-        p.fields.extend(self.udp.into_point(None)[0].fields.clone());
+        p.fields.extend(self.ip.into_point(None, is_time_series)[0].fields.clone());
+        p.fields.extend(self.tcp.into_point(None, is_time_series)[0].fields.clone());
+        p.fields.extend(self.udp.into_point(None, is_time_series)[0].fields.clone());
         for device in &self.devices {
             p.add_tag("device", TsValue::String(device.device.clone()));
             p.add_field(
@@ -792,27 +792,27 @@ pub struct CifsAllSample {
 }
 
 impl IntoPoint for CifsAllSample {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut p = TsPoint::new(name.unwrap_or("cifs_usage"), true);
         p.add_tag("mover", TsValue::String(self.mover.clone()));
         // Turn these counters into point arrays, get the first one and merge
         // the fields with this point
         p.fields
-            .extend(self.smb_calls.into_point(None)[0].fields.clone());
+            .extend(self.smb_calls.into_point(None, is_time_series)[0].fields.clone());
         p.fields
-            .extend(self.smb_time.into_point(None)[0].fields.clone());
+            .extend(self.smb_time.into_point(None, is_time_series)[0].fields.clone());
         p.fields
-            .extend(self.trans2_calls.into_point(None)[0].fields.clone());
+            .extend(self.trans2_calls.into_point(None, is_time_series)[0].fields.clone());
         p.fields
-            .extend(self.trans2_time.into_point(None)[0].fields.clone());
+            .extend(self.trans2_time.into_point(None, is_time_series)[0].fields.clone());
         p.fields
-            .extend(self.nt_calls.into_point(None)[0].fields.clone());
+            .extend(self.nt_calls.into_point(None, is_time_series)[0].fields.clone());
         p.fields
-            .extend(self.nt_time.into_point(None)[0].fields.clone());
+            .extend(self.nt_time.into_point(None, is_time_series)[0].fields.clone());
         p.fields
-            .extend(self.state.into_point(None)[0].fields.clone());
+            .extend(self.state.into_point(None, is_time_series)[0].fields.clone());
         p.fields
-            .extend(self.totals.into_point(None)[0].fields.clone());
+            .extend(self.totals.into_point(None, is_time_series)[0].fields.clone());
 
         vec![p]
     }
@@ -1038,26 +1038,26 @@ pub struct NfsAllSample {
 }
 
 impl IntoPoint for NfsAllSample {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut p = TsPoint::new(name.unwrap_or("nfs_usage"), true);
         p.add_tag("mover", TsValue::String(self.mover.clone()));
         // Turn these counters into point arrays, get the first one and merge
         // the fields with this point
         p.fields
-            .extend(self.proc_v2_calls.into_point(None)[0].fields.clone());
+            .extend(self.proc_v2_calls.into_point(None, is_time_series)[0].fields.clone());
         p.fields
-            .extend(self.proc_v2_failures.into_point(None)[0].fields.clone());
+            .extend(self.proc_v2_failures.into_point(None, is_time_series)[0].fields.clone());
         p.fields
-            .extend(self.proc_v2_time.into_point(None)[0].fields.clone());
+            .extend(self.proc_v2_time.into_point(None, is_time_series)[0].fields.clone());
         p.fields
-            .extend(self.proc_v3_calls.into_point(None)[0].fields.clone());
+            .extend(self.proc_v3_calls.into_point(None, is_time_series)[0].fields.clone());
         p.fields
-            .extend(self.proc_v3_failures.into_point(None)[0].fields.clone());
+            .extend(self.proc_v3_failures.into_point(None, is_time_series)[0].fields.clone());
         p.fields
-            .extend(self.proc_v3_time.into_point(None)[0].fields.clone());
+            .extend(self.proc_v3_time.into_point(None, is_time_series)[0].fields.clone());
         p.fields
-            .extend(self.cache.into_point(None)[0].fields.clone());
-        p.fields.extend(self.rpc.into_point(None)[0].fields.clone());
+            .extend(self.cache.into_point(None, is_time_series)[0].fields.clone());
+        p.fields.extend(self.rpc.into_point(None, is_time_series)[0].fields.clone());
 
         vec![p]
     }
@@ -1258,10 +1258,10 @@ impl FromXml for DiskInfo {
 }
 
 impl IntoPoint for DiskInfo {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
         for disk in &self.disks {
-            points.extend(disk.into_point(name));
+            points.extend(disk.into_point(name, is_time_series));
         }
 
         points
@@ -1293,8 +1293,8 @@ pub struct ResourceUsageSample {
 }
 
 impl IntoPoint for ResourceUsageSample {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut p = TsPoint::new(name.unwrap_or("resource_usage"), true);
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        let mut p = TsPoint::new(name.unwrap_or("resource_usage"), is_time_series);
         p.add_tag("mover", TsValue::String(self.mover.clone()));
         p.add_field("cpu", TsValue::Float(self.cpu));
         p.add_field("memory", TsValue::Float(self.mem));
@@ -1418,11 +1418,11 @@ pub struct FilesystemUsage {
 }
 
 impl IntoPoint for FilesystemUsage {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
 
         for f in &self.filesystems {
-            let mut p = TsPoint::new(name.unwrap_or("filesystem_usage"), true);
+            let mut p = TsPoint::new(name.unwrap_or("filesystem_usage"), is_time_series);
             p.add_tag("filesystem_id", TsValue::String(f.filesystem_id.clone()));
             p.add_field("space_total", TsValue::Long(f.space_total));
             p.add_field("space_used", TsValue::Long(f.space_used));
@@ -1560,8 +1560,8 @@ pub struct Volume {
 }
 
 impl IntoPoint for Volume {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut p = TsPoint::new(name.unwrap_or("volume"), true);
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        let mut p = TsPoint::new(name.unwrap_or("volume"), is_time_series);
         match self.vol_type {
             VolumeType::Disk(ref v) => {
                 p.add_tag(
@@ -1923,7 +1923,7 @@ fn test_storage_pool_query_parser() {
     };
     let res = StoragePools::from_xml(&data).unwrap();
     println!("result: {:#?}", res);
-    let _ = res.into_point(None);
+    let _ = res.into_point(None, is_time_series);
 }
 
 #[derive(Debug)]
@@ -1950,8 +1950,8 @@ pub struct StoragePool {
 }
 
 impl IntoPoint for StoragePool {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut p = TsPoint::new(name.unwrap_or("pool"), true);
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        let mut p = TsPoint::new(name.unwrap_or("pool"), is_time_series);
         p.add_tag("pool", TsValue::String(self.pool.clone()));
         /* get serial number from description. Assuming this is last token */
         let mut serial_number = self
@@ -1981,10 +1981,10 @@ impl IntoPoint for StoragePool {
 
 // Collecting the new information to include the pool name and pool ID and for VNXs where there are multiple pools
 impl IntoPoint for StoragePools {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
         for pool in &self.storage_pools {
-            points.extend(pool.into_point(name));
+            points.extend(pool.into_point(name, is_time_series));
         }
         points
     }
@@ -2374,7 +2374,7 @@ where
         end_query_stats_request(&mut writer)?;
     }
     let res: T = api_request(&client, &config, output, cookie_jar)?;
-    Ok(res.into_point(None))
+    Ok(res.into_point(None, true))
 }
 
 /*
@@ -2456,7 +2456,7 @@ pub fn disk_info_request(
     }
     debug!("{}", String::from_utf8_lossy(&output));
     let res: DiskInfo = api_request(&client, &config, output, cookie_jar)?;
-    Ok(res.into_point(Some("vnx_disk_info")))
+    Ok(res.into_point(Some("vnx_disk_info"), true))
 }
 
 pub fn filesystem_capacity_request(
@@ -2478,7 +2478,7 @@ pub fn filesystem_capacity_request(
         end_query_request(&mut writer)?;
     }
     let res: FileSystemCapacities = api_request(&client, &config, output, cookie_jar)?;
-    Ok(res.into_point(Some("vnx_filesystem_capacity")))
+    Ok(res.into_point(Some("vnx_filesystem_capacity"), true))
 }
 
 pub fn filesystem_usage_request(
@@ -2495,7 +2495,7 @@ pub fn filesystem_usage_request(
         end_query_stats_request(&mut writer)?;
     }
     let res: FilesystemUsage = api_request(&client, &config, output, cookie_jar)?;
-    Ok(res.into_point(None))
+    Ok(res.into_point(None, true))
 }
 
 /// A VNX mount is identified by the Data Mover ID and the mount path
@@ -2519,7 +2519,7 @@ pub fn mount_listing_request(
     }
     // Request the mount info from the VNX
     let res: Mounts = api_request(&client, &config, output, cookie_jar)?;
-    Ok(res.into_point(None))
+    Ok(res.into_point(None, true))
 }
 
 fn begin_query_request<W: Write>(w: &mut EventWriter<W>) -> MetricsResult<()> {

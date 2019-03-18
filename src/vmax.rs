@@ -61,7 +61,7 @@ where
     );
     let j: T = crate::get(&client, &url, &config.user, Some(&config.password))?;
 
-    Ok(j.into_point(Some(point_name)))
+    Ok(j.into_point(Some(point_name), true))
 }
 
 /* Changed the GET to POST and added body parameter to pass additional fields to
@@ -92,7 +92,7 @@ where
     let json_res: Result<T, serde_json::Error> = serde_json::from_str(&array_output);
     trace!("json result: {:?}", json_res);
     let json_res = json_res?;
-    Ok(json_res.into_point(Some(point_name)))
+    Ok(json_res.into_point(Some(point_name), true))
 }
 
 /* Changed the GET to POST and added body parameter to pass additional field to w/o IntoPoint
@@ -160,10 +160,10 @@ pub struct Srps {
 }
 
 impl IntoPoint for Srps {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
         for s in &self.srp {
-            points.extend(s.into_point(name));
+            points.extend(s.into_point(name, is_time_series));
         }
         points
     }
@@ -200,10 +200,10 @@ pub struct StorageGroups {
 }
 
 impl IntoPoint for StorageGroups {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
         for s in &self.storageGroup {
-            points.extend(s.into_point(name));
+            points.extend(s.into_point(name, is_time_series));
         }
         points
     }
@@ -238,10 +238,10 @@ pub struct SloArray {
 }
 
 impl IntoPoint for SloArray {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
         for s in &self.symmetrix {
-            points.extend(s.into_point(name));
+            points.extend(s.into_point(name, is_time_series));
         }
         points
     }
@@ -260,8 +260,8 @@ pub struct Symmetrix {
 }
 
 impl IntoPoint for Symmetrix {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut p = TsPoint::new(name.unwrap_or("vmax_symmetrix"), true);
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        let mut p = TsPoint::new(name.unwrap_or("vmax_symmetrix"), is_time_series);
         p.add_tag("symmetrixId", TsValue::String(self.symmetrixId.clone()));
         if let Some(d) = self.device_count {
             p.add_field("device_count", TsValue::SignedLong(d));
@@ -319,7 +319,7 @@ fn test_get_slo_arrays() {
 
     let i: SloArray = serde_json::from_str(&buff).unwrap();
     println!("result: {:#?}", i);
-    println!("point: {:#?}", i.into_point(Some("slo_arrays")));
+    println!("point: {:#?}", i.into_point(Some("slo_arrays"), true));
 }
 
 pub fn get_slo_arrays(client: &reqwest::Client, config: &VmaxConfig) -> MetricsResult<Vec<String>> {
@@ -352,7 +352,7 @@ fn test_get_slo_array_srps() {
 
     let i: Srps = serde_json::from_str(&buff).unwrap();
     println!("result: {:#?}", i);
-    println!("point: {:#?}", i.into_point(Some("srp")));
+    println!("point: {:#?}", i.into_point(Some("srp"), true));
 }
 
 pub fn get_slo_array_srps(
@@ -395,7 +395,7 @@ fn test_get_slo_array_storagegroups() {
 
     let i: StorageGroups = serde_json::from_str(&buff).unwrap();
     println!("result: {:#?}", i);
-    println!("point: {:#?}", i.into_point(Some("storage_group")));
+    println!("point: {:#?}", i.into_point(Some("storage_group"), true));
 }
 
 pub fn get_slo_array_storagegroups(
@@ -444,10 +444,10 @@ pub struct FedArray {
 }
 
 impl IntoPoint for FedArray {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
         for s in &self.fe_director_info {
-            points.extend(s.into_point(name));
+            points.extend(s.into_point(name, is_time_series));
         }
         points
     }
@@ -511,16 +511,16 @@ pub struct FedArrayMetrics {
 }
 
 impl IntoPoint for FedArrayMetrics {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        self.result_list.into_point(name)
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        self.result_list.into_point(name, is_time_series)
     }
 }
 
 impl IntoPoint for FedResult {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
         for r in &self.result {
-            let res = r.into_point(name);
+            let res = r.into_point(name, is_time_series);
             points.extend(res);
         }
         points
@@ -627,10 +627,10 @@ pub struct PortGroupArray {
 }
 
 impl IntoPoint for PortGroupArray {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
         for s in &self.port_group_info {
-            points.extend(s.into_point(name));
+            points.extend(s.into_point(name, is_time_series));
         }
         points
     }
@@ -665,16 +665,16 @@ pub struct PortGroupArrayMetrics {
 }
 
 impl IntoPoint for PortGroupArrayMetrics {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        self.result_list.into_point(name)
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        self.result_list.into_point(name, is_time_series)
     }
 }
 
 impl IntoPoint for PgResult {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
         for r in &self.result {
-            let res = r.into_point(name);
+            let res = r.into_point(name, is_time_series);
             points.extend(res);
         }
         points
@@ -762,10 +762,10 @@ pub struct StorageGroupArray {
 }
 
 impl IntoPoint for StorageGroupArray {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
         for s in &self.storage_group_info {
-            points.extend(s.into_point(name));
+            points.extend(s.into_point(name, is_time_series));
         }
         points
     }
@@ -827,16 +827,16 @@ pub struct StorageGroupArrayMetrics {
 }
 
 impl IntoPoint for StorageGroupArrayMetrics {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        self.result_list.into_point(name)
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        self.result_list.into_point(name, is_time_series)
     }
 }
 
 impl IntoPoint for SgResult {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
         for r in &self.result {
-            let res = r.into_point(name);
+            let res = r.into_point(name, is_time_series);
             points.extend(res);
         }
         points
@@ -1044,8 +1044,8 @@ pub struct VmaxSystemCapacity {
 }
 
 impl IntoPoint for VmaxSystemCapacity {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut p = TsPoint::new(name.unwrap_or("vmax_system_capacity"), true);
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        let mut p = TsPoint::new(name.unwrap_or("vmax_system_capacity"), is_time_series);
         p.add_tag("symmetrix_id", TsValue::String(self.symmetrix_id.clone()));
         p.add_field("device_count", TsValue::Long(self.device_count));
         p.add_field("ucode", TsValue::String(self.ucode.clone()));

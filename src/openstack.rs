@@ -157,11 +157,11 @@ pub struct Volumes {
 }
 
 impl IntoPoint for Volumes {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
 
         for v in &self.volumes {
-            points.extend(v.into_point(name));
+            points.extend(v.into_point(name, is_time_series));
         }
 
         points
@@ -282,7 +282,7 @@ pub fn list_volumes(
         &format!("v3/{}/volumes/detail?all_tenants=True", project_id),
     )?;
 
-    Ok(volumes.into_point(Some("openstack_volume")))
+    Ok(volumes.into_point(Some("openstack_volume"), true))
 }
 
 #[test]

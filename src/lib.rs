@@ -49,7 +49,7 @@ pub mod vnx;
 pub mod xtremio;
 
 pub trait IntoPoint {
-    fn into_point(&self, name: Option<&str>) -> Vec<ir::TsPoint>;
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<ir::TsPoint>;
 }
 
 pub trait ChildPoint {

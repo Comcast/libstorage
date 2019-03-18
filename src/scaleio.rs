@@ -406,8 +406,8 @@ pub struct DeviceStatistics {
 }
 
 impl IntoPoint for DeviceStatistics {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut p = TsPoint::new(name.unwrap_or("scaleio_drive_stat"), true);
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        let mut p = TsPoint::new(name.unwrap_or("scaleio_drive_stat"), is_time_series);
         p.add_field(
             "avg_write_size_in_bytes",
             TsValue::Long(self.avg_write_size_in_bytes),
@@ -785,8 +785,8 @@ pub struct SdcMappingInfo {
 }
 
 impl IntoPoint for SdcMappingInfo {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut p = TsPoint::new(name.unwrap_or("scaleio_volume_sdc"), true);
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        let mut p = TsPoint::new(name.unwrap_or("scaleio_volume_sdc"), is_time_series);
         p.add_tag("sdc_id", TsValue::String(self.sdc_id.clone()));
         p.add_tag("sdc_ip", TsValue::String(self.sdc_ip.clone()));
         p.add_field("limit_iops", TsValue::Long(self.limit_iops));
@@ -816,9 +816,9 @@ pub struct SdsVolume {
 }
 
 impl IntoPoint for SdsVolume {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
-        let mut p = TsPoint::new(name.unwrap_or("scaleio_volume"), true);
+        let mut p = TsPoint::new(name.unwrap_or("scaleio_volume"), is_time_series);
         p.add_tag("id", TsValue::String(self.id.clone()));
         if let Some(ref name) = self.name {
             p.add_tag("name", TsValue::String(name.clone()));
@@ -841,7 +841,7 @@ impl IntoPoint for SdsVolume {
         if let Some(ref mapped_sdc_info) = self.mapped_sdc_info {
             for sdc_map in mapped_sdc_info {
                 sdc_map
-                    .into_point(Some("scaleio_volume_sdc"))
+                    .into_point(Some("scaleio_volume_sdc"), is_time_series)
                     .into_iter()
                     .for_each(|mut point| {
                         // Add the volume id so we can look this up later
@@ -854,7 +854,7 @@ impl IntoPoint for SdsVolume {
         if let Some(ref mapped_scsi_list) = self.mapped_scsi_initiator_info_list {
             for scsi_map in mapped_scsi_list {
                 scsi_map
-                    .into_point(Some("scaleio_volume_scsi"))
+                    .into_point(Some("scaleio_volume_scsi"), is_time_series)
                     .into_iter()
                     .for_each(|mut point| {
                         point.add_tag("volume", TsValue::String(self.id.clone()));
@@ -1116,8 +1116,8 @@ pub struct SdsObject {
 }
 
 impl IntoPoint for SdsObject {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut p = TsPoint::new(name.unwrap_or("scaleio_sds"), true);
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        let mut p = TsPoint::new(name.unwrap_or("scaleio_sds"), is_time_series);
         p.add_field(
             "ip_list",
             TsValue::StringVec(
@@ -1445,7 +1445,7 @@ pub fn get_drive_instances(
         get::<Vec<Instance>>(&client, &config, "types/Device/instances").and_then(|instance| {
             let points: Vec<TsPoint> = instance
                 .iter()
-                .flat_map(|instance| instance.into_point(Some("scaleio_drive")))
+                .flat_map(|instance| instance.into_point(Some("scaleio_drive"), true))
                 .map(|mut point| {
                     point.timestamp = Some(t);
                     point
@@ -1497,7 +1497,7 @@ pub fn get_sds_statistics(
     )
     .and_then(|instance| {
         let points: Vec<TsPoint> = instance
-            .into_point(Some("scaleio_sds_stat"))
+            .into_point(Some("scaleio_sds_stat"), true)
             .iter_mut()
             .map(|point| {
                 point.timestamp = Some(t);
@@ -1524,7 +1524,7 @@ pub fn get_drive_statistics(
     )
     .and_then(|instance| {
         let points: Vec<TsPoint> = instance
-            .into_point(Some("scaleio_drive_stat"))
+            .into_point(Some("scaleio_drive_stat"), true)
             .iter_mut()
             .map(|point| {
                 point.timestamp = Some(t);
@@ -1681,7 +1681,7 @@ pub fn get_sdc_objects(
     .and_then(|sdc_objects| {
         let points: Vec<TsPoint> = sdc_objects
             .iter()
-            .flat_map(|sdc| sdc.into_point(Some("scaleio_sdc")))
+            .flat_map(|sdc| sdc.into_point(Some("scaleio_sdc"), true))
             .map(|mut point| {
                 point.timestamp = Some(t);
                 point
@@ -1712,7 +1712,7 @@ pub fn get_sds_objects(
         get::<Vec<SdsObject>>(&client, &config, "types/Sds/instances").and_then(|sds_objects| {
             let points: Vec<TsPoint> = sds_objects
                 .iter()
-                .flat_map(|sds| sds.into_point(Some("scaleio_sds")))
+                .flat_map(|sds| sds.into_point(Some("scaleio_sds"), true))
                 .map(|mut point| {
                     point.timestamp = Some(t);
                     point
@@ -1760,7 +1760,7 @@ pub fn get_volumes(
         get::<Vec<SdsVolume>>(&client, &config, "types/Volume/instances").and_then(|sds_vols| {
             let points: Vec<TsPoint> = sds_vols
                 .iter()
-                .flat_map(|vol| vol.into_point(Some("scaleio_volume")))
+                .flat_map(|vol| vol.into_point(Some("scaleio_volume"), true))
                 .map(|mut point| {
                     point.timestamp = Some(t);
                     point

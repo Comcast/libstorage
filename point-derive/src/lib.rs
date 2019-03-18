@@ -328,8 +328,8 @@ fn impl_struct_point_fields(
     } else {
         quote! {
             impl IntoPoint for #name {
-                fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-                    let mut p = TsPoint::new(name.unwrap_or("unknown"), true);
+                fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+                    let mut p = TsPoint::new(name.unwrap_or("unknown"), is_time_series);
                     #(#result)*
                     vec![p]
                 }
@@ -357,8 +357,8 @@ fn impl_enum_point_fields(name: &syn::Ident, variants: &[syn::Variant]) -> quote
     }
     quote! {
         impl IntoPoint for #name {
-            fn into_point(&self, name: Option<&str>) -> TsPoint {
-                let mut p = TsPoint::new(point_name.unwrap_or("unknown"), true);
+            fn into_point(&self, name: Option<&str>, is_time_series: bool) -> TsPoint {
+                let mut p = TsPoint::new(point_name.unwrap_or("unknown"), is_time_series);
                 match self {
                     #(#result)*
                 }

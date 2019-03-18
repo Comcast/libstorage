@@ -49,8 +49,8 @@ pub struct IsilonConfig {
 }
 
 impl IntoPoint for ClusterStatfs {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut point = TsPoint::new(name.unwrap_or("isilon_usage"), true);
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        let mut point = TsPoint::new(name.unwrap_or("isilon_usage"), is_time_series);
         point.add_field("f_bavail", TsValue::Long(self.f_bavail));
         point.add_field("f_bfree", TsValue::Long(self.f_bfree));
         point.add_field("f_blocks", TsValue::Long(self.f_blocks));
@@ -72,11 +72,11 @@ impl IntoPoint for ClusterStatfs {
 }
 
 impl IntoPoint for NodeStatus {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
         if let Some(ref nodes) = self.nodes {
             for node in nodes {
-                let mut point = TsPoint::new(name.unwrap_or("isilon_node_status"), true);
+                let mut point = TsPoint::new(name.unwrap_or("isilon_node_status"), is_time_series);
                 if let Some(ref capacity_items) = node.capacity {
                     for item in capacity_items {
                         if let Some(ref device_type) = item._type {
@@ -160,8 +160,8 @@ impl IntoPoint for NodeStatus {
 }
 
 impl IntoPoint for NodeDrivesNodeDrive {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut point = TsPoint::new(name.unwrap_or("isilon_drives"), true);
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        let mut point = TsPoint::new(name.unwrap_or("isilon_drives"), is_time_series);
 
         if let Some(ref bay_group) = self.bay_group {
             point.add_field("bay_group", TsValue::String(bay_group.clone()));
@@ -260,8 +260,8 @@ impl IntoPoint for NodeDrivesNodeDrive {
 }
 
 impl IntoPoint for SummaryProtocolStats {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        let mut point = TsPoint::new(name.unwrap_or("isilon_perf"), true);
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        let mut point = TsPoint::new(name.unwrap_or("isilon_perf"), is_time_series);
 
         if let Some(ref stats) = self.protocol_stats {
             if let Some(ref cpu) = stats.cpu {
@@ -381,7 +381,7 @@ fn test_node_status() {
     f.read_to_string(&mut buff).unwrap();
 
     let i: NodeStatus = serde_json::from_str(&buff).unwrap();
-    println!("result: {:#?}", i.into_point(None));
+    println!("result: {:#?}", i.into_point(None, true));
 }
 
 // Try to keep these public functions as futures as long as possible to prevent blocking
@@ -392,7 +392,7 @@ pub fn get_cluster_usage<C: hyper::client::connect::Connect + 'static>(
     Box::new(
         cluster_api
             .get_cluster_statfs()
-            .map(|res| res.into_point(Some("isilon_usage")))
+            .map(|res| res.into_point(Some("isilon_usage"), true))
             .map_err(|err| StorageError::from(err)),
     )
 }
@@ -404,7 +404,7 @@ pub fn get_cluster_performance<C: hyper::client::connect::Connect + 'static>(
     Box::new(
         stats_api
             .get_summary_protocol_stats(true, None, None, 600)
-            .map(|res| res.into_point(Some("isilon_perf")))
+            .map(|res| res.into_point(Some("isilon_perf"), true))
             .map_err(|err| StorageError::from(err)),
     )
 }
@@ -416,7 +416,7 @@ pub fn get_node_status<C: hyper::client::connect::Connect + 'static>(
     Box::new(
         cluster_api
             .get_node_status(None)
-            .map(|res| res.into_point(Some("isilon_node_status")))
+            .map(|res| res.into_point(Some("isilon_node_status"), true))
             .map_err(|err| StorageError::from(err)),
     )
 }
@@ -434,7 +434,7 @@ pub fn get_cluster_drives<C: hyper::client::connect::Connect + 'static>(
                     for n in cluster_extended_info {
                         if let Some(drives) = n.drives {
                             for drive in drives {
-                                points.extend(drive.into_point(Some("isilon_drives")));
+                                points.extend(drive.into_point(Some("isilon_drives"), true));
                             }
                         }
                     }
