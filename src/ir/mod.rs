@@ -1,7 +1,7 @@
 //! Inspiration for these structs come from compiler design patterns.  TsPoint
 //! is an intermediate representation that is used to abstract
 //! time series data points.
-use std::collections::HashMap;
+use crate::error::{MetricsResult, StorageError};
 /**
 * Copyright 2019 Comcast Cable Communications Management, LLC
 *
@@ -21,6 +21,7 @@ use std::collections::HashMap;
 */
 use chrono::{DateTime, Utc};
 use influx_db_client::keys::{Point, Value};
+use std::collections::HashMap;
 
 /// An intermediate representation of time series data points
 #[derive(Clone, Debug)]
@@ -61,9 +62,15 @@ impl TsPoint {
     }
 
     /// Set the field to be used for indexing if supported
-    pub fn set_index_field(&mut self, index_field: &str) {
-        if !self.fields.contains_key(index_field) {
+    pub fn set_index_field(&mut self, index_field: &str) -> MetricsResult<()> {
+        if self.fields.contains_key(index_field) || self.tags.contains_key(index_field) {
             self.index_field = Some(index_field.to_string());
+            Ok(())
+        } else {
+            Err(StorageError::new(format!(
+                "{} index field is not contained within tags or fields",
+                index_field
+            )))
         }
     }
 
