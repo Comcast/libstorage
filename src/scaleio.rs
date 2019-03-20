@@ -304,7 +304,7 @@ fn test_scaleio_drive_stats() {
     f.read_to_string(&mut buff).unwrap();
 
     let i: DeviceStatistics = serde_json::from_str(&buff).unwrap();
-    let points = i.into_point(Some("scaleio_device"));
+    let points = i.into_point(Some("scaleio_device"), true);
     println!("result: {:#?}", i);
     println!("points: {:?}", points);
 }

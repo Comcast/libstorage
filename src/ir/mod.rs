@@ -1,6 +1,7 @@
 //! Inspiration for these structs come from compiler design patterns.  TsPoint
 //! is an intermediate representation that is used to abstract
-//! time series data points. 
+//! time series data points.
+use std::collections::HashMap;
 /**
 * Copyright 2019 Comcast Cable Communications Management, LLC
 *
@@ -18,8 +19,6 @@
 *
 * SPDX-License-Identifier: Apache-2.0
 */
-use std::collections::HashMap;
-
 use chrono::{DateTime, Utc};
 use influx_db_client::keys::{Point, Value};
 
@@ -42,7 +41,11 @@ impl TsPoint {
             measurement: String::from(measurement),
             tags: HashMap::new(),
             fields: HashMap::new(),
-            timestamp: if is_time_series { Some(Utc::now())} else {None},
+            timestamp: if is_time_series {
+                Some(Utc::now())
+            } else {
+                None
+            },
             index_field: None,
         }
     }
@@ -58,8 +61,10 @@ impl TsPoint {
     }
 
     /// Set the field to be used for indexing if supported
-    pub fn set_index_field<T: ToString>(&mut self, index_field: T)  {
-        self.index_field = Some(index_field.to_string());
+    pub fn set_index_field(&mut self, index_field: &str) {
+        if !self.fields.contains_key(index_field) {
+            self.index_field = Some(index_field.to_string());
+        }
     }
 
     /// Set the timestamp for this time point

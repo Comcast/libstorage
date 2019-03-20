@@ -402,7 +402,7 @@ fn test_filesystem_capacity_parser() {
         s
     };
     let res = FileSystemCapacities::from_xml(&data).unwrap();
-    let points = res.into_point(Some("vnx_filesystem_capacity"));
+    let points = res.into_point(Some("vnx_filesystem_capacity"), true);
     println!("result: {:#?}", points);
 }
 
@@ -418,7 +418,7 @@ fn test_mount_parser() {
         s
     };
     let res = Mounts::from_xml(&data).unwrap();
-    let points = res.into_point(None);
+    let points = res.into_point(None, true);
     println!("result: {:#?}", points);
 }
 
@@ -530,7 +530,7 @@ fn test_network_all_parser() {
         s
     };
     let res = NetworkAllSample::from_xml(&data).unwrap();
-    let points = res.into_point(None);
+    let points = res.into_point(None, true);
     println!("result: {:#?}", points);
 }
 
@@ -1923,7 +1923,7 @@ fn test_storage_pool_query_parser() {
     };
     let res = StoragePools::from_xml(&data).unwrap();
     println!("result: {:#?}", res);
-    let _ = res.into_point(None, is_time_series);
+    let _ = res.into_point(None, true);
 }
 
 #[derive(Debug)]
