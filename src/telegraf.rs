@@ -79,7 +79,7 @@ fn test_telegraf_parsing() {
 fn parse_telegraf(output: &str, point_name: Option<&str>) -> MetricsResult<TsPoint> {
     // Data model
     // <metric name>{<label name>=<label value>, ...}
-    let mut point = TsPoint::new(point_name.unwrap_or("telegraf"));
+    let mut point = TsPoint::new(point_name.unwrap_or("telegraf"), true);
     for line in output.lines() {
         if line.starts_with('#') {
             continue;

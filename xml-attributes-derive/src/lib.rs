@@ -153,7 +153,7 @@ fn impl_struct_xml_fields(name: &syn::Ident, fields: &syn::Fields) -> quote::Tok
         let ident_name = {
             let i = i.as_ref();
             if i.starts_with("_") {
-                i.trim_left_matches("_")
+                i.trim_start_matches("_")
             } else {
                 i
             }

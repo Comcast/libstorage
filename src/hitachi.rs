@@ -438,7 +438,7 @@ pub fn csv_to_points(
     for result in iter {
         let record = result?;
         let values = into_values(&record, &fields, &headers);
-        let mut p = TsPoint::new(point_name);
+        let mut p = TsPoint::new(point_name, true);
         p.timestamp = t;
         for (name, value) in values {
             match value {

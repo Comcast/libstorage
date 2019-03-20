@@ -285,10 +285,10 @@ pub struct NetappVolumes {
 }
 
 impl IntoPoint for NetappVolumes {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
         for vol in &self.vols {
-            points.extend(vol.into_point(name));
+            points.extend(vol.into_point(name, is_time_series));
         }
         points
     }
@@ -813,7 +813,7 @@ pub fn get_volume_performance(
     let mut points: Vec<TsPoint> = res
         .perf
         .iter()
-        .flat_map(|vol| vol.into_point(Some("netapp_volume_stat")))
+        .flat_map(|vol| vol.into_point(Some("netapp_volume_stat"), true))
         .collect();
     // Set all the timestamps to be identical
     for p in &mut points {
@@ -840,7 +840,7 @@ pub fn get_volume_usage(
     let mut points: Vec<TsPoint> = res
         .vols
         .iter()
-        .flat_map(|vol| vol.into_point(Some("netapp_volume")))
+        .flat_map(|vol| vol.into_point(Some("netapp_volume"), true))
         .collect();
     // Set all the timestamps to be identical
     for p in &mut points {
