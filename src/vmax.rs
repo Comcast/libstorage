@@ -1257,14 +1257,23 @@ pub fn get_all_slo_volumes(
         .error_for_status()?
         .json()?;
 
-    let vol_count = data["count"].as_u64().unwrap();
-    let iterator_id = data["id"].as_str().unwrap();
-    let max_count_per_page = data["max_page_size"].as_u64().unwrap();
-    let mut num_iterations = vol_count / max_count_per_page;
+    let vol_count = match data["count"].as_u64() {
+        Some(count) => count,
+        None => 0,
+    };
+    let iterator_id = match data["id"].as_str() {
+        Some(id) => id,
+        None => "",
+    };
+    let max_count_per_page = match data["max_page_size"].as_u64() {
+        Some(count) => count,
+        None => 0,
+    };
 
-    if vol_count == 0 {
+    if vol_count == 0 || max_count_per_page == 0 || iterator_id.is_empty() {
         return Ok(vec![]);
     }
+    let mut num_iterations = vol_count / max_count_per_page;
 
     // grab the list from what was returned before calling the iterator
     let mut all_volume_ids = match data["resultList"]["result"]["volumeId"].as_array() {
