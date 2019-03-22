@@ -17,11 +17,10 @@
 */
 extern crate proc_macro;
 
-//use lazy_static::lazy_static;
 use quote::quote;
 use proc_macro::TokenStream;
 use proc_macro2::{Ident, Span};
-use syn::{parse_macro_input, DeriveInput};//, Ident, PathParameters, Ty};
+use syn::{parse_macro_input, DeriveInput};
 
 
 #[proc_macro_derive(IntoPoint)]
