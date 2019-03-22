@@ -417,7 +417,7 @@ fn test_list_openstack_servers() {
     use std::fs::File;
     use std::io::Read;
 
-    let mut f = File::open("tests/openstack/foo.json").unwrap();
+    let mut f = File::open("tests/openstack/servers.json").unwrap();
     let mut buff = String::new();
     f.read_to_string(&mut buff).unwrap();
 
