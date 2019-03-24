@@ -1,0 +1,78 @@
+{
+    "data": [
+        {
+            "ldevId": 0,
+            "clprId": 0,
+            "emulationType": "OPEN-V-CVS",
+            "byteFormatCapacity": "1.00 G",
+            "blockCapacity": 2097152,
+            "numOfPorts": 2,
+            "ports": [
+                {
+                    "portId": "CL1-A",
+                    "hostGroupNumber": 0,
+                    "hostGroupName": "1A-G00",
+                    "lun": 1
+                },
+                {
+                    "portId": "CL2-A",
+                    "hostGroupNumber": 0,
+                    "hostGroupName": "2A-G00",
+                    "lun": 1
+                }
+            ],
+            "attributes": [
+                "CVS",
+                "HDP"
+            ],
+            "label": "JH-26216_DP",
+            "status": "NML",
+            "mpBladeId": 2,
+            "ssid": "0012",
+            "poolId": 63,
+            "numOfUsedBlock": 86016,
+            "isFullAllocationEnabled": false,
+            "resourceGroupId": 0,
+            "dataReductionStatus": "ENABLED",
+            "dataReductionMode": "compression_deduplication",
+            "isAluaEnabled": false
+        },
+        {
+            "ldevId": 1,
+            "clprId": 0,
+            "emulationType": "OPEN-V-CVS",
+            "byteFormatCapacity": "1.00 G",
+            "blockCapacity": 2097152,
+            "numOfPorts": 2,
+            "ports": [
+                {
+                    "portId": "CL1-A",
+                    "hostGroupNumber": 0,
+                    "hostGroupName": "1A-G00",
+                    "lun": 2
+                },
+                {
+                    "portId": "CL2-A",
+                    "hostGroupNumber": 0,
+                    "hostGroupName": "2A-G00",
+                    "lun": 2
+                }
+            ],
+            "attributes": [
+                "CVS",
+                "HDP"
+            ],
+            "label": "JH-26216_DP",
+            "status": "NML",
+            "mpBladeId": 0,
+            "ssid": "0012",
+            "poolId": 63,
+            "numOfUsedBlock": 0,
+            "isFullAllocationEnabled": false,
+            "resourceGroupId": 0,
+            "dataReductionStatus": "DISABLED",
+            "dataReductionMode": "disabled",
+            "isAluaEnabled": false
+        }
+    ]
+}

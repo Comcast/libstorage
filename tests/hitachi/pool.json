@@ -1,0 +1,71 @@
+{
+    "data": [
+        {
+            "poolId": 5,
+            "poolStatus": "POLN",
+            "usedCapacityRate": 1,
+            "usedPhysicalCapacityRate": 1,
+            "snapshotCount": 0,
+            "poolName": "pool_5",
+            "availableVolumeCapacity": 32042850,
+            "availablePhysicalVolumeCapacity": 20006364,
+            "totalPoolCapacity": 32066496,
+            "totalPhysicalCapacity": 20009724,
+            "numOfLdevs": 11,
+            "firstLdevId": 2304,
+            "warningThreshold": 70,
+            "depletionThreshold": 80,
+            "virtualVolumeCapacityRate": -1,
+            "isMainframe": false,
+            "isShrinking": false,
+            "locatedVolumeCount": 13,
+            "totalLocatedCapacity": 79951368,
+            "blockingMode": "NB",
+            "totalReservedCapacity": 0,
+            "reservedVolumeCount": 0,
+            "poolType": "HDP",
+            "duplicationLdevIds": [
+                65269,
+                65268,
+                65267,
+                65266,
+                65265,
+                65264,
+                65263,
+                65262
+            ],
+            "duplicationNumber": 8,
+            "dataReductionAccelerateCompCapacity": 206783585,
+            "dataReductionCapacity": 205901472,
+            "dataReductionBeforeCapacity": 210117216,
+            "dataReductionAccelerateCompRate": 87,
+            "duplicationRate": 42,
+            "compressionRate": 44,
+            "dataReductionRate": 97,
+            "dataReductionAccelerateCompIncludingSystemData": {
+                "isReductionCapacityAvailable": true,
+                "reductionCapacity": 228372480,
+                "isReductionRateAvailable": true,
+                "reductionRate": 97
+            },
+            "dataReductionIncludingSystemData": {
+                "isReductionCapacityAvailable": true,
+                "reductionCapacity": 186826752,
+                "isReductionRateAvailable": true,
+                "reductionRate": 79
+            },
+            "snapshotUsedCapacity": 0,
+            "suspendSnapshot": true,
+            "capacitiesExcludingSystemData": {
+                "usedVirtualVolumeCapacity": 235253760,
+                "compressedCapacity": 0,
+                "dedupedCapacity": 101035296,
+                "reclaimedCapacity": 129142560,
+                "systemDataCapacity": 43351104,
+                "preUsedCapacity": 234393600,
+                "preCompressedCapacity": 0,
+                "preDedupredCapacity": 105247408
+            }
+        }
+    ]
+}
