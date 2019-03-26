@@ -474,7 +474,7 @@ pub struct FeDirectorMetrics {
     pub miss_reqs: f64,
     pub read_miss_reqs: f64,
     pub write_miss_reqs: f64,
-    pub percent_re4ad_reqs: f64,
+    pub percent_read_reqs: f64,
     pub percent_write_reqs: f64,
     pub percent_hit_reqs: f64,
     pub percent_read_req_hit: f64,
@@ -1188,7 +1188,6 @@ impl ChildPoint for PhysicalCapacity {
     }
 }
 
-#[allow(non_snake_case)]
 #[derive(Debug, Deserialize, IntoPoint)]
 pub struct Volume {
     #[serde(rename = "volumeId")]
@@ -1240,6 +1239,36 @@ fn test_get_vmax_json_volume() {
     println!("point: {:#?}", i.into_point(Some("vmax_slo_volume")));
 }
 
+#[test]
+/// Test retrieving one page of volumes from json
+fn test_get_vmax_json_volumes() {
+    use std::fs::File;
+    use std::io::Read;
+
+    let mut f = File::open("tests/vmax/slo_volumes.json").unwrap();
+    let mut buff = String::new();
+    f.read_to_string(&mut buff).unwrap();
+
+    let data: Value = serde_json::from_str(&buff).unwrap();
+
+    // grab the list from what was returned before calling the iterator
+    let all_volume_ids = match data["resultList"]["result"].as_array() {
+        Some(v) => v
+            .iter()
+            .map(|val| {
+                val.as_object()
+                    .unwrap()
+                    .values()
+                    .map(|v_i| v_i.as_str().unwrap().to_string())
+                    .collect::<String>()
+            })
+            .collect(),
+        None => vec![],
+    };
+
+    println!("Volume IDs: {:?}", all_volume_ids);
+}
+
 /// Returns a list of volume IDs for this array
 // TODO: combine this with the other getters and generalize along with other metrics
 pub fn get_all_slo_volumes(
@@ -1247,15 +1276,15 @@ pub fn get_all_slo_volumes(
     config: &VmaxConfig,
     symmetrixid: &str,
 ) -> MetricsResult<Vec<String>> {
-    let data: Value = client
-        .get(&format!(
+    let data: Value = super::get(
+        client,
+        &format!(
             "https://{}/univmax/restapi/90/sloprovisioning/symmetrix/{}/volume",
             config.endpoint, symmetrixid
-        ))
-        .basic_auth(&config.user, Some(&config.password))
-        .send()?
-        .error_for_status()?
-        .json()?;
+        ),
+        &config.user,
+        Some(&config.password),
+    )?;
 
     let vol_count = match data["count"].as_u64() {
         Some(count) => count,
@@ -1276,11 +1305,17 @@ pub fn get_all_slo_volumes(
     let mut num_iterations = vol_count / max_count_per_page;
 
     // grab the list from what was returned before calling the iterator
-    let mut all_volume_ids = match data["resultList"]["result"]["volumeId"].as_array() {
+    let mut all_volume_ids = match data["resultList"]["result"].as_array() {
         Some(v) => v
             .iter()
-            .map(|val| val.as_str().unwrap().to_string())
-            .collect::<Vec<String>>(),
+            .map(|val| {
+                val.as_object()
+                    .unwrap()
+                    .values()
+                    .map(|v_i| v_i.as_str().unwrap().to_string())
+                    .collect::<String>()
+            })
+            .collect(),
         None => vec![],
     };
 
@@ -1303,11 +1338,17 @@ pub fn get_all_slo_volumes(
             .error_for_status()?
             .json()?;
 
-        let v = match data["resultList"]["result"]["volumeId"].as_array() {
+        let v = match data["resultList"]["result"].as_array() {
             Some(v) => v
                 .iter()
-                .map(|val| val.as_str().unwrap().to_string())
-                .collect::<Vec<String>>(),
+                .map(|val| {
+                    val.as_object()
+                        .unwrap()
+                        .values()
+                        .map(|v_i| v_i.as_str().unwrap().to_string())
+                        .collect::<String>()
+                })
+                .collect(),
             None => vec![],
         };
         all_volume_ids.extend(v);
