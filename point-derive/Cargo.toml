@@ -1,6 +1,6 @@
 [package]
 name = "point-derive"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Chris Holcombe <christopher_holcombe@comcast.com>"]
 description = "Proc macro to help with struct to ts point conversion" 
 license = "Apache-2.0"
