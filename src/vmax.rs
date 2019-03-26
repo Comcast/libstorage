@@ -15,6 +15,7 @@
 *
 * SPDX-License-Identifier: Apache-2.0
 */
+
 use crate::error::MetricsResult;
 use crate::ChildPoint;
 use crate::IntoPoint;
@@ -1236,7 +1237,7 @@ fn test_get_vmax_json_volume() {
 
     let i: Volume = serde_json::from_str(&buff).unwrap();
     println!("result: {:#?}", i);
-    println!("point: {:#?}", i.into_point(Some("vmax_slo_volume")));
+    println!("point: {:#?}", i.into_point(Some("vmax_slo_volume"), false));
 }
 
 #[test]
