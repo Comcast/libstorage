@@ -50,6 +50,7 @@ fn get_data<T>(
     config: &VmaxConfig,
     api_endpoint: &str,
     point_name: &str,
+    is_time_series: bool,
 ) -> MetricsResult<Vec<TsPoint>>
 where
     T: DeserializeOwned + Debug + IntoPoint,
@@ -60,7 +61,7 @@ where
     );
     let j: T = crate::get(&client, &url, &config.user, Some(&config.password))?;
 
-    Ok(j.into_point(Some(point_name), true))
+    Ok(j.into_point(Some(point_name), is_time_series))
 }
 
 /* Changed the GET to POST and added body parameter to pass additional fields to
@@ -336,6 +337,7 @@ pub fn get_slo_array(
         config,
         &format!("sloprovisioning/symmetrix/{}", id),
         "symmetrix",
+        true,
     )?;
     Ok(points)
 }
@@ -379,6 +381,7 @@ pub fn get_slo_array_srp(
         config,
         &format!("sloprovisioning/symmetrix/{}/srp/{}", id, srp),
         "slo_array_srp",
+        true,
     )?;
     Ok(points)
 }
@@ -422,6 +425,7 @@ pub fn get_slo_array_storagegroup(
         config,
         &format!("sloprovisioning/symmetrix/{}/storagegroup/{}", id, group),
         "slo_array_storagegroup",
+        false,
     )?;
     Ok(points)
 }
@@ -1014,6 +1018,7 @@ pub fn get_vmax_array_raw(
         config,
         &format!("90/sloprovisioning/symmetrix/{}", symmetrixid),
         "vmax_array_raw",
+        true,
     )?;
     debug!("result: {:#?}", vmax_raw);
     Ok(vmax_raw)
@@ -1236,7 +1241,7 @@ fn test_get_vmax_json_volume() {
 
     let i: Volume = serde_json::from_str(&buff).unwrap();
     println!("result: {:#?}", i);
-    println!("point: {:#?}", i.into_point(Some("vmax_slo_volume")));
+    println!("point: {:#?}", i.into_point(Some("vmax_slo_volume"), false));
 }
 
 #[test]
@@ -1371,6 +1376,7 @@ pub fn get_slo_volume(
             symmetrixid, volume_id
         ),
         "vmax_slo_volume",
+        false,
     )?;
     Ok(volume)
 }
