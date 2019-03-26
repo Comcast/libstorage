@@ -80,12 +80,12 @@ pub struct Volumes {
 }
 
 impl IntoPoint for Volumes {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
         let n = name.unwrap_or("volume");
 
         for v in &self.volumes {
-            points.extend(v.into_point(Some(n)));
+            points.extend(v.into_point(Some(n), is_time_series));
         }
 
         points
@@ -203,12 +203,12 @@ pub struct Ssds {
 }
 
 impl IntoPoint for Ssds {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
         let n = name.unwrap_or("ssd");
 
         for v in &self.ssds {
-            points.extend(v.into_point(Some(n)));
+            points.extend(v.into_point(Some(n), is_time_series));
         }
 
         points
@@ -303,12 +303,12 @@ pub struct Psus {
 }
 
 impl IntoPoint for Psus {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
         let n = name.unwrap_or("psu");
 
         for v in &self.storage_controller_psus {
-            points.extend(v.into_point(Some(n)));
+            points.extend(v.into_point(Some(n), is_time_series));
         }
 
         points
@@ -375,12 +375,12 @@ pub struct Clusters {
 }
 
 impl IntoPoint for Clusters {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
         let n = name.unwrap_or("cluster");
 
         for v in &self.clusters {
-            points.extend(v.into_point(Some(n)));
+            points.extend(v.into_point(Some(n), is_time_series));
         }
 
         points
@@ -769,12 +769,12 @@ pub struct Xmss {
 }
 
 impl IntoPoint for Xmss {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
         let n = name.unwrap_or("xms");
 
         for xms in &self.xmss {
-            points.extend(xms.into_point(Some(n)));
+            points.extend(xms.into_point(Some(n), is_time_series));
         }
 
         points
@@ -886,7 +886,7 @@ where
     );
     let j: T = crate::get(&client, &url, &config.user, Some(&config.password))?;
 
-    Ok(j.into_point(Some(point_name)))
+    Ok(j.into_point(Some(point_name), true))
 }
 
 pub fn get_clusters(

@@ -15,9 +15,7 @@
 *
 * SPDX-License-Identifier: Apache-2.0
 */
-
-use std::fmt::Debug;
-use std::str::FromStr;
+use std::{collections::HashMap, fmt, fmt::Debug, str::FromStr};
 
 use crate::error::{MetricsResult, StorageError};
 use crate::ir::{TsPoint, TsValue};
@@ -27,6 +25,7 @@ use log::debug;
 use reqwest::{header::HeaderName, header::HeaderValue, StatusCode};
 use serde::de::DeserializeOwned;
 use serde_json::json;
+use serde_repr::{Deserialize_repr, Serialize_repr};
 
 #[derive(Clone, Deserialize, Debug)]
 pub struct OpenstackConfig {
@@ -58,6 +57,30 @@ pub struct Domains {
     pub domains: Vec<Domain>,
 }
 
+#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug)]
+#[repr(u8)]
+pub enum PowerState {
+    NoState = 0,
+    Running = 1,
+    Paused = 3,
+    Shutdown = 4,
+    Crashed = 6,
+    Suspended = 7,
+}
+
+impl fmt::Display for PowerState {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            PowerState::NoState => write!(f, "no_state"),
+            PowerState::Running => write!(f, "running"),
+            PowerState::Paused => write!(f, "paused"),
+            PowerState::Shutdown => write!(f, "shutdown"),
+            PowerState::Crashed => write!(f, "crashed"),
+            PowerState::Suspended => write!(f, "suspended"),
+        }
+    }
+}
+
 #[derive(Deserialize, Debug)]
 pub struct Project {
     pub is_domain: Option<bool>,
@@ -73,6 +96,124 @@ pub struct Project {
 #[derive(Deserialize, Debug)]
 pub struct Projects {
     pub projects: Vec<Project>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Server {
+    #[serde(rename = "OS-EXT-AZ:availability_zone")]
+    az_availability_zone: String,
+    #[serde(rename = "OS-EXT-SRV-ATTR:host")]
+    host: String,
+    #[serde(rename = "OS-EXT-SRV-ATTR:hostname")]
+    hostname: Option<String>,
+    #[serde(rename = "OS-EXT-SRV-ATTR:hypervisor_hostname")]
+    hypervisor_hostname: String,
+    #[serde(rename = "OS-EXT-SRV-ATTR:instance_name")]
+    instance_name: String,
+    #[serde(rename = "OS-EXT-STS:power_state")]
+    power_state: PowerState,
+    #[serde(rename = "OS-EXT-STS:task_state")]
+    task_state: Option<String>,
+    #[serde(rename = "OS-EXT-STS:vm_state")]
+    vm_state: String,
+    #[serde(rename = "OS-SRV-USG:launched_at")]
+    launched_at: String,
+    #[serde(rename = "OS-SRV-USG:terminated_at")]
+    terminated_at: Option<String>,
+    created: String,
+    description: Option<String>,
+    #[serde(rename = "hostId")]
+    host_id: String,
+    host_status: Option<String>,
+    id: String,
+    name: String,
+    #[serde(rename = "os-extended-volumes:volumes_attached")]
+    volumes_attached: Vec<HashMap<String, String>>,
+    #[serde(rename = "os-extended-volumes:volumes_attached.id")]
+    volumes_attached_id: Option<String>,
+    progress: u64,
+    status: String,
+    tenant_id: String,
+    updated: String,
+    user_id: String,
+}
+
+impl IntoPoint for Server {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        let mut p = TsPoint::new(name.unwrap_or("openstack_server"), is_time_series);
+        p.add_tag(
+            "az_availability_zone",
+            TsValue::String(self.az_availability_zone.clone()),
+        );
+        p.add_tag("host", TsValue::String(self.host.clone()));
+        if let Some(hostname) = &self.hostname {
+            p.add_tag("hostname", TsValue::String(hostname.clone()));
+        }
+        p.add_tag(
+            "hypervisor_hostname",
+            TsValue::String(self.hypervisor_hostname.clone()),
+        );
+        p.add_tag("instance_name", TsValue::String(self.instance_name.clone()));
+        p.add_tag(
+            "power_state",
+            TsValue::String(format!("{}", self.power_state)),
+        );
+        if let Some(task_state) = &self.task_state {
+            p.add_tag("task_state", TsValue::String(task_state.clone()));
+        }
+        p.add_tag("vm_state", TsValue::String(self.vm_state.clone()));
+        p.add_tag("launched_at", TsValue::String(self.launched_at.clone()));
+        if let Some(terminated_at) = &self.terminated_at {
+            p.add_tag("terminated_at", TsValue::String(terminated_at.clone()));
+        }
+        p.add_tag("created", TsValue::String(self.created.clone()));
+        if let Some(description) = &self.description {
+            p.add_tag("description", TsValue::String(description.clone()));
+        }
+        p.add_tag("host_id", TsValue::String(self.host_id.clone()));
+        if let Some(host_status) = &self.host_status {
+            p.add_tag("host_status", TsValue::String(host_status.clone()));
+        }
+        p.add_tag("id", TsValue::String(self.id.clone()));
+        p.add_tag("name", TsValue::String(self.name.clone()));
+        p.add_tag(
+            "volumes_attached",
+            TsValue::StringVec(
+                self.volumes_attached
+                    .iter()
+                    // Only save the volume_id
+                    .flat_map(|hashmap| hashmap.iter().map(|(_k, v)| v.clone()))
+                    .collect(),
+            ),
+        );
+        if let Some(volumes_attached_id) = &self.volumes_attached_id {
+            p.add_tag(
+                "volumes_attached_id",
+                TsValue::String(volumes_attached_id.clone()),
+            );
+        }
+        p.add_field("progress", TsValue::Long(self.progress));
+        p.add_tag("status", TsValue::String(self.status.clone()));
+        p.add_tag("tenant_id", TsValue::String(self.tenant_id.clone()));
+        p.add_tag("updated", TsValue::String(self.updated.clone()));
+        p.add_tag("user_id", TsValue::String(self.user_id.clone()));
+
+        vec![p]
+    }
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Servers {
+    pub servers: Vec<Server>,
+}
+
+impl IntoPoint for Servers {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        self.servers
+            .iter()
+            .flat_map(|s| s.into_point(name, is_time_series))
+            .collect()
+    }
 }
 
 #[derive(Deserialize, Debug)]
@@ -157,11 +298,11 @@ pub struct Volumes {
 }
 
 impl IntoPoint for Volumes {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
 
         for v in &self.volumes {
-            points.extend(v.into_point(name));
+            points.extend(v.into_point(name, is_time_series));
         }
 
         points
@@ -271,6 +412,29 @@ pub fn list_projects(
     Ok(projects.projects)
 }
 
+#[test]
+fn test_list_openstack_servers() {
+    use std::fs::File;
+    use std::io::Read;
+
+    let mut f = File::open("tests/openstack/servers.json").unwrap();
+    let mut buff = String::new();
+    f.read_to_string(&mut buff).unwrap();
+
+    let i: Servers = serde_json::from_str(&buff).unwrap();
+    println!("result: {:#?}", i);
+    println!("result points: {:#?}", i.into_point(None, false));
+}
+
+pub fn list_servers(
+    client: &reqwest::Client,
+    config: &OpenstackConfig,
+) -> MetricsResult<Vec<TsPoint>> {
+    let servers: Servers = get(&client, &config, "v2.1/servers/detail")?;
+
+    Ok(servers.into_point(Some("openstack_server"), false))
+}
+
 pub fn list_volumes(
     client: &reqwest::Client,
     config: &OpenstackConfig,
@@ -282,7 +446,7 @@ pub fn list_volumes(
         &format!("v3/{}/volumes/detail?all_tenants=True", project_id),
     )?;
 
-    Ok(volumes.into_point(Some("openstack_volume")))
+    Ok(volumes.into_point(Some("openstack_volume"), true))
 }
 
 #[test]

@@ -15,7 +15,6 @@
 *
 * SPDX-License-Identifier: Apache-2.0
 */
-
 use std::collections::HashMap;
 use std::fmt::Debug;
 
@@ -108,8 +107,8 @@ pub struct ClusterCapacityResult {
 }
 
 impl IntoPoint for ClusterCapacityResult {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        self.cluster_capacity.into_point(name)
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        self.cluster_capacity.into_point(name, is_time_series)
     }
 }
 
@@ -165,8 +164,8 @@ pub struct ClusterInfoResult {
 }
 
 impl IntoPoint for ClusterInfoResult {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        self.cluster_info.into_point(name)
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        self.cluster_info.into_point(name, is_time_series)
     }
 }
 
@@ -218,8 +217,8 @@ pub struct ClusterStatsResult {
 }
 
 impl IntoPoint for ClusterStatsResult {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        self.cluster_stats.into_point(name)
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        self.cluster_stats.into_point(name, is_time_series)
     }
 }
 
@@ -657,8 +656,8 @@ pub struct VolumeStatsResult {
 }
 
 impl IntoPoint for VolumeStatsResult {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        self.volume_stats.into_point(name)
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        self.volume_stats.into_point(name, is_time_series)
     }
 }
 
@@ -669,10 +668,10 @@ struct DriveHardwareResult {
 }
 
 impl IntoPoint for DriveHardwareResult {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         self.nodes
             .iter()
-            .flat_map(|n| n.into_point(name))
+            .flat_map(|n| n.into_point(name, is_time_series))
             .collect::<Vec<TsPoint>>()
     }
 }
@@ -689,7 +688,7 @@ fn test_get_drive_hardware() {
     let r: JsonResult<HardwareNodes> = serde_json::from_str(&buff).unwrap();
     println!(
         "JsonResult: {:?}",
-        r.result.into_point(Some("solidfire_drive_hardware"))
+        r.result.into_point(Some("solidfire_drive_hardware"), true)
     );
 }
 
@@ -699,10 +698,10 @@ struct HardwareNodes {
 }
 
 impl IntoPoint for HardwareNodes {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         self.nodes
             .iter()
-            .flat_map(|n| n.into_point(name))
+            .flat_map(|n| n.into_point(name, is_time_series))
             .collect::<Vec<TsPoint>>()
     }
 }
@@ -716,8 +715,8 @@ struct HardwareNode {
 }
 
 impl IntoPoint for HardwareNode {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
-        self.result.into_point(name)
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        self.result.into_point(name, is_time_series)
     }
 }
 
@@ -728,10 +727,10 @@ struct DriveHardware {
 }
 
 impl IntoPoint for DriveHardware {
-    fn into_point(&self, name: Option<&str>) -> Vec<TsPoint> {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         self.drive_hardware
             .iter()
-            .flat_map(|n| n.into_point(name))
+            .flat_map(|n| n.into_point(name, is_time_series))
             .collect::<Vec<TsPoint>>()
     }
 }
@@ -881,7 +880,7 @@ pub fn get<T>(
     force: bool,
 ) -> MetricsResult<T>
 where
-    T: DeserializeOwned+Debug,
+    T: DeserializeOwned + Debug,
 {
     let mut url = format!("https://{}/json-rpc/8.4?method={}", config.endpoint, method);
     if force {
@@ -909,7 +908,7 @@ pub fn get_drive_hardware_info(
     let info = get::<JsonResult<HardwareNodes>>(&client, &config, "ListDriveHardware", None, true)?;
     Ok(info
         .result
-        .into_point(Some("solidfire_drive_hardware"))
+        .into_point(Some("solidfire_drive_hardware"), true)
         .into_iter()
         .map(|mut p| {
             p.timestamp = Some(t);
@@ -933,7 +932,7 @@ pub fn get_cluster_capacity(
     )?;
     Ok(info
         .result
-        .into_point(Some("solidfire_cluster_capacity"))
+        .into_point(Some("solidfire_cluster_capacity"), true)
         .into_iter()
         .map(|mut p| {
             p.timestamp = Some(t);
@@ -957,7 +956,7 @@ pub fn get_cluster_fullness(
     )?;
     Ok(info
         .result
-        .into_point(Some("solidfire_cluster_full_threshold"))
+        .into_point(Some("solidfire_cluster_full_threshold"), true)
         .into_iter()
         .map(|mut p| {
             p.timestamp = Some(t);
@@ -986,7 +985,7 @@ pub fn get_cluster_stats(
         get::<JsonResult<ClusterStatsResult>>(&client, &config, "GetClusterStats", None, false)?;
     Ok(info
         .result
-        .into_point(Some("solidfire_cluster_stats"))
+        .into_point(Some("solidfire_cluster_stats"), true)
         .into_iter()
         .map(|mut p| {
             p.timestamp = Some(t);
@@ -1014,7 +1013,7 @@ pub fn get_volume_stats(
     )?;
     Ok(info
         .result
-        .into_point(Some("solidfire_volume_stats"))
+        .into_point(Some("solidfire_volume_stats"), true)
         .into_iter()
         .map(|mut p| {
             p.timestamp = Some(t);

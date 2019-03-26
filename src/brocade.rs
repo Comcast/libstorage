@@ -558,7 +558,7 @@ pub fn get_fc_fabrics(
     let mut points = result
         .fc_fabrics
         .iter()
-        .flat_map(|fabric| fabric.into_point(Some("brocade_fc_fabric")))
+        .flat_map(|fabric| fabric.into_point(Some("brocade_fc_fabric"), true))
         .collect::<Vec<TsPoint>>();
     for point in &mut points {
         point.timestamp = Some(t)
@@ -640,7 +640,7 @@ pub fn get_fc_ports(
     let mut points = result
         .fc_ports
         .iter()
-        .flat_map(|port| port.into_point(Some("brocade_fc_port")))
+        .flat_map(|port| port.into_point(Some("brocade_fc_port"), true))
         .collect::<Vec<TsPoint>>();
     for point in &mut points {
         point.timestamp = Some(t)
@@ -685,7 +685,7 @@ pub fn get_fc_switches(
     let mut points = result
         .fc_switches
         .iter()
-        .flat_map(|switch| switch.into_point(Some("brocade_fc_switch")))
+        .flat_map(|switch| switch.into_point(Some("brocade_fc_switch"), true))
         .collect::<Vec<TsPoint>>();
     for point in &mut points {
         point.timestamp = Some(t)
