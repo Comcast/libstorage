@@ -1,0 +1,16 @@
+{
+    "data": [
+        {
+            "storageDeviceId": "354351354877",
+            "model": "VSP",
+            "serialNumber": 10000,
+            "svpIp": "192.168.1.1"
+        },
+        {
+            "storageDeviceId": "364673513578",
+            "model": "VSP G1000",
+            "serialNumber": 10000,
+            "svpIp": "192.168.1.1"
+        }
+    ]
+}
