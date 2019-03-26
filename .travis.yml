@@ -6,6 +6,7 @@ addons:
     packages:
       # Dependencies for this package
 
+cache: cargo
 rust:
   - stable
   - beta
@@ -21,7 +22,7 @@ before_script:
     fi'
 
 script:
-  - cargo check --features "isilon-library"
+  - cargo test --verbose --all-features
   - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == "$CLIPPY_RUST_VERSION" ]]; then
       cargo clippy -- -D warnings;
     fi'
