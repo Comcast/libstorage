@@ -72,6 +72,7 @@ fn post_data_to_points<T, U>(
     api_endpoint: &str,
     body: &U,
     point_name: &str,
+    is_time_series: bool,
 ) -> MetricsResult<Vec<TsPoint>>
 where
     T: DeserializeOwned + Debug + IntoPoint,
@@ -92,7 +93,7 @@ where
     let json_res: Result<T, serde_json::Error> = serde_json::from_str(&array_output);
     trace!("json result: {:?}", json_res);
     let json_res = json_res?;
-    Ok(json_res.into_point(Some(point_name), true))
+    Ok(json_res.into_point(Some(point_name), is_time_series))
 }
 
 /* Changed the GET to POST and added body parameter to pass additional field to w/o IntoPoint
@@ -147,7 +148,7 @@ fn get_list(
     match data[key].as_array() {
         Some(v) => Ok(v
             .iter()
-            .map(|val| val.as_str().unwrap().to_string())
+            .map(|val| val.as_str().expect("Failed to retrieve key").to_string())
             .collect::<Vec<String>>()),
         None => Ok(vec![]),
     }
@@ -575,6 +576,7 @@ pub fn get_fed_metrics(
         "performance/FEDirector/metrics/",
         &vmaxmetrics,
         "fedvmaxmetrics",
+        true,
     )?;
     Ok(points)
 }
@@ -716,6 +718,7 @@ pub fn get_portgroup_metrics(
         "performance/PortGroup/metrics/",
         &vmaxpgmetrics,
         "portgroupvmaxmetrics",
+        true,
     )?;
     Ok(points)
 }
@@ -878,6 +881,7 @@ pub fn get_storagegroup_metrics(
         "performance/StorageGroup/metrics/",
         &vmaxsgmetrics,
         "storagegroupvmaxmetrics",
+        true,
     )?;
     Ok(points)
 }
@@ -1315,9 +1319,13 @@ pub fn get_all_slo_volumes(
             .iter()
             .map(|val| {
                 val.as_object()
-                    .unwrap()
+                    .expect("Failed to find volume ID object")
                     .values()
-                    .map(|v_i| v_i.as_str().unwrap().to_string())
+                    .map(|v_i| {
+                        v_i.as_str()
+                            .expect("Failed to retrieve volume ID")
+                            .to_string()
+                    })
                     .collect::<String>()
             })
             .collect(),
@@ -1348,9 +1356,13 @@ pub fn get_all_slo_volumes(
                 .iter()
                 .map(|val| {
                     val.as_object()
-                        .unwrap()
+                        .expect("Failed to find volume ID object")
                         .values()
-                        .map(|v_i| v_i.as_str().unwrap().to_string())
+                        .map(|v_i| {
+                            v_i.as_str()
+                                .expect("Failed to retrieve volume ID")
+                                .to_string()
+                        })
                         .collect::<String>()
                 })
                 .collect(),
