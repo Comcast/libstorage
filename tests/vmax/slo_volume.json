@@ -1,0 +1,42 @@
+{
+    "allocated_percent": 0,
+    "cap_cyl": 68267,
+    "cap_gb": 125.0,
+    "cap_mb": 128001.0,
+    "effective_wwn": "some wwn",
+    "emulation": "FBA",
+    "encapsulated": false,
+    "has_effective_wwn": false,
+    "num_of_front_end_paths": 4,
+    "num_of_storage_groups": 1,
+    "pinned": false,
+    "reserved": false,
+    "snapvx_source": false,
+    "snapvx_target": false,
+    "ssid": "FFFFFFFF",
+    "status": "Ready",
+    "storageGroupId": [
+        "some group id"
+    ],
+    "symmetrixPortKey": [
+        {
+            "directorId": "some val",
+            "portId": "some port"
+        },
+        {
+            "directorId": "some val",
+            "portId": "some port"
+        },
+        {
+            "directorId": "some val",
+            "portId": "some port"
+        },
+        {
+            "directorId": "some  val",
+            "portId": "some port"
+        }
+    ],
+    "type": "TDEV",
+    "volumeId": "12345678",
+    "wwn": "some wwn"
+}

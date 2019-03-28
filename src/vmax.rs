@@ -15,7 +15,6 @@
 *
 * SPDX-License-Identifier: Apache-2.0
 */
-
 use crate::error::MetricsResult;
 use crate::ChildPoint;
 use crate::IntoPoint;
@@ -51,6 +50,7 @@ fn get_data<T>(
     config: &VmaxConfig,
     api_endpoint: &str,
     point_name: &str,
+    is_time_series: bool,
 ) -> MetricsResult<Vec<TsPoint>>
 where
     T: DeserializeOwned + Debug + IntoPoint,
@@ -61,7 +61,7 @@ where
     );
     let j: T = crate::get(&client, &url, &config.user, Some(&config.password))?;
 
-    Ok(j.into_point(Some(point_name), true))
+    Ok(j.into_point(Some(point_name), is_time_series))
 }
 
 /* Changed the GET to POST and added body parameter to pass additional fields to
@@ -72,6 +72,7 @@ fn post_data_to_points<T, U>(
     api_endpoint: &str,
     body: &U,
     point_name: &str,
+    is_time_series: bool,
 ) -> MetricsResult<Vec<TsPoint>>
 where
     T: DeserializeOwned + Debug + IntoPoint,
@@ -92,7 +93,7 @@ where
     let json_res: Result<T, serde_json::Error> = serde_json::from_str(&array_output);
     trace!("json result: {:?}", json_res);
     let json_res = json_res?;
-    Ok(json_res.into_point(Some(point_name), true))
+    Ok(json_res.into_point(Some(point_name), is_time_series))
 }
 
 /* Changed the GET to POST and added body parameter to pass additional field to w/o IntoPoint
@@ -147,7 +148,7 @@ fn get_list(
     match data[key].as_array() {
         Some(v) => Ok(v
             .iter()
-            .map(|val| val.as_str().unwrap().to_string())
+            .map(|val| val.as_str().expect("Failed to retrieve key").to_string())
             .collect::<Vec<String>>()),
         None => Ok(vec![]),
     }
@@ -337,6 +338,7 @@ pub fn get_slo_array(
         config,
         &format!("sloprovisioning/symmetrix/{}", id),
         "symmetrix",
+        true,
     )?;
     Ok(points)
 }
@@ -380,6 +382,7 @@ pub fn get_slo_array_srp(
         config,
         &format!("sloprovisioning/symmetrix/{}/srp/{}", id, srp),
         "slo_array_srp",
+        true,
     )?;
     Ok(points)
 }
@@ -423,6 +426,7 @@ pub fn get_slo_array_storagegroup(
         config,
         &format!("sloprovisioning/symmetrix/{}/storagegroup/{}", id, group),
         "slo_array_storagegroup",
+        false,
     )?;
     Ok(points)
 }
@@ -572,6 +576,7 @@ pub fn get_fed_metrics(
         "performance/FEDirector/metrics/",
         &vmaxmetrics,
         "fedvmaxmetrics",
+        true,
     )?;
     Ok(points)
 }
@@ -713,6 +718,7 @@ pub fn get_portgroup_metrics(
         "performance/PortGroup/metrics/",
         &vmaxpgmetrics,
         "portgroupvmaxmetrics",
+        true,
     )?;
     Ok(points)
 }
@@ -875,6 +881,7 @@ pub fn get_storagegroup_metrics(
         "performance/StorageGroup/metrics/",
         &vmaxsgmetrics,
         "storagegroupvmaxmetrics",
+        true,
     )?;
     Ok(points)
 }
@@ -1015,6 +1022,7 @@ pub fn get_vmax_array_raw(
         config,
         &format!("90/sloprovisioning/symmetrix/{}", symmetrixid),
         "vmax_array_raw",
+        true,
     )?;
     debug!("result: {:#?}", vmax_raw);
     Ok(vmax_raw)
@@ -1187,4 +1195,200 @@ impl ChildPoint for PhysicalCapacity {
         p.add_field("used_capacity_gb", TsValue::Float(self.used_capacity_gb));
         p.add_field("total_capacity_gb", TsValue::Float(self.total_capacity_gb));
     }
+}
+
+#[derive(Debug, Deserialize, IntoPoint)]
+pub struct Volume {
+    #[serde(rename = "volumeId")]
+    pub volume_id: String,
+    #[serde(rename = "type")]
+    pub volume_type: Option<String>,
+    pub emulation: Option<String>,
+    pub ssid: Option<String>,
+    pub allocated_percent: Option<u64>,
+    pub cap_gb: Option<f64>,
+    pub cap_mb: Option<f64>,
+    pub cap_cyl: Option<u64>,
+    pub status: Option<String>,
+    pub reserved: Option<bool>,
+    pub pinned: Option<bool>,
+    pub physical_name: Option<String>,
+    pub volume_identifier: Option<String>,
+    pub wwn: Option<String>,
+    pub encapsulated: Option<bool>,
+    pub num_of_storage_groups: Option<u64>,
+    pub num_of_fron_end_paths: Option<u64>,
+    #[serde(rename = "storageGroupId")]
+    pub storage_group_id: Option<Vec<String>>,
+    // ignoring these two fields as they are not needed,
+    // and don't have to store an array unnecessarily
+    //#[serde(rename = "symmetrixPortKey")]
+    //pub symmetrix_port_key: Option<Vec<SymmetrixPortKey>>,
+    //#[serde(rename = "rdfGroupId")]
+    //pub rdf_group_id: Option<Vec<u64>>,
+    pub snapvx_source: Option<bool>,
+    pub snapvx_target: Option<bool>,
+    pub cu_image_base_address: Option<String>,
+    pub has_effective_wwn: Option<bool>,
+    pub effective_wwn: Option<String>,
+    pub encapsulated_wwn: Option<String>,
+}
+
+#[test]
+fn test_get_vmax_json_volume() {
+    use std::fs::File;
+    use std::io::Read;
+
+    let mut f = File::open("tests/vmax/slo_volume.json").unwrap();
+    let mut buff = String::new();
+    f.read_to_string(&mut buff).unwrap();
+
+    let i: Volume = serde_json::from_str(&buff).unwrap();
+    println!("result: {:#?}", i);
+    println!("point: {:#?}", i.into_point(Some("vmax_slo_volume"), false));
+}
+
+#[test]
+/// Test retrieving one page of volumes from json
+fn test_get_vmax_json_volumes() {
+    use std::fs::File;
+    use std::io::Read;
+
+    let mut f = File::open("tests/vmax/slo_volumes.json").unwrap();
+    let mut buff = String::new();
+    f.read_to_string(&mut buff).unwrap();
+
+    let data: Value = serde_json::from_str(&buff).unwrap();
+
+    // grab the list from what was returned before calling the iterator
+    let all_volume_ids = match data["resultList"]["result"].as_array() {
+        Some(v) => v
+            .iter()
+            .map(|val| {
+                val.as_object()
+                    .unwrap()
+                    .values()
+                    .map(|v_i| v_i.as_str().unwrap().to_string())
+                    .collect::<String>()
+            })
+            .collect(),
+        None => vec![],
+    };
+
+    println!("Volume IDs: {:?}", all_volume_ids);
+}
+
+/// Returns a list of volume IDs for this array
+// TODO: combine this with the other getters and generalize along with other metrics
+pub fn get_all_slo_volumes(
+    client: &reqwest::Client,
+    config: &VmaxConfig,
+    symmetrixid: &str,
+) -> MetricsResult<Vec<String>> {
+    let data: Value = super::get(
+        client,
+        &format!(
+            "https://{}/univmax/restapi/90/sloprovisioning/symmetrix/{}/volume",
+            config.endpoint, symmetrixid
+        ),
+        &config.user,
+        Some(&config.password),
+    )?;
+
+    let vol_count = match data["count"].as_u64() {
+        Some(count) => count,
+        None => 0,
+    };
+    let iterator_id = match data["id"].as_str() {
+        Some(id) => id,
+        None => "",
+    };
+    let max_count_per_page = match data["max_page_size"].as_u64() {
+        Some(count) => count,
+        None => 0,
+    };
+
+    if vol_count == 0 || max_count_per_page == 0 || iterator_id.is_empty() {
+        return Ok(vec![]);
+    }
+    let mut num_iterations = vol_count / max_count_per_page;
+
+    // grab the list from what was returned before calling the iterator
+    let mut all_volume_ids = match data["resultList"]["result"].as_array() {
+        Some(v) => v
+            .iter()
+            .map(|val| {
+                val.as_object()
+                    .expect("Failed to find volume ID object")
+                    .values()
+                    .map(|v_i| {
+                        v_i.as_str()
+                            .expect("Failed to retrieve volume ID")
+                            .to_string()
+                    })
+                    .collect::<String>()
+            })
+            .collect(),
+        None => vec![],
+    };
+
+    while num_iterations != 0 {
+        let from = all_volume_ids.len() + 1;
+        let to = from as u64 + max_count_per_page;
+        let body = json! ({
+             "from" : from,
+             "to"   : to
+        });
+        let data: Value = client
+            .post(&format!(
+                "https://{}/univmax/restapi/common/Iterator/{}/page",
+                config.endpoint, iterator_id
+            ))
+            .basic_auth(&config.user, Some(&config.password))
+            .header(ACCEPT, "application/json")
+            .json(&body)
+            .send()?
+            .error_for_status()?
+            .json()?;
+
+        let v = match data["resultList"]["result"].as_array() {
+            Some(v) => v
+                .iter()
+                .map(|val| {
+                    val.as_object()
+                        .expect("Failed to find volume ID object")
+                        .values()
+                        .map(|v_i| {
+                            v_i.as_str()
+                                .expect("Failed to retrieve volume ID")
+                                .to_string()
+                        })
+                        .collect::<String>()
+                })
+                .collect(),
+            None => vec![],
+        };
+        all_volume_ids.extend(v);
+        num_iterations -= 1;
+    }
+    Ok(all_volume_ids)
+}
+
+pub fn get_slo_volume(
+    client: &reqwest::Client,
+    config: &VmaxConfig,
+    volume_id: &str,
+    symmetrixid: &str,
+) -> MetricsResult<Vec<TsPoint>> {
+    let volume = get_data::<Volume>(
+        client,
+        config,
+        &format!(
+            "90/sloprovisioning/symmetrix/{}/volume/{}",
+            symmetrixid, volume_id
+        ),
+        "vmax_slo_volume",
+        false,
+    )?;
+    Ok(volume)
 }
