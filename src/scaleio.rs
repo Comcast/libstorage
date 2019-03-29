@@ -40,7 +40,7 @@ use nom::IResult;
 use reqwest::header::CONTENT_TYPE;
 use serde::de::DeserializeOwned;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct ScaleioConfig {
     /// The scaleio endpoint to use
     pub endpoint: String,
@@ -72,7 +72,7 @@ fn test_get_system_config() {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct SystemConfig {
     pub system_id: String,
     pub mdm_port: String,
@@ -92,7 +92,7 @@ pub struct SystemConfig {
 
 // BWC=Bandwidth Calculation
 #[serde(rename_all = "camelCase")]
-#[derive(Clone, Deserialize, Debug)]
+#[derive(Clone, Deserialize, Copy, Debug)]
 pub struct BWC {
     pub total_weight_in_kb: u64,
     pub num_occured: u64,
@@ -123,7 +123,7 @@ pub struct CertificateInfo {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Clone, Deserialize, Debug, IntoPoint)]
+#[derive(Clone, Deserialize, Debug, IntoPoint, Copy)]
 pub struct OscillatingCounterWindow {
     pub threshold: Option<i64>,
     pub window_size_in_sec: Option<i64>,
@@ -230,7 +230,7 @@ pub struct FailureCounter {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Clone, Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug, Copy)]
 pub struct Successfulio {
     pub short_window: Option<OscillatingCounterWindow>,
     pub medium_window: Option<OscillatingCounterWindow>,
@@ -243,7 +243,7 @@ pub struct Link {
     pub href: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone, Copy)]
 pub enum AuthenticationError {
     None,
     General,
@@ -273,7 +273,7 @@ impl ToString for AuthenticationError {
     }
 }
 
-#[derive(Clone, Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug, Copy)]
 pub enum DeviceState {
     InitialTest,
     InitialTestDone,
@@ -310,7 +310,7 @@ fn test_scaleio_drive_stats() {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone, Copy)]
 pub struct DeviceStatistics {
     avg_write_size_in_bytes: u64,
     active_moving_in_fwd_rebuild_jobs: u64,
@@ -490,7 +490,7 @@ impl IntoPoint for DeviceStatistics {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone, Copy)]
 pub enum DrlMode {
     Volatile,
     NonVolatile,
@@ -505,7 +505,7 @@ impl ToString for DrlMode {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone, Copy)]
 pub enum IpRole {
     #[serde(rename = "sdsOnly")]
     SdsOnly,
@@ -515,7 +515,7 @@ pub enum IpRole {
     All,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone, Copy)]
 pub enum MembershipState {
     JoinPending,
     Joined,
@@ -532,7 +532,7 @@ impl ToString for MembershipState {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone, Copy)]
 pub enum MaintenanceState {
     NoMaintenance,
     SetMaintenanceInProgress,
@@ -551,7 +551,7 @@ impl ToString for MaintenanceState {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone, Copy)]
 pub enum MdmConnectionState {
     Connected,
     Disconnected,
@@ -566,7 +566,7 @@ impl ToString for MdmConnectionState {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone, Copy)]
 pub enum MemoryAllocationState {
     RmcacheMemoryAllocationStateInvalid,
     AllocationPending,
@@ -589,7 +589,7 @@ impl ToString for MemoryAllocationState {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone, Copy)]
 pub enum PerfProfile {
     Custom,
     Default,
@@ -641,20 +641,20 @@ fn test_selected_stats() {
     println!("result: {:#?}", i);
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct SelectedStatisticsResponse {
     #[serde(rename = "Device")]
     pub device: HashMap<String, HashMap<String, u64>>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct ClusterSelectedStatisticsResponse {
     #[serde(rename = "StoragePool")]
     pub storage_pool: HashMap<String, StoragePoolInfo>,
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Deserialize, Debug, IntoPoint)]
+#[derive(Deserialize, Debug, Clone, Copy, IntoPoint)]
 pub struct StoragePoolInfo {
     pub num_of_devices: u64,
     pub num_of_volumes: u64,
@@ -690,7 +690,7 @@ pub struct Instance {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct MdmCluster {
     pub master: TieBreaker,
     pub slaves: Vec<TieBreaker>,
@@ -704,12 +704,12 @@ pub struct MdmCluster {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Debug, Clone)]
 pub struct SelectedStatisticsRequest {
     pub selected_statistics_list: Vec<StatsRequest>,
 }
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Debug, Clone, Copy)]
 pub enum StatsRequestType {
     System,
     ProtectionDomain,
@@ -723,7 +723,7 @@ pub enum StatsRequestType {
     RfcacheDevice,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Copy)]
 pub enum RebuildIoPriority {
     #[serde(rename = "unlimited")]
     Unlimited,
@@ -735,21 +735,21 @@ pub enum RebuildIoPriority {
     DynamicBwThrottling,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Copy)]
 pub enum BackgroundScannerMode {
     Disabled,
     DeviceOnly,
     DataComparison,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Copy)]
 pub enum CacheWriteHandlingMode {
     Passthrough,
     Cached,
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Debug, Clone)]
 pub struct StatsRequest {
     #[serde(rename = "type")]
     pub req_type: StatsRequestType,
@@ -760,14 +760,14 @@ pub struct StatsRequest {
     pub properties: Vec<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct IpObject {
     pub ip: IpAddr,
     pub role: IpRole,
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 pub struct ScsiInitiatorMappingInfo {
     pub scsi_initiator_id: String,
     pub scsi_initiator_name: String,
@@ -776,7 +776,7 @@ pub struct ScsiInitiatorMappingInfo {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct SdcMappingInfo {
     pub sdc_id: String,
     pub sdc_ip: String,
@@ -797,7 +797,7 @@ impl IntoPoint for SdcMappingInfo {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct SdsVolume {
     pub id: String,
     pub name: Option<String>,
@@ -907,7 +907,7 @@ fn test_sds_statistics() {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, Copy, IntoPoint)]
 pub struct SdsStatistics {
     active_moving_in_bck_rebuild_jobs: u64,
     active_moving_in_fwd_rebuild_jobs: u64,
@@ -1079,7 +1079,7 @@ pub struct SdsStatistics {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct SdsObject {
     pub ip_list: Vec<IpObject>,
     pub on_vm_ware: bool,
@@ -1253,7 +1253,7 @@ fn test_pool_response() {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct PoolInstanceResponse {
     pub rebuild_io_priority_policy: RebuildIoPriority,
     pub rebalance_io_priority_policy: RebuildIoPriority,
@@ -1332,7 +1332,7 @@ fn test_system_response() {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 pub struct System {
     pub system_version_name: String,
     pub capacity_alert_high_threshold_percent: u16,
@@ -1384,7 +1384,7 @@ pub struct TieBreaker {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Clone, Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug, Copy)]
 pub struct Window {
     threshold: u64,
     window_size_in_sec: u64,
@@ -1771,14 +1771,14 @@ pub fn get_volumes(
     Ok(sds_vols)
 }
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Debug, Clone, Copy)]
 pub enum VolumeRequestType {
     ThinProvisioned,
     ThickProvisioned,
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Debug, Clone)]
 pub struct VolumeRequest {
     pub volume_size_in_kb: String,
     pub storage_pool_id: String,

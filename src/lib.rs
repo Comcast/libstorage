@@ -56,14 +56,14 @@ pub trait ChildPoint {
     fn sub_point(&self, p: &mut ir::TsPoint);
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 #[serde(untagged)]
 enum StringOrInt {
     String(String),
     Int(i64),
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 #[serde(untagged)]
 enum StringOrFloat {
     String(String),

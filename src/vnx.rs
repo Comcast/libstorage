@@ -50,6 +50,7 @@ pub trait FromXmlAttributes {
         Self: Sized;
 }
 
+#[derive(Debug, Clone, Copy)]
 pub enum MoverStatsRequest {
     Cifs,
     Network,
@@ -68,10 +69,11 @@ impl ToString for MoverStatsRequest {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct VnxConfig {
     /// The scaleio endpoint to use
     pub endpoint: String,
+    #[serde(alias = "username")]
     pub user: String,
     /// This gets replaced with the token at runtime
     pub password: String,
@@ -115,7 +117,7 @@ pub enum VolumeType {
     Unknown,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Copy)]
 pub enum DiskType {
     Clstd,
     Mixed,
@@ -132,7 +134,7 @@ impl ToString for DiskType {
     }
 }
 
-#[derive(Clone, Debug, Default, FromXmlAttributes, IntoPoint)]
+#[derive(Clone, Debug, Copy, Default, FromXmlAttributes, IntoPoint)]
 pub struct IpCounter {
     pub sent: u64,
     pub received: u64,
@@ -140,7 +142,7 @@ pub struct IpCounter {
     pub deliv: u64,
 }
 
-#[derive(Clone, Debug, Default, FromXmlAttributes, IntoPoint)]
+#[derive(Clone, Debug, Copy, Default, FromXmlAttributes, IntoPoint)]
 pub struct TcpCounter {
     pub sent: u64,
     pub received: u64,
@@ -150,7 +152,7 @@ pub struct TcpCounter {
     pub resets: u64,
 }
 
-#[derive(Clone, Debug, Default, FromXmlAttributes, IntoPoint)]
+#[derive(Clone, Debug, Copy, Default, FromXmlAttributes, IntoPoint)]
 pub struct UdpCounter {
     pub deliv: u64,
     pub sent: u64,
@@ -552,9 +554,12 @@ impl IntoPoint for NetworkAllSample {
         p.add_tag("mover", TsValue::String(self.mover.clone()));
         // Turn these counters into point arrays, get the first one and merge
         // the fields with this point
-        p.fields.extend(self.ip.into_point(None, is_time_series)[0].fields.clone());
-        p.fields.extend(self.tcp.into_point(None, is_time_series)[0].fields.clone());
-        p.fields.extend(self.udp.into_point(None, is_time_series)[0].fields.clone());
+        p.fields
+            .extend(self.ip.into_point(None, is_time_series)[0].fields.clone());
+        p.fields
+            .extend(self.tcp.into_point(None, is_time_series)[0].fields.clone());
+        p.fields
+            .extend(self.udp.into_point(None, is_time_series)[0].fields.clone());
         for device in &self.devices {
             p.add_tag("device", TsValue::String(device.device.clone()));
             p.add_field(
@@ -661,7 +666,7 @@ impl FromXml for NetworkAllSample {
     }
 }
 
-#[derive(Clone, Debug, Default, FromXmlAttributes, IntoPoint)]
+#[derive(Clone, Debug, Copy, Default, FromXmlAttributes, IntoPoint)]
 pub struct Trans2Counter {
     pub trans2Open: u64,
     pub trans2FindFirst: u64,
@@ -674,7 +679,7 @@ pub struct Trans2Counter {
     pub trans2Mkdir: u64,
 }
 
-#[derive(Clone, Debug, Default, FromXmlAttributes, IntoPoint)]
+#[derive(Clone, Debug, Copy, Default, FromXmlAttributes, IntoPoint)]
 pub struct NtCounter {
     pub ntCreate: u64,
     pub ntSetSd: u64,
@@ -683,13 +688,13 @@ pub struct NtCounter {
     pub ntQuerySd: u64,
 }
 
-#[derive(Clone, Debug, Default, FromXmlAttributes, IntoPoint)]
+#[derive(Clone, Debug, Copy, Default, FromXmlAttributes, IntoPoint)]
 pub struct StateCounter {
     pub openConnections: u64,
     pub openFiles: u64,
 }
 
-#[derive(Clone, Debug, Default, FromXmlAttributes, IntoPoint)]
+#[derive(Clone, Debug, Copy, Default, FromXmlAttributes, IntoPoint)]
 pub struct TotalsCounter {
     pub all: u64,
     pub smb: u64,
@@ -697,7 +702,7 @@ pub struct TotalsCounter {
     pub nt: u64,
 }
 
-#[derive(Clone, Debug, Default, FromXmlAttributes, IntoPoint)]
+#[derive(Clone, Debug, Copy, Default, FromXmlAttributes, IntoPoint)]
 pub struct SmbCounter {
     pub mkdir: u64,
     pub rmdir: u64,
@@ -797,22 +802,46 @@ impl IntoPoint for CifsAllSample {
         p.add_tag("mover", TsValue::String(self.mover.clone()));
         // Turn these counters into point arrays, get the first one and merge
         // the fields with this point
-        p.fields
-            .extend(self.smb_calls.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.smb_time.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.trans2_calls.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.trans2_time.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.nt_calls.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.nt_time.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.state.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.totals.into_point(None, is_time_series)[0].fields.clone());
+        p.fields.extend(
+            self.smb_calls.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.smb_time.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.trans2_calls.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.trans2_time.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.nt_calls.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.nt_time.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.state.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.totals.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
 
         vec![p]
     }
@@ -942,7 +971,7 @@ impl FromXml for CifsAllSample {
     }
 }
 
-#[derive(Clone, Debug, Default, FromXmlAttributes, IntoPoint)]
+#[derive(Clone, Debug, Copy, Default, FromXmlAttributes, IntoPoint)]
 pub struct CacheCounter {
     pub hits: u64,
     pub misses: u64,
@@ -950,7 +979,7 @@ pub struct CacheCounter {
     pub nonExistent: u64,
 }
 
-#[derive(Clone, Debug, Default, FromXmlAttributes, IntoPoint)]
+#[derive(Clone, Debug, Copy, Default, FromXmlAttributes, IntoPoint)]
 pub struct RpcCounter {
     pub calls: u64,
     pub badData: u64,
@@ -959,7 +988,7 @@ pub struct RpcCounter {
     pub badAuth: u64,
 }
 
-#[derive(Clone, Debug, Default, FromXmlAttributes, IntoPoint)]
+#[derive(Clone, Debug, Copy, Default, FromXmlAttributes, IntoPoint)]
 pub struct NfsV2Counter {
     pub null: u64,
     pub getattr: u64,
@@ -980,7 +1009,7 @@ pub struct NfsV2Counter {
     pub fsstat: u64,
 }
 
-#[derive(Clone, Debug, Default, FromXmlAttributes, IntoPoint)]
+#[derive(Clone, Debug, Copy, Default, FromXmlAttributes, IntoPoint)]
 pub struct NfsV3Counter {
     pub v3null: u64,
     pub v3getattr: u64,
@@ -1043,21 +1072,43 @@ impl IntoPoint for NfsAllSample {
         p.add_tag("mover", TsValue::String(self.mover.clone()));
         // Turn these counters into point arrays, get the first one and merge
         // the fields with this point
+        p.fields.extend(
+            self.proc_v2_calls.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.proc_v2_failures.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.proc_v2_time.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.proc_v3_calls.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.proc_v3_failures.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.proc_v3_time.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.cache.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
         p.fields
-            .extend(self.proc_v2_calls.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.proc_v2_failures.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.proc_v2_time.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.proc_v3_calls.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.proc_v3_failures.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.proc_v3_time.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.cache.into_point(None, is_time_series)[0].fields.clone());
-        p.fields.extend(self.rpc.into_point(None, is_time_series)[0].fields.clone());
+            .extend(self.rpc.into_point(None, is_time_series)[0].fields.clone());
 
         vec![p]
     }
@@ -1518,7 +1569,7 @@ pub struct DiskVolume {
     pub data_service_policies: HashMap<String, String>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Copy)]
 pub struct FreeSpace {
     size: u64,
     offset: u64,
@@ -1926,12 +1977,12 @@ fn test_storage_pool_query_parser() {
     let _ = res.into_point(None, true);
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct StoragePools {
     pub storage_pools: Vec<StoragePool>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct StoragePool {
     pub movers: Vec<String>,
     pub member_volumes: Vec<String>,

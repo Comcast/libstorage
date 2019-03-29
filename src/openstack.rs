@@ -30,8 +30,11 @@ use serde_repr::{Deserialize_repr, Serialize_repr};
 #[derive(Clone, Deserialize, Debug)]
 pub struct OpenstackConfig {
     /// The openstack endpoint to use
+    #[serde(alias = "identity_endpoint")]
     pub endpoint: String,
+    #[serde(alias = "identity_port")]
     pub port: Option<u16>,
+    #[serde(alias = "username")]
     pub user: String,
     /// This gets replaced with the token at runtime
     pub password: String,
@@ -44,7 +47,7 @@ pub struct OpenstackConfig {
     pub region: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Domain {
     pub description: String,
     pub enabled: bool,
@@ -52,12 +55,12 @@ pub struct Domain {
     pub name: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Domains {
     pub domains: Vec<Domain>,
 }
 
-#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug)]
+#[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug, Clone, Copy)]
 #[repr(u8)]
 pub enum PowerState {
     NoState = 0,
@@ -81,7 +84,7 @@ impl fmt::Display for PowerState {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Project {
     pub is_domain: Option<bool>,
     pub description: Option<String>,
@@ -93,12 +96,12 @@ pub struct Project {
     pub tags: Option<Vec<String>>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Projects {
     pub projects: Vec<Project>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Server {
     #[serde(rename = "OS-EXT-AZ:availability_zone")]
     az_availability_zone: String,
@@ -202,7 +205,7 @@ impl IntoPoint for Server {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Servers {
     pub servers: Vec<Server>,
 }
@@ -216,12 +219,12 @@ impl IntoPoint for Servers {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct UserRoot {
     pub user: User,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct User {
     pub default_project_id: Option<String>,
     pub domain_id: String,
@@ -232,7 +235,7 @@ pub struct User {
     pub password_expires_at: Option<String>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct VolumesAttachment {
     pub server_id: String,
     pub attachment_id: String,
@@ -242,13 +245,13 @@ pub struct VolumesAttachment {
     pub id: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct VolumesMetadatum {
     pub readonly: Option<String>,
     pub attached_mode: Option<String>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct VolumeImageMetadatum {
     pub kernel_id: Option<String>,
     pub checksum: Option<String>,
@@ -262,7 +265,7 @@ pub struct VolumeImageMetadatum {
     pub size: Option<String>,
 }
 
-#[derive(Deserialize, Debug, IntoPoint)]
+#[derive(Deserialize, Debug, Clone, IntoPoint)]
 pub struct Volume {
     pub migration_status: Option<String>,
     pub attachments: Vec<VolumesAttachment>,
@@ -291,7 +294,7 @@ pub struct Volume {
     pub volume_image_metadata: Option<VolumeImageMetadatum>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Volumes {
     pub volumes: Vec<Volume>,
     pub count: Option<u64>,

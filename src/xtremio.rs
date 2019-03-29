@@ -15,7 +15,6 @@
 *
 * SPDX-License-Identifier: Apache-2.0
 */
-
 use crate::deserialize_string_or_float;
 use crate::deserialize_string_or_int;
 use crate::error::MetricsResult;
@@ -33,6 +32,7 @@ use serde_json::Value;
 pub struct XtremIOConfig {
     /// The scaleio endpoint to use
     pub endpoint: String,
+    #[serde(alias = "username")]
     pub user: String,
     /// This gets replaced with the token at runtime
     pub password: String,
@@ -59,20 +59,20 @@ fn test_get_xtremio_volumes() {
     println!("result: {:#?}", i);
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Link {
     pub href: String,
     pub rel: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone, Copy)]
 #[serde(rename_all = "lowercase")]
 pub enum SmallIOAlert {
     Enabled,
     Disabled,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Volumes {
     pub params: HashMap<String, String>,
     pub volumes: Vec<Volume>,
@@ -92,7 +92,7 @@ impl IntoPoint for Volumes {
     }
 }
 
-#[derive(Deserialize, Debug, IntoPoint)]
+#[derive(Deserialize, Debug, Clone, IntoPoint)]
 #[serde(rename_all = "kebab-case")]
 pub struct Volume {
     pub small_io_alerts: SmallIOAlert,
@@ -195,7 +195,7 @@ pub struct Volume {
     pub wr_bw: i64,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Ssds {
     pub ssds: Vec<Ssd>,
     pub params: HashMap<String, String>,
@@ -228,7 +228,7 @@ fn test_get_xtremio_ssds() {
     println!("result: {:#?}", i);
 }
 
-#[derive(Deserialize, Debug, IntoPoint)]
+#[derive(Deserialize, Debug, Clone, IntoPoint)]
 #[serde(rename_all = "kebab-case")]
 pub struct Ssd {
     #[serde(deserialize_with = "deserialize_string_or_int")]
@@ -294,7 +294,7 @@ pub struct Ssd {
     pub useful_ssd_space: i64,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Psus {
     #[serde(rename = "storage-controller-psus")]
     pub storage_controller_psus: Vec<Psu>,
@@ -328,7 +328,7 @@ fn test_get_xtremio_psus() {
     println!("result: {:#?}", i);
 }
 
-#[derive(Deserialize, Debug, IntoPoint)]
+#[derive(Deserialize, Debug, Clone, IntoPoint)]
 #[serde(rename_all = "kebab-case")]
 pub struct Psu {
     pub index: i64,
@@ -367,7 +367,7 @@ fn test_get_xtremio_clusters() {
     println!("result: {:#?}", i);
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Clusters {
     pub clusters: Vec<Cluster>,
     pub params: HashMap<String, String>,
@@ -387,7 +387,7 @@ impl IntoPoint for Clusters {
     }
 }
 
-#[derive(Deserialize, Debug, IntoPoint)]
+#[derive(Deserialize, Debug, Clone, IntoPoint)]
 #[serde(rename_all = "kebab-case")]
 pub struct Cluster {
     pub compression_factor_text: String,
@@ -761,7 +761,7 @@ fn test_get_xtremio_xmss() {
     println!("result: {:#?}", i);
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Xmss {
     pub xmss: Vec<Xms>,
     pub params: HashMap<String, String>,
@@ -781,7 +781,7 @@ impl IntoPoint for Xmss {
     }
 }
 
-#[derive(Deserialize, Debug, IntoPoint)]
+#[derive(Deserialize, Debug, Clone, IntoPoint)]
 #[serde(rename_all = "kebab-case")]
 pub struct Xms {
     pub max_repeating_alert: Option<i64>,

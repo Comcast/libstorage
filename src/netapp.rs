@@ -16,8 +16,6 @@
 *
 * SPDX-License-Identifier: Apache-2.0
 */
-
-
 use std::io::Write;
 use std::str::FromStr;
 
@@ -40,10 +38,11 @@ static FILER_URL: &str = "servlets/netapp.servlets.admin.XMLrequest_filer";
 //static NETCACHE_URL: &str = "/servlets/netapp.servlets.admin.XMLrequest";
 //static ZAPI_xmlns: &str = "http://www.netapp.com/filer/admin";
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct NetappConfig {
     /// The netapp endpoint to use
     pub endpoint: String,
+    #[serde(alias = "username")]
     pub user: String,
     /// This gets replaced with the token at runtime
     pub password: String,
@@ -127,12 +126,12 @@ fn test_netapp_perf_list() {
     println!("res: {:#?}", res);
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct HaPerformanceStats {
     pub perf: Vec<PerformanceStat>,
 }
 
-#[derive(Debug, IntoPoint)]
+#[derive(Debug, Clone, IntoPoint)]
 pub struct PerformanceStat {
     pub average_bytes_per_transfer: u64,
     pub average_megabytes_per_second: f64,
@@ -279,7 +278,7 @@ fn test_netapp_vol_list() {
     println!("res: {:#?}", res);
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct NetappVolumes {
     pub vols: Vec<NetappVolume>,
 }
@@ -294,7 +293,7 @@ impl IntoPoint for NetappVolumes {
     }
 }
 
-#[derive(Debug, IntoPoint)]
+#[derive(Debug, Clone, IntoPoint)]
 pub struct NetappVolume {
     pub encrypted: bool,
     pub grow_threshold_percent: u8,
@@ -619,7 +618,7 @@ impl FromXml for NetappVolumes {
     }
 }
 
-#[derive(Debug, IntoPoint)]
+#[derive(Debug, Clone, IntoPoint)]
 pub struct OnTapVersion {
     pub build_timestamp: u64,
     pub is_clustered: bool,

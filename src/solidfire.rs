@@ -28,7 +28,7 @@ use log::debug;
 use serde::de::DeserializeOwned;
 use uuid::Uuid;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct SolidfireConfig {
     /// The solidfire endpoint to use
     pub endpoint: String,
@@ -41,7 +41,7 @@ pub struct SolidfireConfig {
     pub region: String,
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Deserialize, Clone, IntoPoint)]
 #[serde(rename_all = "camelCase")]
 pub struct AddressBlock {
     pub available: String,
@@ -49,7 +49,7 @@ pub struct AddressBlock {
     pub start: String,
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Deserialize, Clone, IntoPoint)]
 #[serde(rename_all = "camelCase")]
 pub struct Cluster {
     pub cipi: String,
@@ -68,7 +68,7 @@ pub struct Cluster {
     pub version: String,
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Deserialize, Clone, IntoPoint)]
 #[serde(rename_all = "camelCase")]
 pub struct ClusterCapacity {
     active_block_space: u64,
@@ -100,7 +100,7 @@ pub struct ClusterCapacity {
     zero_blocks: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ClusterCapacityResult {
     cluster_capacity: ClusterCapacity,
@@ -112,7 +112,7 @@ impl IntoPoint for ClusterCapacityResult {
     }
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Deserialize, Clone, IntoPoint)]
 #[serde(rename_all = "camelCase")]
 pub struct ClusterFullThreshold {
     pub block_fullness: FullnessStatus,
@@ -134,7 +134,7 @@ pub struct ClusterFullThreshold {
     pub sum_used_metadata_cluster_bytes: u64,
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Deserialize, Clone, IntoPoint)]
 #[serde(rename_all = "camelCase")]
 pub struct ClusterInfo {
     pub attributes: HashMap<String, String>,
@@ -157,7 +157,7 @@ pub struct ClusterInfo {
     pub uuid: Uuid,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ClusterInfoResult {
     pub cluster_info: ClusterInfo,
@@ -169,7 +169,7 @@ impl IntoPoint for ClusterInfoResult {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Copy, Deserialize)]
 pub enum ClusterState {
     Available,
     Pending,
@@ -177,7 +177,7 @@ pub enum ClusterState {
     PendingActive,
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 #[serde(rename_all = "camelCase")]
 pub struct ClusterStat {
     #[serde(rename = "actualIOPS")]
@@ -210,7 +210,7 @@ pub struct ClusterStat {
     pub write_ops_last_sample: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ClusterStatsResult {
     pub cluster_stats: ClusterStat,
@@ -222,7 +222,7 @@ impl IntoPoint for ClusterStatsResult {
     }
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 #[serde(rename_all = "camelCase")]
 pub struct Drive {
     pub attributes: HashMap<String, String>,
@@ -238,7 +238,7 @@ pub struct Drive {
     pub drive_type: DriveType,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Copy)]
 #[serde(rename_all = "camelCase")]
 pub enum DriveStatus {
     Available,
@@ -248,7 +248,7 @@ pub enum DriveStatus {
     Removing,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Copy)]
 #[serde(rename_all = "camelCase")]
 pub enum DriveType {
     Block,
@@ -256,7 +256,7 @@ pub enum DriveType {
     Volume,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Copy)]
 #[serde(rename_all = "camelCase")]
 pub enum EncryptionState {
     Enabling,
@@ -265,7 +265,7 @@ pub enum EncryptionState {
     Disabled,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Copy)]
 #[serde(rename_all = "camelCase")]
 pub enum FullnessStatus {
     Stage1Happy,
@@ -275,7 +275,7 @@ pub enum FullnessStatus {
     Stage5CompletelyConsumed,
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 #[serde(rename_all = "camelCase")]
 pub struct MetadataHosts {
     dead_secondaries: Vec<u64>,
@@ -283,7 +283,7 @@ pub struct MetadataHosts {
     primary: u64,
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 #[serde(rename_all = "camelCase")]
 pub struct Node {
     #[serde(rename = "associatedFServiceID")]
@@ -310,12 +310,12 @@ pub struct Node {
     pub virtual_networks: Vec<VirtualNetwork>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct Nodes {
     pub nodes: Vec<Node>,
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 #[serde(rename_all = "camelCase")]
 pub struct NodeStats {
     pub count: u64,
@@ -343,7 +343,7 @@ pub struct NodeStats {
     pub write_ops: u64,
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 #[serde(rename_all = "camelCase")]
 pub struct PlatformInfo {
     pub chassis_type: String,
@@ -354,14 +354,14 @@ pub struct PlatformInfo {
     pub platform_config_version: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Copy)]
 pub enum ReplicationMode {
     Async,
     Sync,
     SnapshotsOnly,
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 #[serde(rename_all = "camelCase")]
 pub struct RemoteReplication {
     pub mode: ReplicationMode,
@@ -374,7 +374,7 @@ pub struct RemoteReplication {
     pub state_details: Option<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Copy)]
 pub enum RemoveStatus {
     Present,
     NotPresent,
@@ -382,7 +382,7 @@ pub enum RemoveStatus {
     Deleted,
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 pub struct Snapshot {
     pub attributes: HashMap<String, String>,
     pub checksum: String,
@@ -408,14 +408,14 @@ pub struct Snapshot {
     pub volume_id: u64,
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 #[serde(rename_all = "camelCase")]
 pub struct SnapshotReplication {
     pub state: String,
     pub state_details: String,
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 #[serde(rename_all = "camelCase")]
 pub struct StorageContainer {
     #[serde(rename = "accountID")]
@@ -430,7 +430,7 @@ pub struct StorageContainer {
     pub virtual_volumes: Vec<Uuid>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Copy)]
 #[serde(rename_all = "camelCase")]
 pub enum SnapshotStatus {
     Unknown,
@@ -441,14 +441,14 @@ pub enum SnapshotStatus {
     Cloning,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Copy)]
 #[serde(rename_all = "camelCase")]
 pub enum StorageContainerStatus {
     Active,
     Locked,
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 pub struct VolumesAttributesImageInfo {
     pub image_created_at: String,
     pub image_id: String,
@@ -464,7 +464,7 @@ pub struct VolumesAttribute {
 }
 */
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint, Copy)]
 pub struct VolumesQosCurve {
     #[serde(rename = "1048576")]
     pub one_mb: i64,
@@ -486,7 +486,7 @@ pub struct VolumesQosCurve {
     pub eight_kb: i64,
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint, Copy)]
 pub struct VolumesQos {
     #[serde(rename = "burstIOPS")]
     pub burst_iops: i64,
@@ -499,7 +499,7 @@ pub struct VolumesQos {
     pub min_iops: i64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Copy)]
 #[serde(rename_all = "camelCase")]
 pub enum VolumeAccess {
     ReadOnly,
@@ -508,7 +508,7 @@ pub enum VolumeAccess {
     ReplicationTarget,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Copy)]
 #[serde(rename_all = "camelCase")]
 pub enum VolumeStatus {
     Cloning,
@@ -516,7 +516,7 @@ pub enum VolumeStatus {
     Ready,
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 pub struct VolumePair {
     #[serde(rename = "clusterPairID")]
     pub cluster_pair_id: i64,
@@ -530,7 +530,7 @@ pub struct VolumePair {
     pub volume_pair_uuid: String,
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 #[serde(rename_all = "camelCase")]
 pub struct VirtualNetwork {
     pub address_blocks: Vec<AddressBlock>,
@@ -544,7 +544,7 @@ pub struct VirtualNetwork {
     pub virtual_network_tag: u64,
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 #[serde(rename_all = "camelCase")]
 pub struct VirtualVolume {
     pub bindings: Vec<Uuid>,
@@ -566,7 +566,7 @@ pub struct VirtualVolume {
     pub volume_info: Option<Volume>,
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 #[serde(rename_all = "camelCase")]
 pub struct Volume {
     pub access: VolumeAccess,
@@ -606,7 +606,7 @@ pub struct Volume {
     pub volume_uuid: Uuid,
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 #[serde(rename_all = "camelCase")]
 pub struct VolumeStats {
     #[serde(rename = "accountID")]
@@ -649,7 +649,7 @@ pub struct VolumeStats {
     pub zero_blocks: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct VolumeStatsResult {
     pub volume_stats: VolumeStats,
@@ -661,7 +661,7 @@ impl IntoPoint for VolumeStatsResult {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct DriveHardwareResult {
     nodes: Vec<HardwareNode>,
@@ -692,7 +692,7 @@ fn test_get_drive_hardware() {
     );
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 struct HardwareNodes {
     nodes: Vec<HardwareNode>,
 }
@@ -706,7 +706,7 @@ impl IntoPoint for HardwareNodes {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct HardwareNode {
     #[serde(rename = "nodeID")]
@@ -720,7 +720,7 @@ impl IntoPoint for HardwareNode {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct DriveHardware {
     drive_hardware: Vec<HardwareDrive>,
@@ -735,7 +735,7 @@ impl IntoPoint for DriveHardware {
     }
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 #[serde(rename_all = "camelCase")]
 struct HardwareDrive {
     canonical_name: String,
@@ -769,12 +769,12 @@ struct HardwareDrive {
     version: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct Volumes {
     pub volumes: Vec<Volume>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct JsonResult<T> {
     pub id: Option<String>,
     pub result: T,

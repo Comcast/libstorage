@@ -16,7 +16,6 @@
 *
 * SPDX-License-Identifier: Apache-2.0
 */
-
 use crate::error::{MetricsResult, StorageError};
 
 use std::collections::HashMap;
@@ -30,12 +29,12 @@ use csv::Reader;
 use log::{error, warn};
 use reqwest::header::ACCEPT;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Collection {
     pub items: Vec<HashMap<String, serde_json::Value>>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Version {
     pub productName: String,
     pub productVersion: String,
@@ -335,6 +334,7 @@ fn test_nas_pi_hnhs() {
 pub struct HitachiConfig {
     /// The hitachi endpoint to use
     pub endpoint: String,
+    #[serde(alias = "username")]
     pub user: String,
     pub password: String,
     /// The region this cluster is located in

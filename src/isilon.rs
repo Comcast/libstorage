@@ -21,7 +21,6 @@
 *
 * SPDX-License-Identifier: Apache-2.0
 */
-
 use std::rc::Rc;
 
 use futures::Future;
@@ -38,6 +37,7 @@ use crate::IntoPoint;
 pub struct IsilonConfig {
     /// The isilon endpoint to use
     pub endpoint: String,
+    #[serde(alias = "username")]
     pub user: String,
     /// This gets replaced with the token at runtime
     pub password: String,
@@ -213,11 +213,12 @@ impl IntoPoint for NodeDrivesNodeDrive {
         if let Some(pending_actions) = &self.pending_actions {
             point.add_field(
                 "pending_actions",
-                TsValue::StringVec(pending_actions
-                    .iter()
-                    .map(|action| action.clone())
-                    .collect::<Vec<String>>(),
-                )
+                TsValue::StringVec(
+                    pending_actions
+                        .iter()
+                        .map(|action| action.clone())
+                        .collect::<Vec<String>>(),
+                ),
             );
         }
         if let Some(physical_block_length) = self.physical_block_length {

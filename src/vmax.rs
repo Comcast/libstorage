@@ -29,10 +29,11 @@ use serde::de::DeserializeOwned;
 use serde::ser::Serialize;
 use serde_json::{json, Value};
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct VmaxConfig {
     /// The scaleio endpoint to use
     pub endpoint: String,
+    #[serde(alias = "username")]
     pub user: String,
     /// This gets replaced with the token at runtime
     pub password: String,
@@ -154,7 +155,7 @@ fn get_list(
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct Srps {
     pub srp: Vec<Srp>,
     pub success: bool,
@@ -171,7 +172,7 @@ impl IntoPoint for Srps {
 }
 
 #[allow(non_snake_case)]
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 pub struct Srp {
     pub srpId: String,
     pub num_of_disk_groups: Option<i64>,
@@ -194,7 +195,7 @@ pub struct Srp {
 }
 
 #[allow(non_snake_case)]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct StorageGroups {
     pub storageGroup: Vec<StorageGroup>,
     pub success: bool,
@@ -211,7 +212,7 @@ impl IntoPoint for StorageGroups {
 }
 
 #[allow(non_snake_case)]
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 pub struct StorageGroup {
     pub storageGroupId: String,
     pub slo: Option<String>,
@@ -232,7 +233,7 @@ pub struct StorageGroup {
     pub maskingview: Option<Vec<String>>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct SloArray {
     pub symmetrix: Vec<Symmetrix>,
     pub success: bool,
@@ -249,7 +250,7 @@ impl IntoPoint for SloArray {
 }
 
 #[allow(non_snake_case)]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct Symmetrix {
     pub symmetrixId: String,
     pub device_count: Option<i64>,
@@ -296,14 +297,14 @@ impl IntoPoint for Symmetrix {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Copy)]
 pub struct SloCompliance {
     pub slo_stable: Option<i64>,
     pub slo_marginal: Option<i64>,
     pub slo_critical: Option<i64>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Copy)]
 pub struct VirtualCapacity {
     pub used_capacity_gb: f64,
     pub total_capacity_gb: f64,
@@ -434,7 +435,7 @@ pub fn get_slo_array_storagegroup(
 //START Section for Collecting VMAX Front-End Port list and Front-End Port Metrics
 //For Collecting the VMAX Array Front-end Directors
 #[serde(rename_all = "camelCase")]
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 pub struct FeDirector {
     pub director_id: String,
     pub first_available_date: u64,
@@ -442,7 +443,7 @@ pub struct FeDirector {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct FedArray {
     pub fe_director_info: Vec<FeDirector>,
 }
@@ -459,7 +460,7 @@ impl IntoPoint for FedArray {
 
 //For Collecting the VMAX Array Front-end Directors Metrics
 #[serde(rename_all = "PascalCase")]
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint, Copy)]
 pub struct FeDirectorMetrics {
     #[serde(rename = "AvgWPDiscTime")]
     pub avg_wpdisc_time: f64,
@@ -509,7 +510,7 @@ pub struct FeDirectorMetrics {
 
 //Since the returned value are an Object--> Object-Array of values, resultlist-result
 #[serde(rename_all = "camelCase")]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct FedArrayMetrics {
     pub result_list: FedResult,
 }
@@ -533,7 +534,7 @@ impl IntoPoint for FedResult {
 
 //Since the returned value are Object-Object-Array of values, result-array of objects
 #[serde(rename_all = "camelCase")]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct FedResult {
     pub result: Vec<FeDirectorMetrics>,
 }
@@ -618,7 +619,7 @@ pub fn get_fed_directors(
 }
 */
 #[serde(rename_all = "camelCase")]
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 pub struct PortGroup {
     pub port_group_id: String,
     pub first_available_date: u64,
@@ -626,7 +627,7 @@ pub struct PortGroup {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct PortGroupArray {
     pub port_group_info: Vec<PortGroup>,
 }
@@ -643,7 +644,7 @@ impl IntoPoint for PortGroupArray {
 
 //For Collecting the VMAX Array PortGroup Metrics
 #[serde(rename_all = "PascalCase")]
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint, Copy)]
 pub struct PortGroupMetrics {
     pub reads: f64,
     pub writes: f64,
@@ -664,7 +665,7 @@ pub struct PortGroupMetrics {
 
 //Since the returned value are an Object--> Object-Array of values, resultlist-result
 #[serde(rename_all = "camelCase")]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct PortGroupArrayMetrics {
     pub result_list: PgResult,
 }
@@ -688,7 +689,7 @@ impl IntoPoint for PgResult {
 
 //Since the returned value are Object-Object-Array of values, result-array of objects
 #[serde(rename_all = "camelCase")]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct PgResult {
     pub result: Vec<PortGroupMetrics>,
 }
@@ -754,7 +755,7 @@ pub fn get_portgroups(
 }
 */
 #[serde(rename_all = "camelCase")]
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 pub struct StorageGroupsInfo {
     pub storage_group_id: String,
     pub first_available_date: u64,
@@ -762,7 +763,7 @@ pub struct StorageGroupsInfo {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct StorageGroupArray {
     pub storage_group_info: Vec<StorageGroupsInfo>,
 }
@@ -779,7 +780,7 @@ impl IntoPoint for StorageGroupArray {
 
 //For Collecting the VMAX Array StorageGroup Metrics
 #[serde(rename_all = "PascalCase")]
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint, Copy)]
 pub struct StorageGroupMetrics {
     #[serde(rename = "HostIOs")]
     pub host_ios: f64,
@@ -827,7 +828,7 @@ pub struct StorageGroupMetrics {
 
 //Since the returned value are an Object--> Object-Array of values, resultlist-result
 #[serde(rename_all = "camelCase")]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct StorageGroupArrayMetrics {
     pub result_list: SgResult,
 }
@@ -851,7 +852,7 @@ impl IntoPoint for SgResult {
 
 //Since the returned value are Object-Object-Array of values, result-array of objects
 #[serde(rename_all = "camelCase")]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct SgResult {
     pub result: Vec<StorageGroupMetrics>,
 }
@@ -1030,7 +1031,7 @@ pub fn get_vmax_array_raw(
 
 // This is split into objects and sub-objects based upon the new Unisphere release v9
 // Added Option here since some of the arrays polled are not returning the same output, may need to be updated again down the road
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct VmaxSystemCapacity {
     #[serde(rename = "symmetrixId")]
     pub symmetrix_id: String,
@@ -1080,7 +1081,7 @@ impl IntoPoint for VmaxSystemCapacity {
 }
 
 #[allow(non_snake_case)]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Copy)]
 pub struct SystemCapacity {
     pub subscribed_allocated_tb: f64,
     pub subscribed_total_tb: f64,
@@ -1118,7 +1119,7 @@ impl ChildPoint for SystemCapacity {
 }
 
 #[allow(non_snake_case)]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Copy)]
 pub struct SystemEfficiency {
     pub overall_efficiency_ratio_to_one: f64,
     pub data_reduction_enabled_percent: f64,
@@ -1144,7 +1145,7 @@ impl ChildPoint for SystemEfficiency {
 
 // Added Option here since some of the arrays polled are not returning the same output, may need to be updated again down the road
 #[allow(non_snake_case)]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Copy)]
 pub struct MetaDataUsage {
     pub system_meta_data_used_percent: Option<f64>,
     pub replication_cache_used_percent: u64,
@@ -1166,7 +1167,7 @@ impl ChildPoint for MetaDataUsage {
 }
 
 #[allow(non_snake_case)]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Copy, Deserialize)]
 pub struct SloComplianceSys {
     pub slo_stable: i64,
     pub slo_marginal: i64,
@@ -1184,7 +1185,7 @@ impl ChildPoint for SloComplianceSys {
 }
 
 #[allow(non_snake_case)]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Copy)]
 pub struct PhysicalCapacity {
     pub used_capacity_gb: f64,
     pub total_capacity_gb: f64,
@@ -1197,7 +1198,7 @@ impl ChildPoint for PhysicalCapacity {
     }
 }
 
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Clone, Deserialize, IntoPoint)]
 pub struct Volume {
     #[serde(rename = "volumeId")]
     pub volume_id: String,
