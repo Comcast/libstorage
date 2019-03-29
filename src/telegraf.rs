@@ -51,7 +51,7 @@ diskio_weighted_io_time{host="5d9df11cb518",name="loop0"} 16
 diskio_weighted_io_time{host="5d9df11cb518",name="loop1"} 28
 */
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct TelegrafConfig {
     /// The telegraf endpoint to use
     pub endpoints: Vec<String>,
