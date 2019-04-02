@@ -1335,10 +1335,13 @@ pub fn get_all_slo_volumes(
             .collect(),
         None => vec![],
     };
-
     while num_iterations != 0 {
+        debug!("Gathered {} volume IDs", all_volume_ids.len());
         let from = all_volume_ids.len() + 1;
-        let to = from as u64 + max_count_per_page;
+        let mut to = from as u64 + max_count_per_page;
+        if to > vol_count {
+            to = vol_count;
+        }
         let body = json! ({
              "from" : from,
              "to"   : to
