@@ -15,12 +15,13 @@
 *
 * SPDX-License-Identifier: Apache-2.0
 */
-
+use std::fmt::Debug;
 use crate::error::{MetricsResult, StorageError};
 use crate::ir::{TsPoint, TsValue};
 use crate::IntoPoint;
 use chrono::offset::Utc;
 use chrono::DateTime;
+use log::trace;
 use reqwest::header::{HeaderMap, HeaderValue, ACCEPT};
 use serde::de::DeserializeOwned;
 
@@ -232,7 +233,7 @@ pub struct FcSwitch {
     pub ad_capable: bool,
     pub operational_status: String,
     pub state: String,
-    pub status_reason: String,
+    pub status_reason: Option<String>,
     pub lf_enabled: bool,
     pub default_logical_switch: bool,
     pub fms_mode: bool,
@@ -464,7 +465,7 @@ fn get_server_response<T>(
     ws_token: &str,
 ) -> MetricsResult<T>
 where
-    T: DeserializeOwned,
+    T: DeserializeOwned + Debug,
 {
     let url = format!(
         "{}://{}/rest/{}",
@@ -484,8 +485,11 @@ where
         .header("WStoken", HeaderValue::from_str(&ws_token)?)
         .send()?
         .error_for_status()?
-        .json()?;
-    Ok(resp)
+        .text()?;
+    trace!("server returned: {}", resp);
+    let json: Result<T, serde_json::Error> = serde_json::from_str(&resp);
+    trace!("json result: {:?}", json);
+    Ok(json?)
 }
 
 // Connect to the server and request a new api token
