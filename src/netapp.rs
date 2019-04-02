@@ -16,8 +16,6 @@
 *
 * SPDX-License-Identifier: Apache-2.0
 */
-
-
 use std::io::Write;
 use std::str::FromStr;
 
@@ -447,6 +445,45 @@ impl FromXml for NetappVolumes {
                         vol_child
                     ))
                 })?;
+            let aggr_list: Option<Vec<String>> =
+                // Find all the <aggr-list> xml elements
+                match id_attributes.find_child(|tag| tag.name == "aggr-list") {
+                    Some(aggr) => {
+                        let child_aggrs = aggr
+                            // look through the children
+                            .children
+                            .iter()
+                            // grab their text
+                            .map(|elem| elem.text.clone())
+                            // filter out any that are not Some
+                            .filter(|elem| elem.is_some())
+                            // unwrap
+                            .map(|elem| elem.unwrap())
+                            .collect();
+                        Some(child_aggrs)
+                    }
+                    None => None,
+                };
+
+            // Find all the <node> xml elements
+            let node_list: Option<Vec<String>> =
+                match id_attributes.find_child(|tag| tag.name == "nodes") {
+                    Some(nodes) => {
+                        let child_nodes = nodes
+                            // look through the children
+                            .children
+                            .iter()
+                            // grab their text
+                            .map(|elem| elem.text.clone())
+                            // filter out any that are not Some
+                            .filter(|elem| elem.is_some())
+                            // unwrap
+                            .map(|elem| elem.unwrap())
+                            .collect();
+                        Some(child_nodes)
+                    }
+                    None => None,
+                };
             volumes.push(NetappVolume {
                 encrypted: get_key::<bool>(&vol_child, "encrypt")?,
                 grow_threshold_percent: get_key::<u8>(
@@ -462,8 +499,7 @@ impl FromXml for NetappVolumes {
                     &autosize_attributes,
                     "shrink-threshold-percent",
                 )?,
-
-                volume_id_aggr_list: vec![],
+                volume_id_aggr_list: aggr_list.unwrap_or_else(|| vec![]),
                 containing_aggregate_name: get_str_key(&id_attributes, "containing-aggregate-name")
                     .unwrap_or_else(|| "".to_string()),
                 containing_aggregate_uuid: get_key::<Uuid>(
@@ -477,7 +513,7 @@ impl FromXml for NetappVolumes {
                 name_ordinal: get_str_key(&id_attributes, "name-ordinal")
                     .unwrap_or_else(|| "".to_string()),
                 node: get_str_key(&id_attributes, "node").unwrap_or_else(|| "".to_string()),
-                node_list: vec![],
+                node_list: node_list.unwrap_or_else(|| vec![]),
                 owning_vserver_name: get_str_key(&id_attributes, "owning-vserver-name")
                     .unwrap_or_else(|| "".to_string()),
                 owning_vserver_uuid: get_key::<Uuid>(&id_attributes, "owning-vserver-uuid")?,
