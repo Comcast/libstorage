@@ -1303,10 +1303,14 @@ pub fn get_all_slo_volumes(
         Some(id) => id,
         None => "",
     };
-    let max_count_per_page = match data["max_page_size"].as_u64() {
+    let max_count_per_page = match data["maxPageSize"].as_u64() {
         Some(count) => count,
         None => 0,
     };
+    debug!(
+        "Volume count {}, max count per page {}, iterator id {}",
+        vol_count, max_count_per_page, iterator_id
+    );
 
     if vol_count == 0 || max_count_per_page == 0 || iterator_id.is_empty() {
         return Ok(vec![]);
@@ -1331,27 +1335,24 @@ pub fn get_all_slo_volumes(
             .collect(),
         None => vec![],
     };
-
     while num_iterations != 0 {
         let from = all_volume_ids.len() + 1;
-        let to = from as u64 + max_count_per_page;
-        let body = json! ({
-             "from" : from,
-             "to"   : to
-        });
-        let data: Value = client
-            .post(&format!(
-                "https://{}/univmax/restapi/common/Iterator/{}/page",
-                config.endpoint, iterator_id
-            ))
-            .basic_auth(&config.user, Some(&config.password))
-            .header(ACCEPT, "application/json")
-            .json(&body)
-            .send()?
-            .error_for_status()?
-            .json()?;
+        let mut to = all_volume_ids.len() as u64 + max_count_per_page;
+        if to > vol_count {
+            to = vol_count;
+        }
+        debug!("Gathering volumes from {} to {}", from, to);
+        let data: Value = super::get(
+            client,
+            &format!(
+                "https://{}/univmax/restapi/common/Iterator/{}/page?from={}&to={}",
+                config.endpoint, iterator_id, from, to
+            ),
+            &config.user,
+            Some(&config.password),
+        )?;
 
-        let v = match data["resultList"]["result"].as_array() {
+        let page_vols = match data["result"].as_array() {
             Some(v) => v
                 .iter()
                 .map(|val| {
@@ -1368,7 +1369,8 @@ pub fn get_all_slo_volumes(
                 .collect(),
             None => vec![],
         };
-        all_volume_ids.extend(v);
+        all_volume_ids.extend(page_vols);
+        debug!("Gathered {} volume IDs", all_volume_ids.len());
         num_iterations -= 1;
     }
     Ok(all_volume_ids)
