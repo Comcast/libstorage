@@ -27,7 +27,7 @@ use crate::ir::{TsPoint, TsValue};
 use chrono::offset::Utc;
 use chrono::DateTime;
 use csv::Reader;
-use log::{error, warn};
+use log::{error, trace, warn};
 use reqwest::header::ACCEPT;
 
 #[derive(Deserialize, Debug)]
@@ -123,18 +123,20 @@ fn into_values(
                 }
             };
         } else if v.contains("short") {
-            match u16::from_str(&r) {
+            // Short is i16 but we're going to upsize it here to i32
+            // since TsValue doesn't have an i16 variant
+            match i32::from_str(&r) {
                 Ok(f) => {
-                    ret_vals.push((header.into(), TsValue::Short(f)));
+                    ret_vals.push((header.into(), TsValue::Integer(f)));
                 }
                 Err(_) => {
-                    error!("unable to convert {} to u16. Skipping", r);
+                    error!("unable to convert {} to i32. Skipping", r);
                 }
             };
         } else if v.contains("unsigned char") {
-            match u16::from_str(&r) {
+            match u8::from_str(&r) {
                 Ok(f) => {
-                    ret_vals.push((header.into(), TsValue::Short(f)));
+                    ret_vals.push((header.into(), TsValue::Byte(f)));
                 }
                 Err(_) => {
                     error!("unable to convert {} to u8. Skipping", r);
@@ -409,6 +411,7 @@ fn get_server_response(
         .send()?
         .error_for_status()?
         .text()?;
+    trace!("server response: {}", content);
     Ok(content)
 }
 
