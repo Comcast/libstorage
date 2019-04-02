@@ -1,0 +1,75 @@
+{
+
+    "data": [
+
+        {
+
+            "ldevId": 0,
+
+            "clprId": 0,
+
+            "emulationType": "OPEN-V-CVS",
+
+            "byteFormatCapacity": "10.00 G",
+
+            "blockCapacity": 20971520, 
+
+            "numOfPorts": 4,
+
+            "ports": [
+
+                {
+
+                    "portId": "CL1-A",
+
+                    "hostGroupNumber": 1,
+
+                    "hostGroupName": "foo",
+
+                    "lun": 0
+
+                }
+
+            ],
+
+            "attributes": [
+
+                "CVS",
+
+                "HDT"
+
+            ],
+
+            "status": "NML",
+
+            "mpBladeId": 0,
+
+            "ssid": "0004",
+
+            "poolId": 0,
+
+            "numOfUsedBlock": 8515584,
+
+            "isRelocationEnabled": true,
+
+            "tierLevel": "all",
+
+            "usedCapacityPerTierLevel1": 0,
+
+            "usedCapacityPerTierLevel2": 4158,
+
+            "tierLevelForNewPageAllocation": "M",
+
+            "isFullAllocationEnabled": false,
+
+            "resourceGroupId": 0,
+
+            "dataReductionStatus": "DISABLED",
+
+            "dataReductionMode": "disabled",
+
+            "isAluaEnabled": false
+
+        }
+    ]
+}

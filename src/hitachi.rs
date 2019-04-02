@@ -1,4 +1,5 @@
 #![allow(non_snake_case)]
+
 /**
 * Copyright 2019 Comcast Cable Communications Management, LLC
 *
@@ -16,14 +17,14 @@
 *
 * SPDX-License-Identifier: Apache-2.0
 */
-
-use crate::error::{MetricsResult, StorageError};
-
 use std::collections::HashMap;
 use std::str;
 use std::str::FromStr;
 
+use crate::error::{MetricsResult, StorageError};
 use crate::ir::{TsPoint, TsValue};
+use crate::IntoPoint;
+
 use chrono::offset::Utc;
 use chrono::DateTime;
 use csv::Reader;
@@ -33,6 +34,151 @@ use reqwest::header::ACCEPT;
 #[derive(Deserialize, Debug)]
 pub struct Collection {
     pub items: Vec<HashMap<String, serde_json::Value>>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ConfigManagerStorage {
+    pub storage_device_id: String,
+    pub model: String,
+    pub serial_number: u64,
+    pub svp_ip: String,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LdevPort {
+    pub port_id: String,
+    pub host_group_number: u64,
+    pub host_group_name: String,
+    pub lun: u64,
+}
+
+impl IntoPoint for LdevPort {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        let mut p = TsPoint::new(name.unwrap_or_else(|| "hitachi_ldev_port"), is_time_series);
+        p.add_tag("port_id", TsValue::String(self.port_id.clone()));
+        p.add_field("host_group_number", TsValue::Long(self.host_group_number));
+        p.add_tag(
+            "host_group_name",
+            TsValue::String(self.host_group_name.clone()),
+        );
+        p.add_field("lun", TsValue::String(convert_to_base16(self.lun)));
+
+        vec![p]
+    }
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct ServerResult<T> {
+    #[serde(bound(deserialize = "T: serde::de::Deserialize<'de>"))]
+    pub data: Vec<T>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StorageLdev {
+    pub ldev_id: u64,
+    pub clpr_id: u64,
+    pub emulation_type: String,
+    pub byte_format_capacity: String,
+    pub block_capacity: u64,
+    pub num_of_ports: u64,
+    pub ports: Vec<LdevPort>,
+    pub attributes: Vec<String>,
+    pub status: String,
+    pub mp_blade_id: u64,
+    pub ssid: String,
+    pub pool_id: u64,
+    pub num_of_used_block: u64,
+    pub is_relocation_enabled: bool,
+    pub tier_level: String,
+    pub used_capacity_per_tier_level1: u64,
+    pub used_capacity_per_tier_level2: u64,
+    pub used_capacity_per_tier_level3: Option<u64>,
+    pub tier_level_for_new_page_allocation: String,
+    pub resource_group_id: u64,
+    pub data_reduction_status: String,
+    pub data_reduction_mode: String,
+    pub is_alua_enabled: bool,
+}
+
+impl IntoPoint for StorageLdev {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        let mut points: Vec<TsPoint> = Vec::new();
+        let mut p = TsPoint::new(name.unwrap_or_else(|| "hitachi_ldev"), is_time_series);
+
+        p.add_field("ldev_id", TsValue::String(convert_to_base16(self.ldev_id)));
+        p.add_field("clpr_id", TsValue::Long(self.clpr_id));
+        p.add_tag(
+            "emulation_type",
+            TsValue::String(self.emulation_type.clone()),
+        );
+        p.add_tag(
+            "byte_format_capacity",
+            TsValue::String(self.byte_format_capacity.clone()),
+        );
+        p.add_field(
+            "block_capacity",
+            TsValue::Long((self.block_capacity * 512) / 1024u64.pow(3)),
+        );
+        p.add_field("num_of_ports", TsValue::Long(self.num_of_ports));
+        for port in &self.ports {
+            let port_points: Vec<TsPoint> = port
+                .into_point(Some("hitachi_ldev_port"), is_time_series)
+                .into_iter()
+                // Tag each port with ldev_id
+                .map(|mut point| {
+                    point.add_field("ldev_id", TsValue::Long(self.ldev_id.clone()));
+                    point
+                })
+                .collect();
+            points.extend(port_points);
+        }
+        p.add_tag("attributes", TsValue::StringVec(self.attributes.clone()));
+        p.add_tag("status", TsValue::String(self.status.clone()));
+        p.add_field("mp_blade_id", TsValue::Long(self.mp_blade_id));
+        p.add_tag("ssid", TsValue::String(self.ssid.clone()));
+        p.add_field("pool_id", TsValue::Long(self.pool_id));
+        p.add_field(
+            "num_of_used_block",
+            TsValue::Long((self.num_of_used_block * 512) / 1024u64.pow(3)),
+        );
+        p.add_field(
+            "is_relocation_enabled",
+            TsValue::Boolean(self.is_relocation_enabled),
+        );
+        p.add_tag("tier_level", TsValue::String(self.tier_level.clone()));
+        p.add_field(
+            "used_capacity_per_tier_level1",
+            TsValue::Long(self.used_capacity_per_tier_level1),
+        );
+        p.add_field(
+            "used_capacity_per_tier_level2",
+            TsValue::Long(self.used_capacity_per_tier_level2),
+        );
+        if let Some(tier_level3) = self.used_capacity_per_tier_level3 {
+            p.add_field("used_capacity_per_tier_level3", TsValue::Long(tier_level3));
+        }
+        p.add_tag(
+            "tier_level_for_new_page_allocation",
+            TsValue::String(self.tier_level_for_new_page_allocation.clone()),
+        );
+        p.add_field("resource_group_id", TsValue::Long(self.resource_group_id));
+        p.add_tag(
+            "data_reduction_status",
+            TsValue::String(self.data_reduction_status.clone()),
+        );
+        p.add_tag(
+            "data_reduction_mode",
+            TsValue::String(self.data_reduction_mode.clone()),
+        );
+        p.add_field("is_alua_enabled", TsValue::Boolean(self.is_alua_enabled));
+
+        points.push(p);
+
+        points
+    }
 }
 
 #[derive(Deserialize, Debug)]
@@ -149,6 +295,34 @@ fn into_values(
     }
 
     ret_vals
+}
+
+#[test]
+fn test_get_storage() {
+    let json = include_str!("../tests/hitachi/config_manager.json");
+    let s: ServerResult<ConfigManagerStorage> = serde_json::from_str(json).unwrap();
+    println!("Result: {:?}", s);
+}
+
+#[test]
+fn test_get_ldev() {
+    let json = include_str!("../tests/hitachi/storage_ldev.json");
+    let storage_id = "2038467351";
+    let s: ServerResult<StorageLdev> = serde_json::from_str(json).unwrap();
+    println!("Result: {:?}", s);
+    let points: Vec<TsPoint> = s
+        .data
+        .iter()
+        // Flatten all the Vec<TsPoint>'s
+        .flat_map(|s| s.into_point(Some("hitachi_ldev"), false))
+        .into_iter()
+        // Tag each with storage_id
+        .map(|mut point| {
+            point.add_tag("storage_id", TsValue::String(storage_id.to_string()));
+            point
+        })
+        .collect();
+    println!("Result: {:#?}", points);
 }
 
 #[test]
@@ -342,6 +516,34 @@ pub struct HitachiConfig {
     /// The region this cluster is located in
     pub region: String,
 }
+#[test]
+fn test_convert_base() {
+    let res = convert_to_base16(139);
+    assert_eq!(res, "8B");
+}
+
+// Algorithm from: http://codeofthedamned.com/index.php/number-base-conversion
+fn convert_to_base16(num: u64) -> String {
+    let symbols: [char; 36] = [
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+        'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+    ];
+    let mut remainder: [u64; 32] = [0; 32];
+    let mut quotient: u64 = num;
+    let mut place: u8 = 0;
+    let mut output = String::new();
+
+    while 0 != quotient {
+        let value: u64 = quotient;
+        remainder[place as usize] = value % 16;
+        quotient = (value - remainder[place as usize]) / 16;
+        place += 1;
+    }
+    for i in 1..=place {
+        output.push(symbols[remainder[(place - i) as usize] as usize]);
+    }
+    output
+}
 
 /// This request obtains the detailed version of the API
 pub fn get_version(client: &reqwest::Client, config: &HitachiConfig) -> MetricsResult<Version> {
@@ -386,7 +588,7 @@ pub fn get_agent_for_nas(
             "http://{}/TuningManager/v1/objects/Agents?agentType=NAS",
             config.endpoint
         ))
-        .basic_auth(config.user.clone(), Some(config.password.clone()))
+        .basic_auth(&config.user, Some(&config.password))
         .header(ACCEPT, "application/json")
         .send()?
         .error_for_status()?
@@ -407,12 +609,54 @@ fn get_server_response(
             "http://{}/TuningManager/v1/objects/{}?hostName={}&agentInstanceName={}",
             config.endpoint, api_call, hostname, agent_instance_name,
         ))
-        .basic_auth(config.user.clone(), Some(config.password.clone()))
+        .basic_auth(&config.user, Some(&config.password))
         .send()?
         .error_for_status()?
         .text()?;
     trace!("server response: {}", content);
     Ok(content)
+}
+
+/// Note this only works with ConfigurationManager
+pub fn get_storage(
+    client: &reqwest::Client,
+    config: &HitachiConfig,
+) -> MetricsResult<ServerResult<ConfigManagerStorage>> {
+    let endpoint = format!(
+        "http://{}/ConfigurationManager/v1/objects/storages",
+        config.endpoint
+    );
+    let s: ServerResult<ConfigManagerStorage> =
+        super::get(&client, &endpoint, &config.user, Some(&config.password))?;
+    Ok(s)
+}
+
+/// Note this only works with ConfigurationManager
+pub fn get_ldev(
+    client: &reqwest::Client,
+    config: &HitachiConfig,
+    storage_id: &str,
+) -> MetricsResult<Vec<TsPoint>> {
+    let endpoint = format!(
+        "http://{}/ConfigurationManager/v1/objects/storages/{}/ldevs?ldevOption=dpVolume",
+        config.endpoint, storage_id
+    );
+    let s: ServerResult<StorageLdev> =
+        super::get(&client, &endpoint, &config.user, Some(&config.password))?;
+    let points = s
+        .data
+        .iter()
+        // Flatten all the Vec<TsPoint>'s
+        .flat_map(|s| s.into_point(Some("hitachi_ldev"), false))
+        .into_iter()
+        // Tag each with storage_device_id
+        .map(|mut point| {
+            point.add_tag("storage_device_id", TsValue::String(storage_id.to_string()));
+            point
+        })
+        .collect();
+
+    Ok(points)
 }
 
 pub fn csv_to_points(
