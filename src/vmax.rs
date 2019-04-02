@@ -1336,29 +1336,23 @@ pub fn get_all_slo_volumes(
         None => vec![],
     };
     while num_iterations != 0 {
-        debug!("Gathered {} volume IDs", all_volume_ids.len());
         let from = all_volume_ids.len() + 1;
-        let mut to = from as u64 + max_count_per_page;
+        let mut to = all_volume_ids.len() as u64 + max_count_per_page;
         if to > vol_count {
             to = vol_count;
         }
-        let body = json! ({
-             "from" : from,
-             "to"   : to
-        });
-        let data: Value = client
-            .post(&format!(
-                "https://{}/univmax/restapi/common/Iterator/{}/page",
-                config.endpoint, iterator_id
-            ))
-            .basic_auth(&config.user, Some(&config.password))
-            .header(ACCEPT, "application/json")
-            .json(&body)
-            .send()?
-            .error_for_status()?
-            .json()?;
+        debug!("Gathering volumes from {} to {}", from, to);
+        let data: Value = super::get(
+            client,
+            &format!(
+                "https://{}/univmax/restapi/common/Iterator/{}/page?from={}&to={}",
+                config.endpoint, iterator_id, from, to
+            ),
+            &config.user,
+            Some(&config.password),
+        )?;
 
-        let v = match data["resultList"]["result"].as_array() {
+        let page_vols = match data["result"].as_array() {
             Some(v) => v
                 .iter()
                 .map(|val| {
@@ -1375,7 +1369,8 @@ pub fn get_all_slo_volumes(
                 .collect(),
             None => vec![],
         };
-        all_volume_ids.extend(v);
+        all_volume_ids.extend(page_vols);
+        debug!("Gathered {} volume IDs", all_volume_ids.len());
         num_iterations -= 1;
     }
     Ok(all_volume_ids)
