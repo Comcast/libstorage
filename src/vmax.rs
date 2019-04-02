@@ -1303,10 +1303,14 @@ pub fn get_all_slo_volumes(
         Some(id) => id,
         None => "",
     };
-    let max_count_per_page = match data["max_page_size"].as_u64() {
+    let max_count_per_page = match data["maxPageSize"].as_u64() {
         Some(count) => count,
         None => 0,
     };
+    debug!(
+        "Volume count {}, max count per page {}, iterator id {}",
+        vol_count, max_count_per_page, iterator_id
+    );
 
     if vol_count == 0 || max_count_per_page == 0 || iterator_id.is_empty() {
         return Ok(vec![]);
