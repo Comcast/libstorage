@@ -213,7 +213,8 @@ impl IntoPoint for StorageGroups {
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize, IntoPoint)]
 pub struct StorageGroup {
-    pub storageGroupId: String,
+    #[serde(rename="storageGroupId")]
+    pub storage_group_id: String,
     pub slo: Option<String>,
     pub srp: Option<String>,
     pub workload: Option<String>,
@@ -426,7 +427,7 @@ pub fn get_slo_array_storagegroup(
         config,
         &format!("sloprovisioning/symmetrix/{}/storagegroup/{}", id, group),
         "slo_array_storagegroup",
-        false,
+        true,
     )?;
     Ok(points)
 }

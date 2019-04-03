@@ -764,7 +764,8 @@ struct HardwareDrive {
     size: u64,
     slot: u64,
     uncorrectable_errors: u64,
-    uuid: Uuid,
+    #[serde(rename="uuid")]
+    hardware_uuid: Uuid,
     vendor: String,
     version: String,
 }
