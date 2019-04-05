@@ -213,7 +213,7 @@ impl IntoPoint for StorageGroups {
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize, IntoPoint)]
 pub struct StorageGroup {
-    #[serde(rename="storageGroupId")]
+    #[serde(rename = "storageGroupId")]
     pub storage_group_id: String,
     pub slo: Option<String>,
     pub srp: Option<String>,
@@ -1218,7 +1218,7 @@ pub struct Volume {
     pub wwn: Option<String>,
     pub encapsulated: Option<bool>,
     pub num_of_storage_groups: Option<u64>,
-    pub num_of_fron_end_paths: Option<u64>,
+    pub num_of_front_end_paths: Option<u64>,
     #[serde(rename = "storageGroupId")]
     pub storage_group_id: Option<Vec<String>>,
     // ignoring these two fields as they are not needed,
@@ -1246,7 +1246,15 @@ fn test_get_vmax_json_volume() {
 
     let i: Volume = serde_json::from_str(&buff).unwrap();
     println!("result: {:#?}", i);
-    println!("point: {:#?}", i.into_point(Some("vmax_slo_volume"), false));
+    let v: Vec<TsPoint> = i
+        .into_point(Some("vmax_slo_volume"), false)
+        .into_iter()
+        .map(|mut v| {
+            v.add_tag("symmetrix_id", TsValue::String("some_string".to_string()));
+            v
+        })
+        .collect();
+    println!("point: {:#?}", v);
 }
 
 #[test]
@@ -1393,5 +1401,12 @@ pub fn get_slo_volume(
         "vmax_slo_volume",
         false,
     )?;
-    Ok(volume)
+    let new_vol = volume
+        .into_iter()
+        .map(|mut v| {
+            v.add_tag("symmetrix_id", TsValue::String(symmetrixid.to_string()));
+            v
+        })
+        .collect();
+    Ok(new_vol)
 }
