@@ -213,7 +213,7 @@ impl IntoPoint for StorageGroups {
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize, IntoPoint)]
 pub struct StorageGroup {
-    #[serde(rename="storageGroupId")]
+    #[serde(rename = "storageGroupId")]
     pub storage_group_id: String,
     pub slo: Option<String>,
     pub srp: Option<String>,
@@ -1218,7 +1218,7 @@ pub struct Volume {
     pub wwn: Option<String>,
     pub encapsulated: Option<bool>,
     pub num_of_storage_groups: Option<u64>,
-    pub num_of_fron_end_paths: Option<u64>,
+    pub num_of_front_end_paths: Option<u64>,
     #[serde(rename = "storageGroupId")]
     pub storage_group_id: Option<Vec<String>>,
     // ignoring these two fields as they are not needed,
