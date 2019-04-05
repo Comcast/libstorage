@@ -1246,7 +1246,15 @@ fn test_get_vmax_json_volume() {
 
     let i: Volume = serde_json::from_str(&buff).unwrap();
     println!("result: {:#?}", i);
-    println!("point: {:#?}", i.into_point(Some("vmax_slo_volume"), false));
+    let v: Vec<TsPoint> = i
+        .into_point(Some("vmax_slo_volume"), false)
+        .into_iter()
+        .map(|mut v| {
+            v.add_tag("symmetrix_id", TsValue::String("some_string".to_string()));
+            v
+        })
+        .collect();
+    println!("point: {:#?}", v);
 }
 
 #[test]
@@ -1393,5 +1401,12 @@ pub fn get_slo_volume(
         "vmax_slo_volume",
         false,
     )?;
-    Ok(volume)
+    let new_vol = volume
+        .into_iter()
+        .map(|mut v| {
+            v.add_tag("symmetrix_id", TsValue::String(symmetrixid.to_string()));
+            v
+        })
+        .collect();
+    Ok(new_vol)
 }
