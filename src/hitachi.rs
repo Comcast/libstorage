@@ -129,7 +129,7 @@ impl IntoPoint for StorageLdev {
                 .into_iter()
                 // Tag each port with ldev_id
                 .map(|mut point| {
-                    point.add_field("ldev_id", TsValue::Long(self.ldev_id.clone()));
+                    point.add_tag("ldev_id", TsValue::String(convert_to_base16(self.ldev_id.clone())));
                     point
                 })
                 .collect();
