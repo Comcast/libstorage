@@ -426,7 +426,7 @@ pub fn get_slo_array_storagegroup(
         client,
         config,
         &format!("sloprovisioning/symmetrix/{}/storagegroup/{}", id, group),
-        "slo_array_storagegroup",
+        "vmax_slo_array_storagegroup",
         false,
     )?;
     let points_with_symid = points
