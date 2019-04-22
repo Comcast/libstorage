@@ -426,10 +426,17 @@ pub fn get_slo_array_storagegroup(
         client,
         config,
         &format!("sloprovisioning/symmetrix/{}/storagegroup/{}", id, group),
-        "slo_array_storagegroup",
-        true,
+        "vmax_slo_array_storagegroup",
+        false,
     )?;
-    Ok(points)
+    let points_with_symid = points
+        .into_iter()
+        .map(|mut s| {
+            s.add_tag("symmetrix_id", TsValue::String(id.to_string()));
+            s
+        })
+        .collect();
+    Ok(points_with_symid)
 }
 
 //START Section for Collecting VMAX Front-End Port list and Front-End Port Metrics
@@ -1399,7 +1406,7 @@ pub fn get_slo_volume(
             symmetrixid, volume_id
         ),
         "vmax_slo_volume",
-        false,
+        true,
     )?;
     let new_vol = volume
         .into_iter()
