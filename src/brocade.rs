@@ -1,3 +1,11 @@
+use crate::error::{MetricsResult, StorageError};
+use crate::ir::{TsPoint, TsValue};
+use crate::IntoPoint;
+use chrono::offset::Utc;
+use chrono::DateTime;
+use log::{error, trace};
+use reqwest::header::{HeaderMap, HeaderValue, ACCEPT};
+use serde::de::DeserializeOwned;
 /**
 * Copyright 2019 Comcast Cable Communications Management, LLC
 *
@@ -16,14 +24,6 @@
 * SPDX-License-Identifier: Apache-2.0
 */
 use std::fmt::Debug;
-use crate::error::{MetricsResult, StorageError};
-use crate::ir::{TsPoint, TsValue};
-use crate::IntoPoint;
-use chrono::offset::Utc;
-use chrono::DateTime;
-use log::trace;
-use reqwest::header::{HeaderMap, HeaderValue, ACCEPT};
-use serde::de::DeserializeOwned;
 
 #[derive(Clone, Deserialize, Debug)]
 pub struct BrocadeConfig {
@@ -40,6 +40,32 @@ pub struct BrocadeConfig {
     pub root_certificate: Option<String>,
     /// The region this cluster is located in
     pub region: String,
+}
+
+pub struct Brocade {
+    client: reqwest::Client,
+    config: BrocadeConfig,
+    token: String,
+}
+
+impl Brocade {
+    /// Initialize and connect to a Brocade switch. 
+    pub fn new(client: &reqwest::Client, config: BrocadeConfig) -> MetricsResult<Self> {
+        let token = login(&client, &config)?;
+        Ok(Brocade {
+            client: client.clone(),
+            config,
+            token,
+        })
+    }
+}
+
+impl Drop for Brocade {
+    fn drop(&mut self) {
+        if let Err(e) = logout(&self.client, &self.config, &self.token) {
+            error!("logout failed: {}", e);
+        }
+    }
 }
 
 #[test]
@@ -546,163 +572,136 @@ pub fn logout(client: &reqwest::Client, config: &BrocadeConfig, token: &str) -> 
         .error_for_status()?;
     Ok(())
 }
-
-pub fn get_fc_fabrics(
-    client: &reqwest::Client,
-    config: &BrocadeConfig,
-    ws_token: &str,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    let result = get_server_response::<FcFabrics>(
-        &client,
-        &config,
-        "resourcegroups/All/fcfabrics",
-        ws_token,
-    )?;
-    let mut points = result
-        .fc_fabrics
-        .iter()
-        .flat_map(|fabric| fabric.into_point(Some("brocade_fc_fabric"), true))
-        .collect::<Vec<TsPoint>>();
-    for point in &mut points {
-        point.timestamp = Some(t)
-    }
-    Ok(points)
-}
-
-pub fn get_fc_switch_timeseries(
-    _client: &reqwest::Client,
-    _config: &BrocadeConfig,
-    _ws_token: &str,
-    switch_key: &str,
-    timeseries: TimeSeries,
-) -> MetricsResult<()> {
-    // TODO: Not sure if these performance metrics need to be enabled on the switches first
-    let _url = format!(
-        "resourcegroups/All/fcswitches/{}/{}?duration=360",
-        switch_key,
-        match timeseries {
-            TimeSeries::Fc(ts) => ts.to_string(),
-            TimeSeries::FcIp(ts) => ts.to_string(),
-        }
-    );
-    Ok(())
-}
-
-pub fn get_fc_fabric_timeseries(
-    _client: &reqwest::Client,
-    _config: &BrocadeConfig,
-    _ws_token: &str,
-    fabric_key: &str,
-    timeseries: &FabricTimeSeries,
-) -> MetricsResult<()> {
-    // TODO: Not sure if these performance metrics need to be enabled on the switches first
-    let _url = format!(
-        "resourcegroups/All/fcfabrics/{}/{}?duration=360",
-        fabric_key,
-        timeseries.to_string(),
-    );
-
-    Ok(())
-}
-
-pub fn get_fc_fabric_ids(
-    client: &reqwest::Client,
-    config: &BrocadeConfig,
-    ws_token: &str,
-) -> MetricsResult<Vec<String>> {
-    let result = get_server_response::<FcFabrics>(
-        &client,
-        &config,
-        "resourcegroups/All/fcfabrics",
-        ws_token,
-    )
-    .and_then(|fabrics| {
-        let fabrics: Vec<String> = fabrics
+impl Brocade {
+    pub fn get_fc_fabrics(&self, t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
+        let result = get_server_response::<FcFabrics>(
+            &self.client,
+            &self.config,
+            "resourcegroups/All/fcfabrics",
+            &self.token,
+        )?;
+        let mut points = result
             .fc_fabrics
             .iter()
-            .map(|fabric| fabric.key.clone())
-            .collect::<Vec<String>>();
-        Ok(fabrics)
-    })?;
-    Ok(result)
-}
-
-pub fn get_fc_ports(
-    client: &reqwest::Client,
-    config: &BrocadeConfig,
-    ws_token: &str,
-    fabric_key: &str,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    let result = get_server_response::<FcPorts>(
-        &client,
-        &config,
-        &format!("resourcegroups/All/fcswitches/{}/fcports", fabric_key),
-        ws_token,
-    )?;
-    let mut points = result
-        .fc_ports
-        .iter()
-        .flat_map(|port| port.into_point(Some("brocade_fc_port"), true))
-        .collect::<Vec<TsPoint>>();
-    for point in &mut points {
-        point.timestamp = Some(t)
+            .flat_map(|fabric| fabric.into_point(Some("brocade_fc_fabric"), true))
+            .collect::<Vec<TsPoint>>();
+        for point in &mut points {
+            point.timestamp = Some(t)
+        }
+        Ok(points)
     }
-    Ok(points)
-}
 
-pub fn get_fc_switch_ids(
-    client: &reqwest::Client,
-    config: &BrocadeConfig,
-    ws_token: &str,
-) -> MetricsResult<Vec<String>> {
-    let result = get_server_response::<FcSwitches>(
-        &client,
-        &config,
-        "resourcegroups/All/fcswitches",
-        ws_token,
-    )
-    .and_then(|switches| {
-        let switches: Vec<String> = switches
+    pub fn get_fc_switch_timeseries(
+        &self,
+        switch_key: &str,
+        timeseries: TimeSeries,
+    ) -> MetricsResult<()> {
+        // TODO: Not sure if these performance metrics need to be enabled on the switches first
+        let _url = format!(
+            "resourcegroups/All/fcswitches/{}/{}?duration=360",
+            switch_key,
+            match timeseries {
+                TimeSeries::Fc(ts) => ts.to_string(),
+                TimeSeries::FcIp(ts) => ts.to_string(),
+            }
+        );
+        Ok(())
+    }
+
+    pub fn get_fc_fabric_timeseries(
+        &self,
+        fabric_key: &str,
+        timeseries: &FabricTimeSeries,
+    ) -> MetricsResult<()> {
+        // TODO: Not sure if these performance metrics need to be enabled on the switches first
+        let _url = format!(
+            "resourcegroups/All/fcfabrics/{}/{}?duration=360",
+            fabric_key,
+            timeseries.to_string(),
+        );
+
+        Ok(())
+    }
+
+    pub fn get_fc_fabric_ids(&self) -> MetricsResult<Vec<String>> {
+        let result = get_server_response::<FcFabrics>(
+            &self.client,
+            &self.config,
+            "resourcegroups/All/fcfabrics",
+            &self.token,
+        )
+        .and_then(|fabrics| {
+            let fabrics: Vec<String> = fabrics
+                .fc_fabrics
+                .iter()
+                .map(|fabric| fabric.key.clone())
+                .collect::<Vec<String>>();
+            Ok(fabrics)
+        })?;
+        Ok(result)
+    }
+
+    pub fn get_fc_ports(&self, fabric_key: &str, t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
+        let result = get_server_response::<FcPorts>(
+            &self.client,
+            &self.config,
+            &format!("resourcegroups/All/fcswitches/{}/fcports", fabric_key),
+            &self.token,
+        )?;
+        let mut points = result
+            .fc_ports
+            .iter()
+            .flat_map(|port| port.into_point(Some("brocade_fc_port"), true))
+            .collect::<Vec<TsPoint>>();
+        for point in &mut points {
+            point.timestamp = Some(t)
+        }
+        Ok(points)
+    }
+
+    pub fn get_fc_switch_ids(&self) -> MetricsResult<Vec<String>> {
+        let result = get_server_response::<FcSwitches>(
+            &self.client,
+            &self.config,
+            "resourcegroups/All/fcswitches",
+            &self.token,
+        )
+        .and_then(|switches| {
+            let switches: Vec<String> = switches
+                .fc_switches
+                .iter()
+                .map(|switch| switch.key.clone())
+                .collect::<Vec<String>>();
+            Ok(switches)
+        })?;
+        Ok(result)
+    }
+
+    pub fn get_fc_switches(&self, t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
+        let result = get_server_response::<FcSwitches>(
+            &self.client,
+            &self.config,
+            "resourcegroups/All/fcswitches",
+            &self.token,
+        )?;
+        let mut points = result
             .fc_switches
             .iter()
-            .map(|switch| switch.key.clone())
-            .collect::<Vec<String>>();
-        Ok(switches)
-    })?;
-    Ok(result)
-}
-
-pub fn get_fc_switches(
-    client: &reqwest::Client,
-    config: &BrocadeConfig,
-    ws_token: &str,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    let result = get_server_response::<FcSwitches>(
-        &client,
-        &config,
-        "resourcegroups/All/fcswitches",
-        ws_token,
-    )?;
-    let mut points = result
-        .fc_switches
-        .iter()
-        .flat_map(|switch| switch.into_point(Some("brocade_fc_switch"), true))
-        .collect::<Vec<TsPoint>>();
-    for point in &mut points {
-        point.timestamp = Some(t)
+            .flat_map(|switch| switch.into_point(Some("brocade_fc_switch"), true))
+            .collect::<Vec<TsPoint>>();
+        for point in &mut points {
+            point.timestamp = Some(t)
+        }
+        Ok(points)
     }
-    Ok(points)
-}
 
-pub fn get_resource_groups(
-    client: &reqwest::Client,
-    config: &BrocadeConfig,
-    ws_token: &str,
-) -> MetricsResult<ResourceGroups> {
-    let result =
-        get_server_response::<ResourceGroups>(&client, &config, "resourcegroups", ws_token)?;
-    Ok(result)
+    pub fn get_resource_groups(&self) -> MetricsResult<ResourceGroups> {
+        let result = get_server_response::<ResourceGroups>(
+            &self.client,
+            &self.config,
+            "resourcegroups",
+            &self.token,
+        )?;
+        Ok(result)
+    }
 }
