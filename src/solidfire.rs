@@ -28,7 +28,7 @@ use log::debug;
 use serde::de::DeserializeOwned;
 use uuid::Uuid;
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)]
 pub struct SolidfireConfig {
     /// The solidfire endpoint to use
     pub endpoint: String,
@@ -39,6 +39,20 @@ pub struct SolidfireConfig {
     pub certificate: Option<String>,
     /// The region this cluster is located in
     pub region: String,
+}
+
+pub struct Solidfire {
+    client: reqwest::Client,
+    config: SolidfireConfig,
+}
+
+impl Solidfire {
+    pub fn new(client: &reqwest::Client, config: SolidfireConfig) -> Self {
+        Solidfire {
+            client: client.clone(),
+            config,
+        }
+    }
 }
 
 #[derive(Debug, Deserialize, IntoPoint)]
@@ -764,7 +778,7 @@ struct HardwareDrive {
     size: u64,
     slot: u64,
     uncorrectable_errors: u64,
-    #[serde(rename="uuid")]
+    #[serde(rename = "uuid")]
     hardware_uuid: Uuid,
     vendor: String,
     version: String,
@@ -872,177 +886,146 @@ fn test_list_sf_nodes() {
     println!("JsonResult: {:?}", r);
 }
 
-// Call out to solidfire and return the result as a json deserialized struct
-pub fn get<T>(
-    client: &reqwest::Client,
-    config: &SolidfireConfig,
-    method: &str,
-    params: Option<HashMap<String, String>>,
-    force: bool,
-) -> MetricsResult<T>
-where
-    T: DeserializeOwned + Debug,
-{
-    let mut url = format!("https://{}/json-rpc/8.4?method={}", config.endpoint, method);
-    if force {
-        url.push_str("&force=true");
-    }
-    if let Some(p) = params {
-        url.push_str(
-            &p.into_iter()
-                .map(|(k, v)| format!("&{}={}", k, v))
-                .collect::<Vec<String>>()
-                .join(""),
+impl Solidfire {
+    // Call out to solidfire and return the result as a json deserialized struct
+    pub fn get<T>(
+        &self,
+        method: &str,
+        params: Option<HashMap<String, String>>,
+        force: bool,
+    ) -> MetricsResult<T>
+    where
+        T: DeserializeOwned + Debug,
+    {
+        let mut url = format!(
+            "https://{}/json-rpc/8.4?method={}",
+            self.config.endpoint, method
         );
+        if force {
+            url.push_str("&force=true");
+        }
+        if let Some(p) = params {
+            url.push_str(
+                &p.into_iter()
+                    .map(|(k, v)| format!("&{}={}", k, v))
+                    .collect::<Vec<String>>()
+                    .join(""),
+            );
+        }
+        let j: T = crate::get(
+            &self.client,
+            &url,
+            &self.config.user,
+            Some(&self.config.password),
+        )?;
+
+        Ok(j)
     }
-    let j: T = crate::get(&client, &url, &config.user, Some(&config.password))?;
 
-    Ok(j)
-}
+    pub fn get_drive_hardware_info(&self, t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
+        debug!("get_hardware_info");
+        let info = self.get::<JsonResult<HardwareNodes>>("ListDriveHardware", None, true)?;
+        Ok(info
+            .result
+            .into_point(Some("solidfire_drive_hardware"), true)
+            .into_iter()
+            .map(|mut p| {
+                p.timestamp = Some(t);
+                p
+            })
+            .collect::<Vec<TsPoint>>())
+    }
 
-pub fn get_drive_hardware_info(
-    client: &reqwest::Client,
-    config: &SolidfireConfig,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    debug!("get_hardware_info");
-    let info = get::<JsonResult<HardwareNodes>>(&client, &config, "ListDriveHardware", None, true)?;
-    Ok(info
-        .result
-        .into_point(Some("solidfire_drive_hardware"), true)
-        .into_iter()
-        .map(|mut p| {
-            p.timestamp = Some(t);
-            p
-        })
-        .collect::<Vec<TsPoint>>())
-}
+    pub fn get_cluster_capacity(&self, t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
+        debug!("get_cluster_capacity");
+        let info =
+            self.get::<JsonResult<ClusterCapacityResult>>("GetClusterCapacity", None, false)?;
+        Ok(info
+            .result
+            .into_point(Some("solidfire_cluster_capacity"), true)
+            .into_iter()
+            .map(|mut p| {
+                p.timestamp = Some(t);
+                p
+            })
+            .collect::<Vec<TsPoint>>())
+    }
 
-pub fn get_cluster_capacity(
-    client: &reqwest::Client,
-    config: &SolidfireConfig,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    debug!("get_cluster_capacity");
-    let info = get::<JsonResult<ClusterCapacityResult>>(
-        &client,
-        &config,
-        "GetClusterCapacity",
-        None,
-        false,
-    )?;
-    Ok(info
-        .result
-        .into_point(Some("solidfire_cluster_capacity"), true)
-        .into_iter()
-        .map(|mut p| {
-            p.timestamp = Some(t);
-            p
-        })
-        .collect::<Vec<TsPoint>>())
-}
+    pub fn get_cluster_fullness(&self, t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
+        debug!("get_cluster_fullness");
+        let info =
+            self.get::<JsonResult<ClusterFullThreshold>>("GetClusterFullThreshold", None, false)?;
+        Ok(info
+            .result
+            .into_point(Some("solidfire_cluster_full_threshold"), true)
+            .into_iter()
+            .map(|mut p| {
+                p.timestamp = Some(t);
+                p
+            })
+            .collect::<Vec<TsPoint>>())
+    }
 
-pub fn get_cluster_fullness(
-    client: &reqwest::Client,
-    config: &SolidfireConfig,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    debug!("get_cluster_fullness");
-    let info = get::<JsonResult<ClusterFullThreshold>>(
-        &client,
-        &config,
-        "GetClusterFullThreshold",
-        None,
-        false,
-    )?;
-    Ok(info
-        .result
-        .into_point(Some("solidfire_cluster_full_threshold"), true)
-        .into_iter()
-        .map(|mut p| {
-            p.timestamp = Some(t);
-            p
-        })
-        .collect::<Vec<TsPoint>>())
-}
+    pub fn get_cluster_info(&self) -> MetricsResult<ClusterInfoResult> {
+        debug!("get_cluster_info");
+        let info = self.get::<JsonResult<ClusterInfoResult>>("GetClusterInfo", None, false)?;
+        Ok(info.result)
+    }
 
-pub fn get_cluster_info(
-    client: &reqwest::Client,
-    config: &SolidfireConfig,
-) -> MetricsResult<ClusterInfoResult> {
-    debug!("get_cluster_info");
-    let info =
-        get::<JsonResult<ClusterInfoResult>>(&client, &config, "GetClusterInfo", None, false)?;
-    Ok(info.result)
-}
+    pub fn get_cluster_stats(&self, t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
+        debug!("get_cluster_stats");
+        let info = self.get::<JsonResult<ClusterStatsResult>>("GetClusterStats", None, false)?;
+        Ok(info
+            .result
+            .into_point(Some("solidfire_cluster_stats"), true)
+            .into_iter()
+            .map(|mut p| {
+                p.timestamp = Some(t);
+                p
+            })
+            .collect::<Vec<TsPoint>>())
+    }
 
-pub fn get_cluster_stats(
-    client: &reqwest::Client,
-    config: &SolidfireConfig,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    debug!("get_cluster_stats");
-    let info =
-        get::<JsonResult<ClusterStatsResult>>(&client, &config, "GetClusterStats", None, false)?;
-    Ok(info
-        .result
-        .into_point(Some("solidfire_cluster_stats"), true)
-        .into_iter()
-        .map(|mut p| {
-            p.timestamp = Some(t);
-            p
-        })
-        .collect::<Vec<TsPoint>>())
-}
+    pub fn get_volume_stats(
+        &self,
+        volume_id: u64,
+        t: DateTime<Utc>,
+    ) -> MetricsResult<Vec<TsPoint>> {
+        let mut params = HashMap::new();
+        params.insert("volumeID".to_string(), volume_id.to_string());
 
-pub fn get_volume_stats(
-    client: &reqwest::Client,
-    config: &SolidfireConfig,
-    volume_id: u64,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    let mut params = HashMap::new();
-    params.insert("volumeID".to_string(), volume_id.to_string());
+        debug!("get_volume_stats");
+        let info =
+            self.get::<JsonResult<VolumeStatsResult>>("GetVolumeStats", Some(params), false)?;
+        Ok(info
+            .result
+            .into_point(Some("solidfire_volume_stats"), true)
+            .into_iter()
+            .map(|mut p| {
+                p.timestamp = Some(t);
+                p
+            })
+            .collect::<Vec<TsPoint>>())
+    }
 
-    debug!("get_volume_stats");
-    let info = get::<JsonResult<VolumeStatsResult>>(
-        &client,
-        &config,
-        "GetVolumeStats",
-        Some(params),
-        false,
-    )?;
-    Ok(info
-        .result
-        .into_point(Some("solidfire_volume_stats"), true)
-        .into_iter()
-        .map(|mut p| {
-            p.timestamp = Some(t);
-            p
-        })
-        .collect::<Vec<TsPoint>>())
-}
+    //pub fn get_node_stats() -> MetricsResult<Vec<TsPoint>> {
+    //
+    //}
 
-//pub fn get_node_stats() -> MetricsResult<Vec<TsPoint>> {
-//
-//}
+    pub fn list_volumes(&self) -> MetricsResult<Volumes> {
+        debug!("list_volumes");
+        let info = self.get::<JsonResult<Volumes>>("ListVolumes", None, false)?;
+        Ok(info.result)
+    }
 
-pub fn list_volumes(client: &reqwest::Client, config: &SolidfireConfig) -> MetricsResult<Volumes> {
-    debug!("list_volumes");
-    let info = get::<JsonResult<Volumes>>(&client, &config, "ListVolumes", None, false)?;
-    Ok(info.result)
-}
-
-pub fn list_volume_ids(
-    client: &reqwest::Client,
-    config: &SolidfireConfig,
-) -> MetricsResult<Vec<u64>> {
-    debug!("list_volume_ids");
-    let info = get::<JsonResult<Volumes>>(&client, &config, "ListVolumes", None, false)?;
-    Ok(info
-        .result
-        .volumes
-        .into_iter()
-        .map(|v| v.volume_id)
-        .collect::<Vec<u64>>())
+    pub fn list_volume_ids(&self) -> MetricsResult<Vec<u64>> {
+        debug!("list_volume_ids");
+        let info = self.get::<JsonResult<Volumes>>("ListVolumes", None, false)?;
+        Ok(info
+            .result
+            .volumes
+            .into_iter()
+            .map(|v| v.volume_id)
+            .collect::<Vec<u64>>())
+    }
 }

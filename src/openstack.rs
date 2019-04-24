@@ -44,6 +44,11 @@ pub struct OpenstackConfig {
     pub region: String,
 }
 
+pub struct Openstack {
+    client: reqwest::Client,
+    config: OpenstackConfig,
+}
+
 #[derive(Deserialize, Debug)]
 pub struct Domain {
     pub description: String,
@@ -309,107 +314,129 @@ impl IntoPoint for Volumes {
     }
 }
 
-fn get<T>(client: &reqwest::Client, config: &OpenstackConfig, api: &str) -> MetricsResult<T>
-where
-    T: DeserializeOwned + Debug,
-{
-    let url = match config.port {
-        Some(port) => format!("https://{}:{}/{}", config.endpoint, port, api),
-        None => format!("https://{}/{}", config.endpoint, api),
-    };
+impl Openstack {
+    pub fn new(client: &reqwest::Client, config: OpenstackConfig) -> Self {
+        Openstack {
+            client: client.clone(),
+            config,
+        }
+    }
 
-    // This could be more efficient by deserializing immediately but when errors
-    // occur it can be really difficult to debug.
-    let res: Result<String, reqwest::Error> = client
-        .get(&url)
-        .header(
-            HeaderName::from_str("X-Auth-Token")?,
-            HeaderValue::from_str(&config.password)?,
-        )
-        .send()?
-        .error_for_status()?
-        .text();
-    debug!("raw response: {:?}", res);
-    let res = serde_json::from_str(&res?);
-    Ok(res?)
-}
+    fn get<T>(&self, api: &str) -> MetricsResult<T>
+    where
+        T: DeserializeOwned + Debug,
+    {
+        let url = match self.config.port {
+            Some(port) => format!("https://{}:{}/{}", self.config.endpoint, port, api),
+            None => format!("https://{}/{}", self.config.endpoint, api),
+        };
 
-// Connect to the metadata server and request a new api token
-pub fn get_api_token(client: &reqwest::Client, config: &mut OpenstackConfig) -> MetricsResult<()> {
-    let auth_json = json!({
-        "auth": {
-            "identity": {
-                "methods": ["password"],
-                "password": {
-                    "user": {
-                        "name": config.user,
-                        "domain": {
-                            "name": config.domain,
-                        },
-                        "password": config.password,
+        // This could be more efficient by deserializing immediately but when errors
+        // occur it can be really difficult to debug.
+        let res: Result<String, reqwest::Error> = self
+            .client
+            .get(&url)
+            .header(
+                HeaderName::from_str("X-Auth-Token")?,
+                HeaderValue::from_str(&self.config.password)?,
+            )
+            .send()?
+            .error_for_status()?
+            .text();
+        debug!("raw response: {:?}", res);
+        let res = serde_json::from_str(&res?);
+        Ok(res?)
+    }
+
+    // Connect to the metadata server and request a new api token
+    pub fn get_api_token(&mut self) -> MetricsResult<()> {
+        let auth_json = json!({
+            "auth": {
+                "identity": {
+                    "methods": ["password"],
+                    "password": {
+                        "user": {
+                            "name": self.config.user,
+                            "domain": {
+                                "name": self.config.domain,
+                            },
+                            "password": self.config.password,
+                        }
                     }
-                }
-            },
-           "scope": {
-               "project": {
-                   "name": config.project_name,
-                   "domain": {
-                       "name": "comcast",
+                },
+               "scope": {
+                   "project": {
+                       "name": self.config.project_name,
+                       "domain": {
+                           "name": "comcast",
+                       }
                    }
                }
-           }
-        }
-    });
-    let url = match config.port {
-        Some(port) => format!("https://{}:{}/v3/auth/tokens", config.endpoint, port),
-        None => format!("https://{}/v3/auth/tokens", config.endpoint),
-    };
-    let resp = client
-        .post(&url)
-        .json(&auth_json)
-        .send()?
-        .error_for_status()?;
-    match resp.status() {
-        StatusCode::OK | StatusCode::CREATED => {
-            // ok we're good
-            let h = resp.headers();
-
-            let token = h.get("X-Subject-Token");
-            if token.is_none() {
-                return Err(StorageError::new(
-                    "openstack token not found in header".to_string(),
-                ));
             }
-            config.password = token.unwrap().to_str()?.to_owned();
-            Ok(())
+        });
+        let url = match self.config.port {
+            Some(port) => format!("https://{}:{}/v3/auth/tokens", self.config.endpoint, port),
+            None => format!("https://{}/v3/auth/tokens", self.config.endpoint),
+        };
+        let resp = self
+            .client
+            .post(&url)
+            .json(&auth_json)
+            .send()?
+            .error_for_status()?;
+        match resp.status() {
+            StatusCode::OK | StatusCode::CREATED => {
+                // ok we're good
+                let h = resp.headers();
+
+                let token = h.get("X-Subject-Token");
+                if token.is_none() {
+                    return Err(StorageError::new(
+                        "openstack token not found in header".to_string(),
+                    ));
+                }
+                self.config.password = token.unwrap().to_str()?.to_owned();
+                Ok(())
+            }
+            StatusCode::UNAUTHORIZED => Err(StorageError::new(format!(
+                "Invalid credentials for {}",
+                self.config.user
+            ))),
+            _ => Err(StorageError::new(format!(
+                "Unknown error: {}",
+                resp.status()
+            ))),
         }
-        StatusCode::UNAUTHORIZED => Err(StorageError::new(format!(
-            "Invalid credentials for {}",
-            config.user
-        ))),
-        _ => Err(StorageError::new(format!(
-            "Unknown error: {}",
-            resp.status()
-        ))),
     }
-}
 
-pub fn list_domains(
-    client: &reqwest::Client,
-    config: &OpenstackConfig,
-) -> MetricsResult<Vec<Domain>> {
-    let domains: Domains = get(&client, &config, "v3/domains")?;
+    pub fn list_domains(&self) -> MetricsResult<Vec<Domain>> {
+        let domains: Domains = self.get("v3/domains")?;
+        Ok(domains.domains)
+    }
 
-    Ok(domains.domains)
-}
+    pub fn list_projects(&self) -> MetricsResult<Vec<Project>> {
+        let projects: Projects = self.get("v3/projects")?;
+        Ok(projects.projects)
+    }
 
-pub fn list_projects(
-    client: &reqwest::Client,
-    config: &OpenstackConfig,
-) -> MetricsResult<Vec<Project>> {
-    let projects: Projects = get(&client, &config, "v3/projects")?;
+    pub fn list_servers(&self) -> MetricsResult<Vec<TsPoint>> {
+        let servers: Servers = self.get("v2.1/servers/detail")?;
+        Ok(servers.into_point(Some("openstack_server"), false))
+    }
 
-    Ok(projects.projects)
+    pub fn list_volumes(&self, project_id: &str) -> MetricsResult<Vec<TsPoint>> {
+        let volumes: Volumes = self.get(&format!(
+            "v3/{}/volumes/detail?all_tenants=True",
+            project_id
+        ))?;
+
+        Ok(volumes.into_point(Some("openstack_volume"), true))
+    }
+
+    pub fn get_user(&self, user_id: &str) -> MetricsResult<User> {
+        let user: UserRoot = self.get(&format!("/v3/users/{}", user_id))?;
+        Ok(user.user)
+    }
 }
 
 #[test]
@@ -425,30 +452,6 @@ fn test_list_openstack_servers() {
     println!("result: {:#?}", i);
     println!("result points: {:#?}", i.into_point(None, false));
 }
-
-pub fn list_servers(
-    client: &reqwest::Client,
-    config: &OpenstackConfig,
-) -> MetricsResult<Vec<TsPoint>> {
-    let servers: Servers = get(&client, &config, "v2.1/servers/detail")?;
-
-    Ok(servers.into_point(Some("openstack_server"), false))
-}
-
-pub fn list_volumes(
-    client: &reqwest::Client,
-    config: &OpenstackConfig,
-    project_id: &str,
-) -> MetricsResult<Vec<TsPoint>> {
-    let volumes: Volumes = get(
-        &client,
-        &config,
-        &format!("v3/{}/volumes/detail?all_tenants=True", project_id),
-    )?;
-
-    Ok(volumes.into_point(Some("openstack_volume"), true))
-}
-
 #[test]
 fn test_list_openstack_volumes() {
     use std::fs::File;
@@ -461,17 +464,6 @@ fn test_list_openstack_volumes() {
     let i: Volumes = serde_json::from_str(&buff).unwrap();
     println!("result: {:#?}", i);
 }
-
-pub fn get_user(
-    client: &reqwest::Client,
-    config: &OpenstackConfig,
-    user_id: &str,
-) -> MetricsResult<User> {
-    let user: UserRoot = get(&client, &config, &format!("/v3/users/{}", user_id))?;
-
-    Ok(user.user)
-}
-
 #[test]
 fn test_get_openstack_user() {
     use std::fs::File;

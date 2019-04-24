@@ -40,7 +40,7 @@ use nom::IResult;
 use reqwest::header::CONTENT_TYPE;
 use serde::de::DeserializeOwned;
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)]
 pub struct ScaleioConfig {
     /// The scaleio endpoint to use
     pub endpoint: String,
@@ -56,6 +56,22 @@ pub struct ScaleioConfig {
     pub bandwidth_limit: Option<u64>,
     /// iops limit for new volumes in this cluster
     pub iops_limit: Option<u64>,
+}
+
+pub struct Scaleio {
+    client: reqwest::Client,
+    config: ScaleioConfig,
+}
+
+impl Scaleio {
+    pub fn new(client: &reqwest::Client, mut config: ScaleioConfig) -> MetricsResult<Self> {
+        let token = get_api_token(&client, &config)?;
+        config.password = token;
+        Ok(Scaleio {
+            client: client.clone(),
+            config,
+        })
+    }
 }
 
 #[test]
@@ -1424,168 +1440,159 @@ pub fn get_api_token(client: &reqwest::Client, config: &ScaleioConfig) -> Metric
     }
 }
 
-// Get the basic cluster configuration
-pub fn get_configuration(
-    client: &reqwest::Client,
-    config: &ScaleioConfig,
-) -> MetricsResult<SystemConfig> {
-    // Ask scaleio for the system configuration information
-    let sys_config = get::<SystemConfig>(&client, &config, "Configuration")?;
-    Ok(sys_config)
-}
+impl Scaleio {
+    // Get the basic cluster configuration
+    pub fn get_configuration(&self) -> MetricsResult<SystemConfig> {
+        // Ask scaleio for the system configuration information
+        let sys_config = get::<SystemConfig>(&self.client, &self.config, "Configuration")?;
+        Ok(sys_config)
+    }
 
-// Dump all drive information.  Call get_sds_object afterwards to turn the sdsId into
-// more useful information
-pub fn get_drive_instances(
-    client: &reqwest::Client,
-    config: &ScaleioConfig,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    let instances =
-        get::<Vec<Instance>>(&client, &config, "types/Device/instances").and_then(|instance| {
+    // Dump all drive information.  Call get_sds_object afterwards to turn the sdsId into
+    // more useful information
+    pub fn get_drive_instances(&self, t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
+        let instances = get::<Vec<Instance>>(&self.client, &self.config, "types/Device/instances")
+            .and_then(|instance| {
+                let points: Vec<TsPoint> = instance
+                    .iter()
+                    .flat_map(|instance| instance.into_point(Some("scaleio_drive"), true))
+                    .map(|mut point| {
+                        point.timestamp = Some(t);
+                        point
+                    })
+                    .collect();
+                Ok(points)
+            })?;
+        Ok(instances)
+    }
+
+    pub fn get_drive_ids(&self) -> MetricsResult<Vec<String>> {
+        let instance_ids =
+            get::<Vec<Instance>>(&self.client, &self.config, "types/Device/instances").and_then(
+                |instances| {
+                    let ids = instances
+                        .iter()
+                        .map(|instance| instance.id.clone())
+                        .collect::<Vec<String>>();
+                    Ok(ids)
+                },
+            )?;
+        Ok(instance_ids)
+    }
+
+    pub fn get_sds_ids(&self) -> MetricsResult<Vec<String>> {
+        let sds_ids = get::<Vec<SdsObject>>(&self.client, &self.config, "types/Sds/instances")
+            .and_then(|sds_objects| {
+                let ids = sds_objects
+                    .iter()
+                    .map(|sds| sds.id.clone())
+                    .collect::<Vec<String>>();
+                Ok(ids)
+            })?;
+
+        Ok(sds_ids)
+    }
+
+    pub fn get_sds_statistics(
+        &self,
+        t: DateTime<Utc>,
+        sds_id: &str,
+    ) -> MetricsResult<Vec<TsPoint>> {
+        let instance_statistics = get::<SdsStatistics>(
+            &self.client,
+            &self.config,
+            &format!("instances/Sds::{}/relationships/Statistics", sds_id),
+        )
+        .and_then(|instance| {
             let points: Vec<TsPoint> = instance
-                .iter()
-                .flat_map(|instance| instance.into_point(Some("scaleio_drive"), true))
-                .map(|mut point| {
+                .into_point(Some("scaleio_sds_stat"), true)
+                .iter_mut()
+                .map(|point| {
                     point.timestamp = Some(t);
-                    point
+                    point.add_tag("sds_id", TsValue::String(sds_id.to_string()));
+                    point.clone()
                 })
                 .collect();
             Ok(points)
         })?;
-    Ok(instances)
-}
 
-pub fn get_drive_ids(
-    client: &reqwest::Client,
-    config: &ScaleioConfig,
-) -> MetricsResult<Vec<String>> {
-    let instance_ids =
-        get::<Vec<Instance>>(&client, &config, "types/Device/instances").and_then(|instances| {
-            let ids = instances
-                .iter()
-                .map(|instance| instance.id.clone())
-                .collect::<Vec<String>>();
-            Ok(ids)
+        Ok(instance_statistics)
+    }
+
+    pub fn get_drive_statistics(
+        &self,
+        t: DateTime<Utc>,
+        device_id: &str,
+    ) -> MetricsResult<Vec<TsPoint>> {
+        let instance_statistics = get::<DeviceStatistics>(
+            &self.client,
+            &self.config,
+            &format!("instances/Device::{}/relationships/Statistics", device_id),
+        )
+        .and_then(|instance| {
+            let points: Vec<TsPoint> = instance
+                .into_point(Some("scaleio_drive_stat"), true)
+                .iter_mut()
+                .map(|point| {
+                    point.timestamp = Some(t);
+                    point.add_tag("device_id", TsValue::String(device_id.to_string()));
+                    point.clone()
+                })
+                .collect();
+            Ok(points)
         })?;
-    Ok(instance_ids)
-}
 
-pub fn get_sds_ids(client: &reqwest::Client, config: &ScaleioConfig) -> MetricsResult<Vec<String>> {
-    let sds_ids =
-        get::<Vec<SdsObject>>(&client, &config, "types/Sds/instances").and_then(|sds_objects| {
-            let ids = sds_objects
-                .iter()
-                .map(|sds| sds.id.clone())
-                .collect::<Vec<String>>();
-            Ok(ids)
-        })?;
+        Ok(instance_statistics)
+    }
 
-    Ok(sds_ids)
-}
+    // Get all the drive stats.  This hashmap is referenced by sdsId.
+    pub fn get_drive_stats(&self) -> MetricsResult<SelectedStatisticsResponse> {
+        let stats_req = SelectedStatisticsRequest {
+            selected_statistics_list: vec![StatsRequest {
+                req_type: StatsRequestType::Device,
+                all_ids: vec![],
+                properties: vec![
+                    // TODO: Change this into an enum
+                    "fixedReadErrorCount".into(),
+                    "avgReadSizeInBytes".into(),
+                    "avgWriteSizeInBytes".into(),
+                    "avgReadLatencyInMicrosec".into(),
+                    "avgWriteLatencyInMicrosec".into(),
+                ],
+            }],
+        };
 
-pub fn get_sds_statistics(
-    client: &reqwest::Client,
-    config: &ScaleioConfig,
-    t: DateTime<Utc>,
-    sds_id: &str,
-) -> MetricsResult<Vec<TsPoint>> {
-    let instance_statistics = get::<SdsStatistics>(
-        &client,
-        &config,
-        &format!("instances/Sds::{}/relationships/Statistics", sds_id),
-    )
-    .and_then(|instance| {
-        let points: Vec<TsPoint> = instance
-            .into_point(Some("scaleio_sds_stat"), true)
-            .iter_mut()
-            .map(|point| {
-                point.timestamp = Some(t);
-                point.add_tag("sds_id", TsValue::String(sds_id.to_string()));
-                point.clone()
-            })
-            .collect();
-        Ok(points)
-    })?;
+        // Contact scaleio metadata server and parse the results
+        // back into json.  If the call isn't an http success result
+        // then return an error
+        let mut resp = self
+            .client
+            .post(&format!(
+                "https://{}/api/instances/querySelectedStatistics",
+                self.config.endpoint
+            ))
+            .header(CONTENT_TYPE, "application/json")
+            .basic_auth(&self.config.user, Some(&self.config.password))
+            .json(&stats_req)
+            .send()?
+            .error_for_status()?;
+        let json_resp: SelectedStatisticsResponse = resp.json()?;
+        Ok(json_resp)
+    }
 
-    Ok(instance_statistics)
-}
+    /// Gets all instances
+    pub fn get_instances(&self) -> MetricsResult<()> {
+        let instances = self
+            .client
+            .get(&format!("https://{}/api/instances", self.config.endpoint,))
+            .basic_auth(&self.config.user, Some(&self.config.password))
+            .send()?
+            .error_for_status()?
+            .text()?;
+        println!("instances: {}", instances);
 
-pub fn get_drive_statistics(
-    client: &reqwest::Client,
-    config: &ScaleioConfig,
-    t: DateTime<Utc>,
-    device_id: &str,
-) -> MetricsResult<Vec<TsPoint>> {
-    let instance_statistics = get::<DeviceStatistics>(
-        &client,
-        &config,
-        &format!("instances/Device::{}/relationships/Statistics", device_id),
-    )
-    .and_then(|instance| {
-        let points: Vec<TsPoint> = instance
-            .into_point(Some("scaleio_drive_stat"), true)
-            .iter_mut()
-            .map(|point| {
-                point.timestamp = Some(t);
-                point.add_tag("device_id", TsValue::String(device_id.to_string()));
-                point.clone()
-            })
-            .collect();
-        Ok(points)
-    })?;
-
-    Ok(instance_statistics)
-}
-
-// Get all the drive stats.  This hashmap is referenced by sdsId.
-pub fn get_drive_stats(
-    client: &reqwest::Client,
-    config: &ScaleioConfig,
-) -> MetricsResult<SelectedStatisticsResponse> {
-    let stats_req = SelectedStatisticsRequest {
-        selected_statistics_list: vec![StatsRequest {
-            req_type: StatsRequestType::Device,
-            all_ids: vec![],
-            properties: vec![
-                // TODO: Change this into an enum
-                "fixedReadErrorCount".into(),
-                "avgReadSizeInBytes".into(),
-                "avgWriteSizeInBytes".into(),
-                "avgReadLatencyInMicrosec".into(),
-                "avgWriteLatencyInMicrosec".into(),
-            ],
-        }],
-    };
-
-    // Contact scaleio metadata server and parse the results
-    // back into json.  If the call isn't an http success result
-    // then return an error
-    let mut resp = client
-        .post(&format!(
-            "https://{}/api/instances/querySelectedStatistics",
-            config.endpoint
-        ))
-        .header(CONTENT_TYPE, "application/json")
-        .basic_auth(config.user.clone(), Some(config.password.clone()))
-        .json(&stats_req)
-        .send()?
-        .error_for_status()?;
-    let json_resp: SelectedStatisticsResponse = resp.json()?;
-    Ok(json_resp)
-}
-
-/// Gets all instances
-pub fn get_instances(client: &reqwest::Client, config: &ScaleioConfig) -> MetricsResult<()> {
-    let instances = client
-        .get(&format!("https://{}/api/instances", config.endpoint,))
-        .basic_auth(config.user.clone(), Some(config.password.clone()))
-        .send()?
-        .error_for_status()?
-        .text()?;
-    println!("instances: {}", instances);
-
-    Ok(())
+        Ok(())
+    }
 }
 
 #[test]
@@ -1612,107 +1619,70 @@ named!(
     ))
 );
 
-pub fn get_pool_info(
-    client: &reqwest::Client,
-    config: &ScaleioConfig,
-    pool_id: &str,
-) -> MetricsResult<PoolInstanceResponse> {
-    let pool_info = get::<PoolInstanceResponse>(
-        &client,
-        &config,
-        &format!("instances/StoragePool::{}", pool_id),
-    )?;
-    Ok(pool_info)
-}
+impl Scaleio {
+    pub fn get_pool_info(&self, pool_id: &str) -> MetricsResult<PoolInstanceResponse> {
+        let pool_info = get::<PoolInstanceResponse>(
+            &self.client,
+            &self.config,
+            &format!("instances/StoragePool::{}", pool_id),
+        )?;
+        Ok(pool_info)
+    }
 
-pub fn get_pool_stats(
-    client: &reqwest::Client,
-    config: &ScaleioConfig,
-) -> MetricsResult<ClusterSelectedStatisticsResponse> {
-    let stats_req = SelectedStatisticsRequest {
-        selected_statistics_list: vec![StatsRequest {
-            req_type: StatsRequestType::StoragePool,
-            all_ids: vec![],
-            properties: vec![
-                "numOfDevices".into(),
-                "numOfVolumes".into(),
-                "capacityLimitInKb".into(),
-                "thickCapacityInUseInKb".into(),
-                "thinCapacityInUseInKb".into(),
-                "primaryReadBwc".into(),
-                "primaryWriteBwc".into(),
-                "secondaryReadBwc".into(),
-                "secondaryWriteBwc".into(),
-                "totalReadBwc".into(),
-                "totalWriteBwc".into(),
-                "thinCapacityAllocatedInKm".into(),
-            ],
-        }],
-    };
+    pub fn get_pool_stats(&self) -> MetricsResult<ClusterSelectedStatisticsResponse> {
+        let stats_req = SelectedStatisticsRequest {
+            selected_statistics_list: vec![StatsRequest {
+                req_type: StatsRequestType::StoragePool,
+                all_ids: vec![],
+                properties: vec![
+                    "numOfDevices".into(),
+                    "numOfVolumes".into(),
+                    "capacityLimitInKb".into(),
+                    "thickCapacityInUseInKb".into(),
+                    "thinCapacityInUseInKb".into(),
+                    "primaryReadBwc".into(),
+                    "primaryWriteBwc".into(),
+                    "secondaryReadBwc".into(),
+                    "secondaryWriteBwc".into(),
+                    "totalReadBwc".into(),
+                    "totalWriteBwc".into(),
+                    "thinCapacityAllocatedInKm".into(),
+                ],
+            }],
+        };
 
-    // Contact scaleio metadata server and parse the results
-    // back into json.  If the call isn't an http success result
-    // then return an error
-    let mut resp = client
-        .post(&format!(
-            "https://{}/api/instances/querySelectedStatistics",
-            config.endpoint
-        ))
-        .header(CONTENT_TYPE, "application/json")
-        .basic_auth(config.user.clone(), Some(config.password.clone()))
-        .json(&stats_req)
-        .send()?
-        .error_for_status()?;
-    let json_resp: ClusterSelectedStatisticsResponse = resp.json()?;
-    Ok(json_resp)
-}
+        // Contact scaleio metadata server and parse the results
+        // back into json.  If the call isn't an http success result
+        // then return an error
+        let mut resp = self
+            .client
+            .post(&format!(
+                "https://{}/api/instances/querySelectedStatistics",
+                self.config.endpoint
+            ))
+            .header(CONTENT_TYPE, "application/json")
+            .basic_auth(&self.config.user, Some(&self.config.password))
+            .json(&stats_req)
+            .send()?
+            .error_for_status()?;
+        let json_resp: ClusterSelectedStatisticsResponse = resp.json()?;
+        Ok(json_resp)
+    }
 
-pub fn get_sdc_objects(
-    client: &reqwest::Client,
-    config: &ScaleioConfig,
-    system_id: &str,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    let sdc_info = get::<Vec<Sdc>>(
-        &client,
-        &config,
-        &format!("instances/System::{}/relationships/Sdc", system_id),
-    )
-    .and_then(|sdc_objects| {
-        let points: Vec<TsPoint> = sdc_objects
-            .iter()
-            .flat_map(|sdc| sdc.into_point(Some("scaleio_sdc"), true))
-            .map(|mut point| {
-                point.timestamp = Some(t);
-                point
-            })
-            .collect();
-        Ok(points)
-    })?;
-    Ok(sdc_info)
-}
-
-// Use this to gather more information about the sds device like
-// ip address, state, storage server attached to, etc
-pub fn get_sds_object(
-    client: &reqwest::Client,
-    config: &ScaleioConfig,
-    sds_id: &str,
-) -> MetricsResult<SdsObject> {
-    let sds_object = get::<SdsObject>(&client, &config, &format!("instances/Sds::{}", sds_id))?;
-    Ok(sds_object)
-}
-
-pub fn get_sds_objects(
-    client: &reqwest::Client,
-    config: &ScaleioConfig,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    let sds_info =
-        get::<Vec<SdsObject>>(&client, &config, "types/Sds/instances").and_then(|sds_objects| {
-            let points: Vec<TsPoint> = sds_objects
+    pub fn get_sdc_objects(
+        &self,
+        system_id: &str,
+        t: DateTime<Utc>,
+    ) -> MetricsResult<Vec<TsPoint>> {
+        let sdc_info = get::<Vec<Sdc>>(
+            &self.client,
+            &self.config,
+            &format!("instances/System::{}/relationships/Sdc", system_id),
+        )
+        .and_then(|sdc_objects| {
+            let points: Vec<TsPoint> = sdc_objects
                 .iter()
-                .flat_map(|sds| sds.into_point(Some("scaleio_sds"), true))
+                .flat_map(|sdc| sdc.into_point(Some("scaleio_sdc"), true))
                 .map(|mut point| {
                     point.timestamp = Some(t);
                     point
@@ -1720,55 +1690,76 @@ pub fn get_sds_objects(
                 .collect();
             Ok(points)
         })?;
-    Ok(sds_info)
-}
+        Ok(sdc_info)
+    }
 
-pub fn get_system(
-    client: &reqwest::Client,
-    config: &ScaleioConfig,
-    system_id: &str,
-) -> MetricsResult<System> {
-    let system = get::<System>(
-        &client,
-        &config,
-        &format!("instances/System::{}", system_id),
-    )?;
-    Ok(system)
-}
+    // Use this to gather more information about the sds device like
+    // ip address, state, storage server attached to, etc
+    pub fn get_sds_object(&self, sds_id: &str) -> MetricsResult<SdsObject> {
+        let sds_object = get::<SdsObject>(
+            &self.client,
+            &self.config,
+            &format!("instances/Sds::{}", sds_id),
+        )?;
+        Ok(sds_object)
+    }
 
-pub fn get_systems(client: &reqwest::Client, config: &ScaleioConfig) -> MetricsResult<Vec<System>> {
-    let systems = get::<Vec<System>>(&client, &config, "types/System/instances")?;
-    Ok(systems)
-}
+    pub fn get_sds_objects(&self, t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
+        let sds_info = get::<Vec<SdsObject>>(&self.client, &self.config, "types/Sds/instances")
+            .and_then(|sds_objects| {
+                let points: Vec<TsPoint> = sds_objects
+                    .iter()
+                    .flat_map(|sds| sds.into_point(Some("scaleio_sds"), true))
+                    .map(|mut point| {
+                        point.timestamp = Some(t);
+                        point
+                    })
+                    .collect();
+                Ok(points)
+            })?;
+        Ok(sds_info)
+    }
 
-pub fn get_version(client: &reqwest::Client, config: &ScaleioConfig) -> MetricsResult<String> {
-    let version = client
-        .get(&format!("https://{}/api/version", config.endpoint))
-        .basic_auth(config.user.clone(), Some(config.password.clone()))
-        .send()?
-        .error_for_status()?
-        .text()?;
-    Ok(version)
-}
+    pub fn get_system(&self, system_id: &str) -> MetricsResult<System> {
+        let system = get::<System>(
+            &self.client,
+            &self.config,
+            &format!("instances/System::{}", system_id),
+        )?;
+        Ok(system)
+    }
 
-pub fn get_volumes(
-    client: &reqwest::Client,
-    config: &ScaleioConfig,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    let sds_vols =
-        get::<Vec<SdsVolume>>(&client, &config, "types/Volume/instances").and_then(|sds_vols| {
-            let points: Vec<TsPoint> = sds_vols
-                .iter()
-                .flat_map(|vol| vol.into_point(Some("scaleio_volume"), true))
-                .map(|mut point| {
-                    point.timestamp = Some(t);
-                    point
-                })
-                .collect();
-            Ok(points)
-        })?;
-    Ok(sds_vols)
+    pub fn get_systems(&self) -> MetricsResult<Vec<System>> {
+        let systems = get::<Vec<System>>(&self.client, &self.config, "types/System/instances")?;
+        Ok(systems)
+    }
+
+    pub fn get_version(&self) -> MetricsResult<String> {
+        let version = self
+            .client
+            .get(&format!("https://{}/api/version", self.config.endpoint))
+            .basic_auth(&self.config.user, Some(&self.config.password))
+            .send()?
+            .error_for_status()?
+            .text()?;
+        Ok(version)
+    }
+
+    pub fn get_volumes(&self, t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
+        let sds_vols = get::<Vec<SdsVolume>>(&self.client, &self.config, "types/Volume/instances")
+            .and_then(|sds_vols| {
+                let points: Vec<TsPoint> = sds_vols
+                    .iter()
+                    .flat_map(|vol| vol.into_point(Some("scaleio_volume"), true))
+                    .map(|mut point| {
+                        point.timestamp = Some(t);
+                        point
+                    })
+                    .collect();
+                Ok(points)
+            })?;
+        Ok(sds_vols)
+    }
 }
 
 #[derive(Serialize, Debug)]
@@ -1849,183 +1840,181 @@ fn identify_ideal_pools(
     }
 }
 
-/// Creates a volume on the given endpoint using the credentials specified
-/// in the config file. Automatically selects a storage pool
-/// vol_name_prefix refers to the tracking ID/ticket ID of the request
-pub fn create_volume(
-    client: &reqwest::Client,
-    config: &ScaleioConfig,
-    vol_name_prefix: &str,
-    requested_size_in_kb: u64,
-    num_of_luns: usize,
-    mut spare_cutoff: u8,
-) -> MetricsResult<Vec<String>> {
-    // Set minimum cut off
-    if spare_cutoff <= 10 {
-        spare_cutoff = 10
+impl Scaleio {
+    /// Creates a volume on the given endpoint using the credentials specified
+    /// in the config file. Automatically selects a storage pool
+    /// vol_name_prefix refers to the tracking ID/ticket ID of the request
+    pub fn create_volume(
+        &self,
+        vol_name_prefix: &str,
+        requested_size_in_kb: u64,
+        num_of_luns: usize,
+        mut spare_cutoff: u8,
+    ) -> MetricsResult<Vec<String>> {
+        // Set minimum cut off
+        if spare_cutoff <= 10 {
+            spare_cutoff = 10
+        }
+
+        // First, get a list of available pools
+        let storage_pools = get::<Vec<PoolInstanceResponse>>(
+            &self.client,
+            &self.config,
+            "types/StoragePool/instances",
+        )?;
+
+        // don't need storage_pools later on, OK to move
+        let pool_ids: Vec<String> = identify_ideal_pools(storage_pools, num_of_luns, spare_cutoff)?;
+
+        // Could be more defensive and check if pool_ids is empty.
+        // identify_ideal_pools() should ideally return an error in that case.
+        // So, skip that check.
+        if pool_ids.len() < num_of_luns {
+            debug!(
+                "Cannot create volumes in {} pools, creating in {} instead",
+                num_of_luns,
+                pool_ids.len()
+            );
+        }
+        // Create each volume with sizes balanced over pools
+        let each_vol_size_in_kb = requested_size_in_kb / (pool_ids.len() as u64);
+
+        let mut volume_ids: Vec<String> = Vec::new();
+
+        for (vol_num, pool_id) in pool_ids.iter().enumerate() {
+            debug!(
+                "Creating volume of size {} in pool with ID {}",
+                each_vol_size_in_kb,
+                pool_id.to_string()
+            );
+            let vol_creation_req = VolumeRequest::new(
+                each_vol_size_in_kb,
+                pool_id.to_string(),
+                format!("{}_{}", vol_name_prefix, vol_num),
+            );
+            // post a request to endpoint to create a volume. If call isn't
+            // an http success result, return an error. Return is newly created volume ID
+            let mut vol_creation_resp = self
+                .client
+                .post(&format!(
+                    "https://{}/api/types/Volume/instances",
+                    self.config.endpoint
+                ))
+                .header(CONTENT_TYPE, "application/json")
+                .basic_auth(&self.config.user, Some(&self.config.password))
+                .json(&vol_creation_req)
+                .send()?
+                .error_for_status()?;
+            let json_resp: String = vol_creation_resp.json()?;
+            volume_ids.push(json_resp);
+        }
+
+        // Did we succeed in creating as many as intended?
+        if volume_ids.len() != pool_ids.len() {
+            debug!(
+                "Created only {} volumes. {} intended",
+                volume_ids.len(),
+                pool_ids.len()
+            );
+            debug!("Request is not met in full");
+            // TODO: Rollback/delete these volumes without mapping?
+        }
+        Ok(volume_ids)
     }
 
-    // First, get a list of available pools
-    let storage_pools =
-        get::<Vec<PoolInstanceResponse>>(&client, &config, "types/StoragePool/instances")?;
+    /// Returns the sdcId corresponding to the given name
+    fn get_sdc_id_from_name(&self, sdc_name: &str) -> MetricsResult<String> {
+        // get a list of all sdc's, filter entry that matches sdc_name
+        // and return corresponding sdc_id
 
-    // don't need storage_pools later on, OK to move
-    let pool_ids: Vec<String> = identify_ideal_pools(storage_pools, num_of_luns, spare_cutoff)?;
+        debug!("Retrieving SDC ID for {}", sdc_name);
+        let sdc_info = get::<Vec<Sdc>>(&self.client, &self.config, "api/types/Sdc/instances")
+            .and_then(|sdc_objects| {
+                let ids: Vec<String> = sdc_objects
+                    .iter()
+                    .filter(|sdc| match sdc.name {
+                        Some(ref name) => name == sdc_name,
+                        None => false,
+                    })
+                    .map(|sdc| sdc.id.clone())
+                    .collect::<Vec<String>>();
+                Ok(ids)
+            })?;
 
-    // Could be more defensive and check if pool_ids is empty.
-    // identify_ideal_pools() should ideally return an error in that case.
-    // So, skip that check.
-    if pool_ids.len() < num_of_luns {
-        debug!(
-            "Cannot create volumes in {} pools, creating in {} instead",
-            num_of_luns,
-            pool_ids.len()
-        );
-    }
-    // Create each volume with sizes balanced over pools
-    let each_vol_size_in_kb = requested_size_in_kb / (pool_ids.len() as u64);
-
-    let mut volume_ids: Vec<String> = Vec::new();
-
-    for (vol_num, pool_id) in pool_ids.iter().enumerate() {
-        debug!(
-            "Creating volume of size {} in pool with ID {}",
-            each_vol_size_in_kb,
-            pool_id.to_string()
-        );
-        let vol_creation_req = VolumeRequest::new(
-            each_vol_size_in_kb,
-            pool_id.to_string(),
-            format!("{}_{}", vol_name_prefix, vol_num),
-        );
-        // post a request to endpoint to create a volume. If call isn't
-        // an http success result, return an error. Return is newly created volume ID
-        let mut vol_creation_resp = client
-            .post(&format!(
-                "https://{}/api/types/Volume/instances",
-                config.endpoint
-            ))
-            .header(CONTENT_TYPE, "application/json")
-            .basic_auth(config.user.clone(), Some(config.password.clone()))
-            .json(&vol_creation_req)
-            .send()?
-            .error_for_status()?;
-        let json_resp: String = vol_creation_resp.json()?;
-        volume_ids.push(json_resp);
-    }
-
-    // Did we succeed in creating as many as intended?
-    if volume_ids.len() != pool_ids.len() {
-        debug!(
-            "Created only {} volumes. {} intended",
-            volume_ids.len(),
-            pool_ids.len()
-        );
-        debug!("Request is not met in full");
-        // TODO: Rollback/delete these volumes without mapping?
-    }
-    Ok(volume_ids)
-}
-
-/// Returns the sdcId corresponding to the given name
-fn get_sdc_id_from_name(
-    client: &reqwest::Client,
-    config: &ScaleioConfig,
-    sdc_name: &str,
-) -> MetricsResult<String> {
-    // get a list of all sdc's, filter entry that matches sdc_name
-    // and return corresponding sdc_id
-
-    debug!("Retrieving SDC ID for {}", sdc_name);
-    let sdc_info =
-        get::<Vec<Sdc>>(&client, &config, "api/types/Sdc/instances").and_then(|sdc_objects| {
-            let ids: Vec<String> = sdc_objects
-                .iter()
-                .filter(|sdc| match sdc.name {
-                    Some(ref name) => name == sdc_name,
-                    None => false,
-                })
-                .map(|sdc| sdc.id.clone())
-                .collect::<Vec<String>>();
-            Ok(ids)
-        })?;
-
-    if !sdc_info.is_empty() {
-        if let Some(id) = sdc_info.get(0) {
-            Ok(id.to_string())
+        if !sdc_info.is_empty() {
+            if let Some(id) = sdc_info.get(0) {
+                Ok(id.to_string())
+            } else {
+                Err(StorageError::new(format!(
+                    "SDC ID not found for {}",
+                    sdc_name
+                )))
+            }
         } else {
             Err(StorageError::new(format!(
                 "SDC ID not found for {}",
                 sdc_name
             )))
         }
-    } else {
-        Err(StorageError::new(format!(
-            "SDC ID not found for {}",
-            sdc_name
-        )))
     }
-}
 
-/// Maps all the volumes in the list to the given sdc
-/// Also sets iops and bandwidth limits
-pub fn map_volumes(
-    client: &reqwest::Client,
-    config: &ScaleioConfig,
-    volume_ids: &[String],
-    sdc_name: &str,
-) -> MetricsResult<bool> {
-    // Get sdc_id from sdc_name
-    let sdc_id = get_sdc_id_from_name(client, config, sdc_name)?;
-    debug!("SDC ID for {} is {}", sdc_name, sdc_id);
+    /// Maps all the volumes in the list to the given sdc
+    /// Also sets iops and bandwidth limits
+    pub fn map_volumes(&self, volume_ids: &[String], sdc_name: &str) -> MetricsResult<bool> {
+        // Get sdc_id from sdc_name
+        let sdc_id = self.get_sdc_id_from_name(sdc_name)?;
+        debug!("SDC ID for {} is {}", sdc_name, sdc_id);
 
-    for vol_id in volume_ids {
-        debug!("Mapping {} to {}", vol_id, sdc_id);
+        for vol_id in volume_ids {
+            debug!("Mapping {} to {}", vol_id, sdc_id);
 
-        let mut sdc_map = HashMap::new();
-        sdc_map.insert("sdcId", sdc_id.clone());
+            let mut sdc_map = HashMap::new();
+            sdc_map.insert("sdcId", sdc_id.clone());
 
-        // TODO: allow multiple mappings?
+            // TODO: allow multiple mappings?
 
-        // Returns only http status of success or failure
-        let mut _resp = client
-            .post(&format!(
-                "https://{}/api/instances/Volume::{}/action/addMappedSdc",
-                config.endpoint, vol_id
-            ))
-            .header(CONTENT_TYPE, "application/json")
-            .basic_auth(config.user.clone(), Some(config.password.clone()))
-            .json(&sdc_map)
-            .send()?
-            .error_for_status()?;
+            // Returns only http status of success or failure
+            let mut _resp = self
+                .client
+                .post(&format!(
+                    "https://{}/api/instances/Volume::{}/action/addMappedSdc",
+                    self.config.endpoint, vol_id
+                ))
+                .header(CONTENT_TYPE, "application/json")
+                .basic_auth(&self.config.user, Some(&self.config.password))
+                .json(&sdc_map)
+                .send()?
+                .error_for_status()?;
 
-        let mut sdc_limits = HashMap::new();
-        sdc_limits.insert("sdcId", sdc_id.clone());
+            let mut sdc_limits = HashMap::new();
+            sdc_limits.insert("sdcId", sdc_id.clone());
 
-        if let Some(limit) = config.bandwidth_limit {
-            sdc_limits.insert("bandwidthLimitInKbps", limit.to_string());
-        } else {
-            sdc_limits.insert("bandwidthLimitInKbps", "0".to_string());
+            if let Some(limit) = &self.config.bandwidth_limit {
+                sdc_limits.insert("bandwidthLimitInKbps", limit.to_string());
+            } else {
+                sdc_limits.insert("bandwidthLimitInKbps", "0".to_string());
+            }
+            if let Some(limit) = &self.config.iops_limit {
+                sdc_limits.insert("iopsLimit", limit.to_string());
+            } else {
+                sdc_limits.insert("iopsLimit", "0".to_string());
+            }
+
+            debug!("Adding bandwidth limits to volume with ID {}", vol_id);
+            let mut _resp = self
+                .client
+                .post(&format!(
+                    "https://{}/api/instances/Volume::{}/action/setMappedSdcLimits",
+                    self.config.endpoint, vol_id
+                ))
+                .header(CONTENT_TYPE, "application/json")
+                .basic_auth(&self.config.user, Some(&self.config.password))
+                .json(&sdc_limits)
+                .send()?
+                .error_for_status()?;
         }
-        if let Some(limit) = config.iops_limit {
-            sdc_limits.insert("iopsLimit", limit.to_string());
-        } else {
-            sdc_limits.insert("iopsLimit", "0".to_string());
-        }
-
-        debug!("Adding bandwidth limits to volume with ID {}", vol_id);
-        let mut _resp = client
-            .post(&format!(
-                "https://{}/api/instances/Volume::{}/action/setMappedSdcLimits",
-                config.endpoint, vol_id
-            ))
-            .header(CONTENT_TYPE, "application/json")
-            .basic_auth(config.user.clone(), Some(config.password.clone()))
-            .json(&sdc_limits)
-            .send()?
-            .error_for_status()?;
+        Ok(true)
     }
-    Ok(true)
 }
 /* Uncomment this when this test should run
 #[test]

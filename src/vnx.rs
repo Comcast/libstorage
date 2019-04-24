@@ -26,14 +26,13 @@ use crate::IntoPoint;
 
 use crate::ir::{TsPoint, TsValue};
 use cookie::{Cookie, CookieJar};
-use log::{debug, warn};
+use log::{debug, error, warn};
 use quick_xml::events::attributes::Attributes;
 use quick_xml::events::Event;
 use quick_xml::Reader;
 use reqwest::header::{
     HeaderMap, HeaderName, HeaderValue, CONTENT_LENGTH, CONTENT_TYPE, COOKIE, SET_COOKIE,
 };
-use reqwest::Client;
 use xml::writer::{EventWriter, XmlEvent};
 
 pub trait FromXml {
@@ -68,7 +67,7 @@ impl ToString for MoverStatsRequest {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)]
 pub struct VnxConfig {
     /// The scaleio endpoint to use
     pub endpoint: String,
@@ -80,6 +79,32 @@ pub struct VnxConfig {
     /// Optional certificate file to use against the server
     /// der encoded
     pub certificate: Option<String>,
+}
+
+pub struct Vnx {
+    client: reqwest::Client,
+    config: VnxConfig,
+    cookie_jar: CookieJar,
+}
+
+impl Vnx {
+    pub fn new(client: &reqwest::Client, config: VnxConfig) -> MetricsResult<Self> {
+        let mut cookie_jar = CookieJar::new();
+        login_request(&client, &config, &mut cookie_jar)?;
+        Ok(Vnx {
+            client: client.clone(),
+            config,
+            cookie_jar,
+        })
+    }
+}
+
+impl Drop for Vnx {
+    fn drop(&mut self) {
+        if let Err(e) = self.logout_request() {
+            error!("Vnx logout request failed: {}", e);
+        }
+    }
 }
 
 fn parse_data_services_policies(s: &str) -> MetricsResult<HashMap<String, String>> {
@@ -552,9 +577,12 @@ impl IntoPoint for NetworkAllSample {
         p.add_tag("mover", TsValue::String(self.mover.clone()));
         // Turn these counters into point arrays, get the first one and merge
         // the fields with this point
-        p.fields.extend(self.ip.into_point(None, is_time_series)[0].fields.clone());
-        p.fields.extend(self.tcp.into_point(None, is_time_series)[0].fields.clone());
-        p.fields.extend(self.udp.into_point(None, is_time_series)[0].fields.clone());
+        p.fields
+            .extend(self.ip.into_point(None, is_time_series)[0].fields.clone());
+        p.fields
+            .extend(self.tcp.into_point(None, is_time_series)[0].fields.clone());
+        p.fields
+            .extend(self.udp.into_point(None, is_time_series)[0].fields.clone());
         for device in &self.devices {
             p.add_tag("device", TsValue::String(device.device.clone()));
             p.add_field(
@@ -797,22 +825,46 @@ impl IntoPoint for CifsAllSample {
         p.add_tag("mover", TsValue::String(self.mover.clone()));
         // Turn these counters into point arrays, get the first one and merge
         // the fields with this point
-        p.fields
-            .extend(self.smb_calls.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.smb_time.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.trans2_calls.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.trans2_time.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.nt_calls.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.nt_time.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.state.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.totals.into_point(None, is_time_series)[0].fields.clone());
+        p.fields.extend(
+            self.smb_calls.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.smb_time.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.trans2_calls.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.trans2_time.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.nt_calls.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.nt_time.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.state.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.totals.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
 
         vec![p]
     }
@@ -1043,21 +1095,43 @@ impl IntoPoint for NfsAllSample {
         p.add_tag("mover", TsValue::String(self.mover.clone()));
         // Turn these counters into point arrays, get the first one and merge
         // the fields with this point
+        p.fields.extend(
+            self.proc_v2_calls.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.proc_v2_failures.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.proc_v2_time.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.proc_v3_calls.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.proc_v3_failures.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.proc_v3_time.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
+        p.fields.extend(
+            self.cache.into_point(None, is_time_series)[0]
+                .fields
+                .clone(),
+        );
         p.fields
-            .extend(self.proc_v2_calls.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.proc_v2_failures.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.proc_v2_time.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.proc_v3_calls.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.proc_v3_failures.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.proc_v3_time.into_point(None, is_time_series)[0].fields.clone());
-        p.fields
-            .extend(self.cache.into_point(None, is_time_series)[0].fields.clone());
-        p.fields.extend(self.rpc.into_point(None, is_time_series)[0].fields.clone());
+            .extend(self.rpc.into_point(None, is_time_series)[0].fields.clone());
 
         vec![p]
     }
@@ -2127,11 +2201,10 @@ fn test_xml_reader() {
 
     println!("Result: {:?}", result);
 }
-
 pub fn login_request(
-    client: &Client,
+    client: &reqwest::Client,
     config: &VnxConfig,
-    jar: &mut CookieJar,
+    cookie_jar: &mut CookieJar,
 ) -> MetricsResult<()> {
     let mut params = HashMap::new();
     params.insert("user", config.user.clone());
@@ -2149,7 +2222,7 @@ pub fn login_request(
         Some(cookie) => {
             debug!("cookie: {:?}", cookie);
             let parsed = Cookie::parse(cookie.to_str()?.to_owned())?;
-            jar.add(parsed);
+            cookie_jar.add(parsed);
             Ok(())
         }
         None => Err(StorageError::new(
@@ -2158,368 +2231,295 @@ pub fn login_request(
     }
 }
 
-pub fn logout_request(
-    client: &Client,
-    config: &VnxConfig,
-    cookie_jar: &CookieJar,
-) -> MetricsResult<()> {
-    let mut headers = HeaderMap::new();
-    headers.insert(CONTENT_LENGTH, HeaderValue::from_str("0")?);
-    headers.insert(CONTENT_TYPE, HeaderValue::from_str("application/xml")?);
+impl Vnx {
+    pub fn logout_request(&self) -> MetricsResult<()> {
+        let mut headers = HeaderMap::new();
+        headers.insert(CONTENT_LENGTH, HeaderValue::from_str("0")?);
+        headers.insert(CONTENT_TYPE, HeaderValue::from_str("application/xml")?);
 
-    match cookie_jar.get("Ticket") {
-        Some(t) => {
-            let cookie = format!(
-                "{}={}; path={}",
-                t.name(),
-                t.value(),
-                t.path().unwrap_or("/")
-            );
-            headers.insert(COOKIE, HeaderValue::from_str(&cookie)?);
-        }
-        None => {
-            return Err(StorageError::new(
-                "Unable to find Ticket cookie from vnx server".into(),
-            ));
-        }
-    };
+        match self.cookie_jar.get("Ticket") {
+            Some(t) => {
+                let cookie = format!(
+                    "{}={}; path={}",
+                    t.name(),
+                    t.value(),
+                    t.path().unwrap_or("/")
+                );
+                headers.insert(COOKIE, HeaderValue::from_str(&cookie)?);
+            }
+            None => {
+                return Err(StorageError::new(
+                    "Unable to find Ticket cookie from vnx server".into(),
+                ));
+            }
+        };
 
-    match cookie_jar.get("JSESSIONID") {
-        Some(t) => {
-            headers.insert(
-                HeaderName::from_str("CelerraConnector-Sess")?,
-                HeaderValue::from_str(t.value())?,
-            );
-        }
-        None => {
-            return Err(StorageError::new(
-                "Unable to find JSESSIONID cookie from vnx server".into(),
-            ));
-        }
-    };
-    headers.insert("CelerraConnector-Ctl", HeaderValue::from_str("DISCONNECT")?);
+        match self.cookie_jar.get("JSESSIONID") {
+            Some(t) => {
+                headers.insert(
+                    HeaderName::from_str("CelerraConnector-Sess")?,
+                    HeaderValue::from_str(t.value())?,
+                );
+            }
+            None => {
+                return Err(StorageError::new(
+                    "Unable to find JSESSIONID cookie from vnx server".into(),
+                ));
+            }
+        };
+        headers.insert("CelerraConnector-Ctl", HeaderValue::from_str("DISCONNECT")?);
 
-    client
-        .post(&format!(
-            "https://{}/servlets/CelerraManagementServices",
-            config.endpoint
-        ))
-        .headers(headers)
-        .body("")
-        .send()?
-        .error_for_status()?;
-    Ok(())
-}
-
-fn api_request<T>(
-    client: &Client,
-    config: &VnxConfig,
-    req: Vec<u8>,
-    cookie_jar: &mut CookieJar,
-) -> MetricsResult<T>
-where
-    T: FromXml,
-{
-    let mut headers = HeaderMap::new();
-
-    // Set the ticket ID
-    let ticket_cookie = match cookie_jar.get("Ticket") {
-        Some(t) => {
-            format!(
-                "{}={}; path={}",
-                t.name(),
-                t.value(),
-                t.path().unwrap_or("/")
-            )
-            //headers.set_raw("Cookie", ticket_cookie);
-        }
-        None => {
-            return Err(StorageError::new(
-                "Unable to find Ticket cookie from vnx server".into(),
-            ));
-        }
-    };
-
-    // Set the Session ID if available
-    match cookie_jar.get("JSESSIONID") {
-        Some(t) => {
-            let session_cookie = format!(
-                "{}; {}={}; path={}; $Secure;",
-                ticket_cookie,
-                t.name(),
-                t.value(),
-                t.path().unwrap_or("/"),
-            );
-            debug!("session cookie: {}", session_cookie);
-            headers.insert(
-                HeaderName::from_str("Cookie")?,
-                HeaderValue::from_str(&session_cookie)?,
-            );
-            headers.insert(
-                HeaderName::from_str("CelerraConnector-Sess")?,
-                HeaderValue::from_str(t.value())?,
-            );
-            debug!("headers: {:?}", headers);
-        }
-        None => {
-            headers.insert(COOKIE, HeaderValue::from_str(&ticket_cookie)?);
-        }
-    };
-
-    let mut s = client
-        .post(&format!(
-            "https://{}/servlets/CelerraManagementServices",
-            config.endpoint
-        ))
-        .body(req)
-        .headers(headers)
-        .send()?
-        .error_for_status()?;
-
-    // From here we should get back a JSESSIONID cookie
-    if let Some(cookie) = s.headers().get(SET_COOKIE) {
-        debug!("cookie: {:?}", cookie);
-        let parsed = Cookie::parse(cookie.to_str()?.to_owned())?;
-        cookie_jar.add(parsed);
-    };
-
-    let data = s.text()?;
-    debug!("api_request response: {}", data);
-    let res = T::from_xml(&data)?;
-
-    Ok(res)
-}
-
-pub fn mover_network_stats_request(
-    client: &Client,
-    config: &VnxConfig,
-    cookie_jar: &mut CookieJar,
-    mover_id: &str,
-) -> MetricsResult<Vec<TsPoint>> {
-    mover_stats_request::<NetworkAllSample>(
-        client,
-        config,
-        cookie_jar,
-        mover_id,
-        &MoverStatsRequest::Network,
-    )
-}
-
-pub fn mover_cifs_stats_request(
-    client: &Client,
-    config: &VnxConfig,
-    cookie_jar: &mut CookieJar,
-    mover_id: &str,
-) -> MetricsResult<Vec<TsPoint>> {
-    mover_stats_request::<CifsAllSample>(
-        client,
-        config,
-        cookie_jar,
-        mover_id,
-        &MoverStatsRequest::Cifs,
-    )
-}
-
-pub fn mover_resource_stats_request(
-    client: &Client,
-    config: &VnxConfig,
-    cookie_jar: &mut CookieJar,
-    mover_id: &str,
-) -> MetricsResult<Vec<TsPoint>> {
-    mover_stats_request::<ResourceUsageSample>(
-        client,
-        config,
-        cookie_jar,
-        mover_id,
-        &MoverStatsRequest::ResourceUsage,
-    )
-}
-
-pub fn mover_nfs_stats_request(
-    client: &Client,
-    config: &VnxConfig,
-    cookie_jar: &mut CookieJar,
-    mover_id: &str,
-) -> MetricsResult<Vec<TsPoint>> {
-    mover_stats_request::<NfsAllSample>(
-        client,
-        config,
-        cookie_jar,
-        mover_id,
-        &MoverStatsRequest::Nfs,
-    )
-}
-
-// Helper function
-fn mover_stats_request<T>(
-    client: &Client,
-    config: &VnxConfig,
-    cookie_jar: &mut CookieJar,
-    mover_id: &str,
-    req_type: &MoverStatsRequest,
-) -> MetricsResult<Vec<TsPoint>>
-where
-    T: FromXml + IntoPoint,
-{
-    let mut output: Vec<u8> = Vec::new();
-    let req_type_str = req_type.to_string();
-    {
-        let mut writer = EventWriter::new(&mut output);
-        begin_query_stats_request(&mut writer)?;
-        let e = XmlEvent::start_element("MoverStats")
-            .attr("mover", mover_id)
-            .attr("statsSet", &req_type_str);
-        writer.write(e)?;
-        end_element(&mut writer, "MoverStats")?;
-        end_query_stats_request(&mut writer)?;
+        self.client
+            .post(&format!(
+                "https://{}/servlets/CelerraManagementServices",
+                self.config.endpoint
+            ))
+            .headers(headers)
+            .body("")
+            .send()?
+            .error_for_status()?;
+        Ok(())
     }
-    let res: T = api_request(&client, &config, output, cookie_jar)?;
-    Ok(res.into_point(None, true))
-}
 
-/*
-pub fn volume_stats_request(
-    client: &Client,
-    config: &VnxConfig,
-    cookie_jar: &CookieJar,
-) -> MetricsResult<Vec<Point>> {
-    let p: Vec<Point> = Vec::new();
-    let mut output: Vec<u8> = Vec::new();
+    fn api_request<T>(&mut self, req: Vec<u8>) -> MetricsResult<T>
+    where
+        T: FromXml,
     {
-        let mut writer = EventWriter::new(&mut output);
-        begin_query_stats_request(&mut writer)?;
-        start_element(&mut writer, "VolumeStats", None, None)?;
-        end_element(&mut writer, "VolumeStats")?;
-        end_query_stats_request(&mut writer)?;
-    }
-    let res: Volumes = api_request(&client, &config, output, &cookie_jar)?;
-    Ok(p)
-}
+        let mut headers = HeaderMap::new();
 
-pub fn volume_query_request(
-    client: &Client,
-    config: &VnxConfig,
-    cookie_jar: &CookieJar,
-) -> MetricsResult<Vec<Point>> {
-    let p: Vec<Point> = Vec::new();
-    let mut output: Vec<u8> = Vec::new();
-    {
-        let mut writer = EventWriter::new(&mut output);
-        begin_query_request(&mut writer)?;
-        start_element(&mut writer, "VolumeQueryParams", None, None)?;
-        end_element(&mut writer, "VolumeQueryParams")?;
-        end_query_request(&mut writer)?;
-    }
-    let res: Volumes = api_request(&client, &config, output, &cookie_jar)?;
-    Ok(p)
-}
-*/
+        // Set the ticket ID
+        let ticket_cookie = match self.cookie_jar.get("Ticket") {
+            Some(t) => {
+                format!(
+                    "{}={}; path={}",
+                    t.name(),
+                    t.value(),
+                    t.path().unwrap_or("/")
+                )
+                //headers.set_raw("Cookie", ticket_cookie);
+            }
+            None => {
+                return Err(StorageError::new(
+                    "Unable to find Ticket cookie from vnx server".into(),
+                ));
+            }
+        };
 
-pub fn storage_pool_query_request(
-    client: &Client,
-    config: &VnxConfig,
-    cookie_jar: &mut CookieJar,
-) -> MetricsResult<StoragePools> {
-    let mut output: Vec<u8> = Vec::new();
-    {
-        let mut writer = EventWriter::new(&mut output);
-        begin_query_request(&mut writer)?;
-        start_element(&mut writer, "StoragePoolQueryParams", None, None)?;
-        end_element(&mut writer, "StoragePoolQueryParams")?;
-        end_query_request(&mut writer)?;
-    }
-    let res: StoragePools = api_request(&client, &config, output, cookie_jar)?;
-    Ok(res)
-}
+        // Set the Session ID if available
+        match self.cookie_jar.get("JSESSIONID") {
+            Some(t) => {
+                let session_cookie = format!(
+                    "{}; {}={}; path={}; $Secure;",
+                    ticket_cookie,
+                    t.name(),
+                    t.value(),
+                    t.path().unwrap_or("/"),
+                );
+                debug!("session cookie: {}", session_cookie);
+                headers.insert(
+                    HeaderName::from_str("Cookie")?,
+                    HeaderValue::from_str(&session_cookie)?,
+                );
+                headers.insert(
+                    HeaderName::from_str("CelerraConnector-Sess")?,
+                    HeaderValue::from_str(t.value())?,
+                );
+                debug!("headers: {:?}", headers);
+            }
+            None => {
+                headers.insert(COOKIE, HeaderValue::from_str(&ticket_cookie)?);
+            }
+        };
 
-pub fn disk_info_request(
-    client: &Client,
-    config: &VnxConfig,
-    cookie_jar: &mut CookieJar,
-    mover_id: &str,
-) -> MetricsResult<Vec<TsPoint>> {
-    let mut output: Vec<u8> = Vec::new();
-    {
-        let mut writer = EventWriter::new(&mut output);
-        let e = XmlEvent::start_element("RequestPacket")
-            .default_ns("http://www.emc.com/schemas/celerra/xml_api")
-            .attr("apiVersion", "V1_1");
-        writer.write(e)?;
-        start_element(&mut writer, "RequestEx", None, None)?;
-        start_element(&mut writer, "Query", None, None)?;
-        let e = XmlEvent::start_element("ClariionDiskQueryParams").attr("clariion", mover_id);
-        writer.write(e)?;
-        end_element(&mut writer, "ClariionDiskQueryParams")?;
-        end_element(&mut writer, "Query")?;
-        end_element(&mut writer, "RequestEx")?;
-        end_element(&mut writer, "RequestPacket")?;
-    }
-    debug!("{}", String::from_utf8_lossy(&output));
-    let res: DiskInfo = api_request(&client, &config, output, cookie_jar)?;
-    Ok(res.into_point(Some("vnx_disk_info"), true))
-}
+        let mut s = self
+            .client
+            .post(&format!(
+                "https://{}/servlets/CelerraManagementServices",
+                self.config.endpoint
+            ))
+            .body(req)
+            .headers(headers)
+            .send()?
+            .error_for_status()?;
 
-pub fn filesystem_capacity_request(
-    client: &Client,
-    config: &VnxConfig,
-    cookie_jar: &mut CookieJar,
-) -> MetricsResult<Vec<TsPoint>> {
-    let mut output: Vec<u8> = Vec::new();
-    {
-        let mut writer = EventWriter::new(&mut output);
-        begin_query_request(&mut writer)?;
-        start_element(&mut writer, "FileSystemQueryParams", None, None)?;
-        let e = XmlEvent::start_element("AspectSelection")
-            .attr("fileSystems", "true")
-            .attr("fileSystemCapacityInfos", "true");
-        writer.write(e)?;
-        end_element(&mut writer, "AspectSelection")?;
-        end_element(&mut writer, "FileSystemQueryParams")?;
-        end_query_request(&mut writer)?;
-    }
-    let res: FileSystemCapacities = api_request(&client, &config, output, cookie_jar)?;
-    Ok(res.into_point(Some("vnx_filesystem_capacity"), true))
-}
+        // From here we should get back a JSESSIONID cookie
+        if let Some(cookie) = s.headers().get(SET_COOKIE) {
+            debug!("cookie: {:?}", cookie);
+            let parsed = Cookie::parse(cookie.to_str()?.to_owned())?;
+            self.cookie_jar.add(parsed);
+        };
 
-pub fn filesystem_usage_request(
-    client: &Client,
-    config: &VnxConfig,
-    cookie_jar: &mut CookieJar,
-) -> MetricsResult<Vec<TsPoint>> {
-    let mut output: Vec<u8> = Vec::new();
-    {
-        let mut writer = EventWriter::new(&mut output);
-        begin_query_stats_request(&mut writer)?;
-        start_element(&mut writer, "FileSystemUsage", None, None)?;
-        end_element(&mut writer, "FileSystemUsage")?;
-        end_query_stats_request(&mut writer)?;
-    }
-    let res: FilesystemUsage = api_request(&client, &config, output, cookie_jar)?;
-    Ok(res.into_point(None, true))
-}
+        let data = s.text()?;
+        debug!("api_request response: {}", data);
+        let res = T::from_xml(&data)?;
 
-/// A VNX mount is identified by the Data Mover ID and the mount path
-/// (This is a directory where the file system is mounted. In VNX terminology
-/// it is called the mount point.) in the root file system of the mover or VDM.
-/// A mount export is identified by the Data Mover or VDM on which the file
-/// system is mounted and the mount path.
-pub fn mount_listing_request(
-    client: &Client,
-    config: &VnxConfig,
-    cookie_jar: &mut CookieJar,
-) -> MetricsResult<Vec<TsPoint>> {
-    let mut output: Vec<u8> = Vec::new();
-    // Create the XML request object to send to the VNX
-    {
-        let mut writer = EventWriter::new(&mut output);
-        begin_query_request(&mut writer)?;
-        start_element(&mut writer, "MountQueryParams", None, None)?;
-        end_element(&mut writer, "MountQueryParams")?;
-        end_query_request(&mut writer)?;
+        Ok(res)
     }
-    // Request the mount info from the VNX
-    let res: Mounts = api_request(&client, &config, output, cookie_jar)?;
-    Ok(res.into_point(None, true))
+
+    pub fn mover_network_stats_request(&mut self, mover_id: &str) -> MetricsResult<Vec<TsPoint>> {
+        self.mover_stats_request::<NetworkAllSample>(mover_id, &MoverStatsRequest::Network)
+    }
+
+    pub fn mover_cifs_stats_request(&mut self, mover_id: &str) -> MetricsResult<Vec<TsPoint>> {
+        self.mover_stats_request::<CifsAllSample>(mover_id, &MoverStatsRequest::Cifs)
+    }
+
+    pub fn mover_resource_stats_request(&mut self, mover_id: &str) -> MetricsResult<Vec<TsPoint>> {
+        self.mover_stats_request::<ResourceUsageSample>(mover_id, &MoverStatsRequest::ResourceUsage)
+    }
+
+    pub fn mover_nfs_stats_request(&mut self, mover_id: &str) -> MetricsResult<Vec<TsPoint>> {
+        self.mover_stats_request::<NfsAllSample>(mover_id, &MoverStatsRequest::Nfs)
+    }
+
+    // Helper function
+    fn mover_stats_request<T>(
+        &mut self,
+        mover_id: &str,
+        req_type: &MoverStatsRequest,
+    ) -> MetricsResult<Vec<TsPoint>>
+    where
+        T: FromXml + IntoPoint,
+    {
+        let mut output: Vec<u8> = Vec::new();
+        let req_type_str = req_type.to_string();
+        {
+            let mut writer = EventWriter::new(&mut output);
+            begin_query_stats_request(&mut writer)?;
+            let e = XmlEvent::start_element("MoverStats")
+                .attr("mover", mover_id)
+                .attr("statsSet", &req_type_str);
+            writer.write(e)?;
+            end_element(&mut writer, "MoverStats")?;
+            end_query_stats_request(&mut writer)?;
+        }
+        let res: T = self.api_request(output)?;
+        Ok(res.into_point(None, true))
+    }
+
+    /*
+    pub fn volume_stats_request(
+        client: &Client,
+        config: &VnxConfig,
+        cookie_jar: &CookieJar,
+    ) -> MetricsResult<Vec<Point>> {
+        let p: Vec<Point> = Vec::new();
+        let mut output: Vec<u8> = Vec::new();
+        {
+            let mut writer = EventWriter::new(&mut output);
+            begin_query_stats_request(&mut writer)?;
+            start_element(&mut writer, "VolumeStats", None, None)?;
+            end_element(&mut writer, "VolumeStats")?;
+            end_query_stats_request(&mut writer)?;
+        }
+        let res: Volumes = api_request(&client, &config, output, &cookie_jar)?;
+        Ok(p)
+    }
+
+    pub fn volume_query_request(
+        client: &Client,
+        config: &VnxConfig,
+        cookie_jar: &CookieJar,
+    ) -> MetricsResult<Vec<Point>> {
+        let p: Vec<Point> = Vec::new();
+        let mut output: Vec<u8> = Vec::new();
+        {
+            let mut writer = EventWriter::new(&mut output);
+            begin_query_request(&mut writer)?;
+            start_element(&mut writer, "VolumeQueryParams", None, None)?;
+            end_element(&mut writer, "VolumeQueryParams")?;
+            end_query_request(&mut writer)?;
+        }
+        let res: Volumes = api_request(&client, &config, output, &cookie_jar)?;
+        Ok(p)
+    }
+    */
+
+    pub fn storage_pool_query_request(&mut self) -> MetricsResult<StoragePools> {
+        let mut output: Vec<u8> = Vec::new();
+        {
+            let mut writer = EventWriter::new(&mut output);
+            begin_query_request(&mut writer)?;
+            start_element(&mut writer, "StoragePoolQueryParams", None, None)?;
+            end_element(&mut writer, "StoragePoolQueryParams")?;
+            end_query_request(&mut writer)?;
+        }
+        let res: StoragePools = self.api_request(output)?;
+        Ok(res)
+    }
+
+    pub fn disk_info_request(&mut self, mover_id: &str) -> MetricsResult<Vec<TsPoint>> {
+        let mut output: Vec<u8> = Vec::new();
+        {
+            let mut writer = EventWriter::new(&mut output);
+            let e = XmlEvent::start_element("RequestPacket")
+                .default_ns("http://www.emc.com/schemas/celerra/xml_api")
+                .attr("apiVersion", "V1_1");
+            writer.write(e)?;
+            start_element(&mut writer, "RequestEx", None, None)?;
+            start_element(&mut writer, "Query", None, None)?;
+            let e = XmlEvent::start_element("ClariionDiskQueryParams").attr("clariion", mover_id);
+            writer.write(e)?;
+            end_element(&mut writer, "ClariionDiskQueryParams")?;
+            end_element(&mut writer, "Query")?;
+            end_element(&mut writer, "RequestEx")?;
+            end_element(&mut writer, "RequestPacket")?;
+        }
+        debug!("{}", String::from_utf8_lossy(&output));
+        let res: DiskInfo = self.api_request(output)?;
+        Ok(res.into_point(Some("vnx_disk_info"), true))
+    }
+
+    pub fn filesystem_capacity_request(&mut self) -> MetricsResult<Vec<TsPoint>> {
+        let mut output: Vec<u8> = Vec::new();
+        {
+            let mut writer = EventWriter::new(&mut output);
+            begin_query_request(&mut writer)?;
+            start_element(&mut writer, "FileSystemQueryParams", None, None)?;
+            let e = XmlEvent::start_element("AspectSelection")
+                .attr("fileSystems", "true")
+                .attr("fileSystemCapacityInfos", "true");
+            writer.write(e)?;
+            end_element(&mut writer, "AspectSelection")?;
+            end_element(&mut writer, "FileSystemQueryParams")?;
+            end_query_request(&mut writer)?;
+        }
+        let res: FileSystemCapacities = self.api_request(output)?;
+        Ok(res.into_point(Some("vnx_filesystem_capacity"), true))
+    }
+
+    pub fn filesystem_usage_request(&mut self) -> MetricsResult<Vec<TsPoint>> {
+        let mut output: Vec<u8> = Vec::new();
+        {
+            let mut writer = EventWriter::new(&mut output);
+            begin_query_stats_request(&mut writer)?;
+            start_element(&mut writer, "FileSystemUsage", None, None)?;
+            end_element(&mut writer, "FileSystemUsage")?;
+            end_query_stats_request(&mut writer)?;
+        }
+        let res: FilesystemUsage = self.api_request(output)?;
+        Ok(res.into_point(None, true))
+    }
+
+    /// A VNX mount is identified by the Data Mover ID and the mount path
+    /// (This is a directory where the file system is mounted. In VNX terminology
+    /// it is called the mount point.) in the root file system of the mover or VDM.
+    /// A mount export is identified by the Data Mover or VDM on which the file
+    /// system is mounted and the mount path.
+    pub fn mount_listing_request(&mut self) -> MetricsResult<Vec<TsPoint>> {
+        let mut output: Vec<u8> = Vec::new();
+        // Create the XML request object to send to the VNX
+        {
+            let mut writer = EventWriter::new(&mut output);
+            begin_query_request(&mut writer)?;
+            start_element(&mut writer, "MountQueryParams", None, None)?;
+            end_element(&mut writer, "MountQueryParams")?;
+            end_query_request(&mut writer)?;
+        }
+        // Request the mount info from the VNX
+        let res: Mounts = self.api_request(output)?;
+        Ok(res.into_point(None, true))
+    }
 }
 
 fn begin_query_request<W: Write>(w: &mut EventWriter<W>) -> MetricsResult<()> {

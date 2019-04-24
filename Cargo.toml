@@ -8,6 +8,7 @@ edition = '2018'
 homepage = "https://github.com/Comcast/libstorage"
 license = "Apache-2.0"
 readme = "README.md"
+keywords = ["storage", "netapp", "emc"]
 
 [workspace]
 members = [
