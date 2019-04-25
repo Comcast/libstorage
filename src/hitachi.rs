@@ -31,6 +31,20 @@ use csv::Reader;
 use log::{error, trace, warn};
 use reqwest::header::ACCEPT;
 
+pub struct Hitachi {
+    client: reqwest::Client,
+    config: HitachiConfig,
+}
+
+impl Hitachi {
+    pub fn new(client: &reqwest::Client, config: HitachiConfig) -> Self {
+        Hitachi {
+            client: client.clone(),
+            config,
+        }
+    }
+}
+
 #[derive(Deserialize, Debug)]
 pub struct Collection {
     pub items: Vec<HashMap<String, serde_json::Value>>,
@@ -129,7 +143,10 @@ impl IntoPoint for StorageLdev {
                 .into_iter()
                 // Tag each port with ldev_id
                 .map(|mut point| {
-                    point.add_tag("ldev_id", TsValue::String(convert_to_base16(self.ldev_id.clone())));
+                    point.add_tag(
+                        "ldev_id",
+                        TsValue::String(convert_to_base16(self.ldev_id.clone())),
+                    );
                     point
                 })
                 .collect();
@@ -545,118 +562,118 @@ fn convert_to_base16(num: u64) -> String {
     output
 }
 
-/// This request obtains the detailed version of the API
-pub fn get_version(client: &reqwest::Client, config: &HitachiConfig) -> MetricsResult<Version> {
-    let version: Version = client
-        .get(&format!(
-            "http://@{endpoint}/TuningManager/v1/configuration/Version",
-            endpoint = config.endpoint
-        ))
-        .basic_auth(config.user.clone(), Some(config.password.clone()))
-        .header(ACCEPT, "application/json")
-        .send()?
-        .error_for_status()?
-        .json()?;
-    Ok(version)
-}
+impl Hitachi {
+    /// This request obtains the detailed version of the API
+    pub fn get_version(&self) -> MetricsResult<Version> {
+        let version: Version = self
+            .client
+            .get(&format!(
+                "http://@{endpoint}/TuningManager/v1/configuration/Version",
+                endpoint = self.config.endpoint
+            ))
+            .basic_auth(&self.config.user, Some(&self.config.password))
+            .header(ACCEPT, "application/json")
+            .send()?
+            .error_for_status()?
+            .json()?;
+        Ok(version)
+    }
 
-pub fn get_agent_for_raid(
-    client: &reqwest::Client,
-    config: &HitachiConfig,
-) -> MetricsResult<Collection> {
-    let agents: Collection = client
-        .get(&format!(
-            "http://{}/TuningManager/v1/objects/AgentForRAID",
-            config.endpoint
-        ))
-        .basic_auth(config.user.clone(), Some(config.password.clone()))
-        .header(ACCEPT, "application/json")
-        .send()?
-        .error_for_status()?
-        .json()?;
+    pub fn get_agent_for_raid(&self) -> MetricsResult<Collection> {
+        let agents: Collection = self
+            .client
+            .get(&format!(
+                "http://{}/TuningManager/v1/objects/AgentForRAID",
+                self.config.endpoint
+            ))
+            .basic_auth(&self.config.user, Some(&self.config.password))
+            .header(ACCEPT, "application/json")
+            .send()?
+            .error_for_status()?
+            .json()?;
 
-    Ok(agents)
-}
+        Ok(agents)
+    }
 
-// HDS NAS have a specific search criteria for the instance_name than what AgentFroRaid is. Alternate is to use agentType=ALL and will see everything
-pub fn get_agent_for_nas(
-    client: &reqwest::Client,
-    config: &HitachiConfig,
-) -> MetricsResult<Collection> {
-    let agentnas: Collection = client
-        .get(&format!(
-            "http://{}/TuningManager/v1/objects/Agents?agentType=NAS",
-            config.endpoint
-        ))
-        .basic_auth(&config.user, Some(&config.password))
-        .header(ACCEPT, "application/json")
-        .send()?
-        .error_for_status()?
-        .json()?;
+    // HDS NAS have a specific search criteria for the instance_name than what AgentFroRaid is. Alternate is to use agentType=ALL and will see everything
+    pub fn get_agent_for_nas(&self) -> MetricsResult<Collection> {
+        let agentnas: Collection = self
+            .client
+            .get(&format!(
+                "http://{}/TuningManager/v1/objects/Agents?agentType=NAS",
+                self.config.endpoint
+            ))
+            .basic_auth(&self.config.user, Some(&self.config.password))
+            .header(ACCEPT, "application/json")
+            .send()?
+            .error_for_status()?
+            .json()?;
 
-    Ok(agentnas)
-}
+        Ok(agentnas)
+    }
 
-fn get_server_response(
-    client: &reqwest::Client,
-    config: &HitachiConfig,
-    hostname: &str,
-    agent_instance_name: &str,
-    api_call: &str,
-) -> MetricsResult<String> {
-    let content = client
-        .get(&format!(
-            "http://{}/TuningManager/v1/objects/{}?hostName={}&agentInstanceName={}",
-            config.endpoint, api_call, hostname, agent_instance_name,
-        ))
-        .basic_auth(&config.user, Some(&config.password))
-        .send()?
-        .error_for_status()?
-        .text()?;
-    trace!("server response: {}", content);
-    Ok(content)
-}
+    fn get_server_response(
+        &self,
+        hostname: &str,
+        agent_instance_name: &str,
+        api_call: &str,
+    ) -> MetricsResult<String> {
+        let content = self
+            .client
+            .get(&format!(
+                "http://{}/TuningManager/v1/objects/{}?hostName={}&agentInstanceName={}",
+                self.config.endpoint, api_call, hostname, agent_instance_name,
+            ))
+            .basic_auth(&self.config.user, Some(&self.config.password))
+            .send()?
+            .error_for_status()?
+            .text()?;
+        trace!("server response: {}", content);
+        Ok(content)
+    }
 
-/// Note this only works with ConfigurationManager
-pub fn get_storage(
-    client: &reqwest::Client,
-    config: &HitachiConfig,
-) -> MetricsResult<ServerResult<ConfigManagerStorage>> {
-    let endpoint = format!(
-        "http://{}/ConfigurationManager/v1/objects/storages",
-        config.endpoint
-    );
-    let s: ServerResult<ConfigManagerStorage> =
-        super::get(&client, &endpoint, &config.user, Some(&config.password))?;
-    Ok(s)
-}
+    /// Note this only works with ConfigurationManager
+    pub fn get_storage(&self) -> MetricsResult<ServerResult<ConfigManagerStorage>> {
+        let endpoint = format!(
+            "http://{}/ConfigurationManager/v1/objects/storages",
+            self.config.endpoint
+        );
+        let s: ServerResult<ConfigManagerStorage> = super::get(
+            &self.client,
+            &endpoint,
+            &self.config.user,
+            Some(&self.config.password),
+        )?;
+        Ok(s)
+    }
 
-/// Note this only works with ConfigurationManager
-pub fn get_ldev(
-    client: &reqwest::Client,
-    config: &HitachiConfig,
-    storage_id: &str,
-) -> MetricsResult<Vec<TsPoint>> {
-    let endpoint = format!(
-        "http://{}/ConfigurationManager/v1/objects/storages/{}/ldevs?ldevOption=dpVolume",
-        config.endpoint, storage_id
-    );
-    let s: ServerResult<StorageLdev> =
-        super::get(&client, &endpoint, &config.user, Some(&config.password))?;
-    let points = s
-        .data
-        .iter()
-        // Flatten all the Vec<TsPoint>'s
-        .flat_map(|s| s.into_point(Some("hitachi_ldev"), false))
-        .into_iter()
-        // Tag each with storage_device_id
-        .map(|mut point| {
-            point.add_tag("storage_device_id", TsValue::String(storage_id.to_string()));
-            point
-        })
-        .collect();
+    /// Note this only works with ConfigurationManager
+    pub fn get_ldev(&self, storage_id: &str) -> MetricsResult<Vec<TsPoint>> {
+        let endpoint = format!(
+            "http://{}/ConfigurationManager/v1/objects/storages/{}/ldevs?ldevOption=dpVolume",
+            self.config.endpoint, storage_id
+        );
+        let s: ServerResult<StorageLdev> = super::get(
+            &self.client,
+            &endpoint,
+            &self.config.user,
+            Some(&self.config.password),
+        )?;
+        let points = s
+            .data
+            .iter()
+            // Flatten all the Vec<TsPoint>'s
+            .flat_map(|s| s.into_point(Some("hitachi_ldev"), false))
+            .into_iter()
+            // Tag each with storage_device_id
+            .map(|mut point| {
+                point.add_tag("storage_device_id", TsValue::String(storage_id.to_string()));
+                point
+            })
+            .collect();
 
-    Ok(points)
+        Ok(points)
+    }
 }
 
 pub fn csv_to_points(
@@ -703,170 +720,147 @@ pub fn csv_to_points(
     Ok(points)
 }
 
-pub fn get_raid_pi_prcs(
-    client: &reqwest::Client,
-    config: &HitachiConfig,
-    hostname: &str,
-    agent_instance_name: &str,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    let result = get_server_response(
-        client,
-        config,
-        hostname,
-        agent_instance_name,
-        "RAID_PI_PRCS",
-    )?;
-    let points = csv_to_points(&result, "raid_pi_prcs", Some(t))?;
-    Ok(points)
-}
+impl Hitachi {
+    pub fn get_raid_pi_prcs(
+        &self,
+        hostname: &str,
+        agent_instance_name: &str,
+        t: DateTime<Utc>,
+    ) -> MetricsResult<Vec<TsPoint>> {
+        let result = self.get_server_response(hostname, agent_instance_name, "RAID_PI_PRCS")?;
+        let points = csv_to_points(&result, "raid_pi_prcs", Some(t))?;
+        Ok(points)
+    }
 
-pub fn get_raid_pi_lda(
-    client: &reqwest::Client,
-    config: &HitachiConfig,
-    hostname: &str,
-    agent_instance_name: &str,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    let result = get_server_response(client, config, hostname, agent_instance_name, "RAID_PI_LDA")?;
-    let points = csv_to_points(&result, "raid_pi_lda", Some(t))?;
-    Ok(points)
-}
+    pub fn get_raid_pi_lda(
+        &self,
+        hostname: &str,
+        agent_instance_name: &str,
+        t: DateTime<Utc>,
+    ) -> MetricsResult<Vec<TsPoint>> {
+        let result = self.get_server_response(hostname, agent_instance_name, "RAID_PI_LDA")?;
+        let points = csv_to_points(&result, "raid_pi_lda", Some(t))?;
+        Ok(points)
+    }
 
-pub fn get_raid_pi(
-    client: &reqwest::Client,
-    config: &HitachiConfig,
-    hostname: &str,
-    agent_instance_name: &str,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    let result = get_server_response(client, config, hostname, agent_instance_name, "RAID_PI")?;
-    let points = csv_to_points(&result, "raid_pi", Some(t))?;
-    Ok(points)
-}
+    pub fn get_raid_pi(
+        &self,
+        hostname: &str,
+        agent_instance_name: &str,
+        t: DateTime<Utc>,
+    ) -> MetricsResult<Vec<TsPoint>> {
+        let result = self.get_server_response(hostname, agent_instance_name, "RAID_PI")?;
+        let points = csv_to_points(&result, "raid_pi", Some(t))?;
+        Ok(points)
+    }
 
-pub fn get_raid_pd_plc(
-    client: &reqwest::Client,
-    config: &HitachiConfig,
-    hostname: &str,
-    agent_instance_name: &str,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    let result = get_server_response(client, config, hostname, agent_instance_name, "RAID_PD_PLC")?;
-    let points = csv_to_points(&result, "raid_pd_plc", Some(t))?;
-    Ok(points)
-}
+    pub fn get_raid_pd_plc(
+        &self,
+        hostname: &str,
+        agent_instance_name: &str,
+        t: DateTime<Utc>,
+    ) -> MetricsResult<Vec<TsPoint>> {
+        let result = self.get_server_response(hostname, agent_instance_name, "RAID_PD_PLC")?;
+        let points = csv_to_points(&result, "raid_pd_plc", Some(t))?;
+        Ok(points)
+    }
 
-pub fn get_raid_pi_chs(
-    client: &reqwest::Client,
-    config: &HitachiConfig,
-    hostname: &str,
-    agent_instance_name: &str,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    let result = get_server_response(client, config, hostname, agent_instance_name, "RAID_PI_CHS")?;
-    let points = csv_to_points(&result, "raid_pi_chs", Some(t))?;
-    Ok(points)
-}
+    pub fn get_raid_pi_chs(
+        &self,
+        hostname: &str,
+        agent_instance_name: &str,
+        t: DateTime<Utc>,
+    ) -> MetricsResult<Vec<TsPoint>> {
+        let result = self.get_server_response(hostname, agent_instance_name, "RAID_PI_CHS")?;
+        let points = csv_to_points(&result, "raid_pi_chs", Some(t))?;
+        Ok(points)
+    }
 
-pub fn get_raid_pd_plts(
-    client: &reqwest::Client,
-    config: &HitachiConfig,
-    hostname: &str,
-    agent_instance_name: &str,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    let result = get_server_response(
-        client,
-        config,
-        hostname,
-        agent_instance_name,
-        "RAID_PD_PLTS",
-    )?;
-    let points = csv_to_points(&result, "raid_pd_plts", Some(t))?;
-    Ok(points)
-}
+    pub fn get_raid_pd_plts(
+        &self,
+        hostname: &str,
+        agent_instance_name: &str,
+        t: DateTime<Utc>,
+    ) -> MetricsResult<Vec<TsPoint>> {
+        let result = self.get_server_response(hostname, agent_instance_name, "RAID_PD_PLTS")?;
+        let points = csv_to_points(&result, "raid_pd_plts", Some(t))?;
+        Ok(points)
+    }
 
-pub fn get_raid_pi_pts(
-    client: &reqwest::Client,
-    config: &HitachiConfig,
-    hostname: &str,
-    agent_instance_name: &str,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    let result = get_server_response(client, config, hostname, agent_instance_name, "RAID_PI_PTS")?;
-    let points = csv_to_points(&result, "raid_pi_pts", Some(t))?;
-    Ok(points)
-}
+    pub fn get_raid_pi_pts(
+        &self,
+        hostname: &str,
+        agent_instance_name: &str,
+        t: DateTime<Utc>,
+    ) -> MetricsResult<Vec<TsPoint>> {
+        let result = self.get_server_response(hostname, agent_instance_name, "RAID_PI_PTS")?;
+        let points = csv_to_points(&result, "raid_pi_pts", Some(t))?;
+        Ok(points)
+    }
 
-pub fn get_nas_pd_hplc(
-    client: &reqwest::Client,
-    config: &HitachiConfig,
-    hostname: &str,
-    agent_instance_name: &str,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    let result = get_server_response(client, config, hostname, agent_instance_name, "NAS_PD_HPLC")?;
-    let points = csv_to_points(&result, "nas_pd_hplc", Some(t))?;
-    Ok(points)
-}
+    pub fn get_nas_pd_hplc(
+        &self,
+        hostname: &str,
+        agent_instance_name: &str,
+        t: DateTime<Utc>,
+    ) -> MetricsResult<Vec<TsPoint>> {
+        let result = self.get_server_response(hostname, agent_instance_name, "NAS_PD_HPLC")?;
+        let points = csv_to_points(&result, "nas_pd_hplc", Some(t))?;
+        Ok(points)
+    }
 
-pub fn get_nas_pd_hsmu(
-    client: &reqwest::Client,
-    config: &HitachiConfig,
-    hostname: &str,
-    agent_instance_name: &str,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    let result = get_server_response(client, config, hostname, agent_instance_name, "NAS_PD_HSMU")?;
-    let points = csv_to_points(&result, "nas_pd_hsmu", Some(t))?;
-    Ok(points)
-}
+    pub fn get_nas_pd_hsmu(
+        &self,
+        hostname: &str,
+        agent_instance_name: &str,
+        t: DateTime<Utc>,
+    ) -> MetricsResult<Vec<TsPoint>> {
+        let result = self.get_server_response(hostname, agent_instance_name, "NAS_PD_HSMU")?;
+        let points = csv_to_points(&result, "nas_pd_hsmu", Some(t))?;
+        Ok(points)
+    }
 
-pub fn get_nas_pd_hnc(
-    client: &reqwest::Client,
-    config: &HitachiConfig,
-    hostname: &str,
-    agent_instance_name: &str,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    let result = get_server_response(client, config, hostname, agent_instance_name, "NAS_PD_HNC")?;
-    let points = csv_to_points(&result, "nas_pd_hnc", Some(t))?;
-    Ok(points)
-}
+    pub fn get_nas_pd_hnc(
+        &self,
+        hostname: &str,
+        agent_instance_name: &str,
+        t: DateTime<Utc>,
+    ) -> MetricsResult<Vec<TsPoint>> {
+        let result = self.get_server_response(hostname, agent_instance_name, "NAS_PD_HNC")?;
+        let points = csv_to_points(&result, "nas_pd_hnc", Some(t))?;
+        Ok(points)
+    }
 
-pub fn get_nas_pd_hfsc(
-    client: &reqwest::Client,
-    config: &HitachiConfig,
-    hostname: &str,
-    agent_instance_name: &str,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    let result = get_server_response(client, config, hostname, agent_instance_name, "NAS_PD_HFSC")?;
-    let points = csv_to_points(&result, "nas_pd_hfsc", Some(t))?;
-    Ok(points)
-}
+    pub fn get_nas_pd_hfsc(
+        &self,
+        hostname: &str,
+        agent_instance_name: &str,
+        t: DateTime<Utc>,
+    ) -> MetricsResult<Vec<TsPoint>> {
+        let result = self.get_server_response(hostname, agent_instance_name, "NAS_PD_HFSC")?;
+        let points = csv_to_points(&result, "nas_pd_hfsc", Some(t))?;
+        Ok(points)
+    }
 
-pub fn get_nas_pi_hns(
-    client: &reqwest::Client,
-    config: &HitachiConfig,
-    hostname: &str,
-    agent_instance_name: &str,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    let result = get_server_response(client, config, hostname, agent_instance_name, "NAS_PI_HNS")?;
-    let points = csv_to_points(&result, "nas_pi_hns", Some(t))?;
-    Ok(points)
-}
+    pub fn get_nas_pi_hns(
+        &self,
+        hostname: &str,
+        agent_instance_name: &str,
+        t: DateTime<Utc>,
+    ) -> MetricsResult<Vec<TsPoint>> {
+        let result = self.get_server_response(hostname, agent_instance_name, "NAS_PI_HNS")?;
+        let points = csv_to_points(&result, "nas_pi_hns", Some(t))?;
+        Ok(points)
+    }
 
-pub fn get_nas_pi_hnhs(
-    client: &reqwest::Client,
-    config: &HitachiConfig,
-    hostname: &str,
-    agent_instance_name: &str,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    let result = get_server_response(client, config, hostname, agent_instance_name, "NAS_PI_HNHS")?;
-    let points = csv_to_points(&result, "nas_pi_hnhs", Some(t))?;
-    Ok(points)
+    pub fn get_nas_pi_hnhs(
+        &self,
+        hostname: &str,
+        agent_instance_name: &str,
+        t: DateTime<Utc>,
+    ) -> MetricsResult<Vec<TsPoint>> {
+        let result = self.get_server_response(hostname, agent_instance_name, "NAS_PI_HNHS")?;
+        let points = csv_to_points(&result, "nas_pi_hnhs", Some(t))?;
+        Ok(points)
+    }
 }

@@ -38,7 +38,7 @@ static FILER_URL: &str = "servlets/netapp.servlets.admin.XMLrequest_filer";
 //static NETCACHE_URL: &str = "/servlets/netapp.servlets.admin.XMLrequest";
 //static ZAPI_xmlns: &str = "http://www.netapp.com/filer/admin";
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)]
 pub struct NetappConfig {
     /// The netapp endpoint to use
     pub endpoint: String,
@@ -50,6 +50,20 @@ pub struct NetappConfig {
     /// Optional certificate file to use against the server
     /// der encoded
     pub certificate: Option<String>,
+}
+
+pub struct Netapp {
+    client: reqwest::Client,
+    config: NetappConfig,
+}
+
+impl Netapp {
+    pub fn new(client: &reqwest::Client, config: NetappConfig) -> Self {
+        Netapp {
+            client: client.clone(),
+            config,
+        }
+    }
 }
 
 pub trait FromXml {
@@ -832,69 +846,60 @@ fn end_element<W: Write>(w: &mut EventWriter<W>, name: &str) -> MetricsResult<()
     Ok(())
 }
 
-pub fn get_volume_performance(
-    client: &Client,
-    config: &NetappConfig,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    let mut output: Vec<u8> = Vec::new();
-    {
-        let mut writer = EventWriter::new(&mut output);
-        create_peformance_request(&mut writer)?;
-    }
-    let res: HaPerformanceStats = api_request(&client, &config, output)?;
-    debug!("netapp ha performance: {:#?}", res);
+impl Netapp {
+    pub fn get_volume_performance(&self, t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
+        let mut output: Vec<u8> = Vec::new();
+        {
+            let mut writer = EventWriter::new(&mut output);
+            create_peformance_request(&mut writer)?;
+        }
+        let res: HaPerformanceStats = api_request(&self.client, &self.config, output)?;
+        debug!("netapp ha performance: {:#?}", res);
 
-    // Squash all the Vec<Vec<TsPoints>> into Vec<TsPoint>
-    let mut points: Vec<TsPoint> = res
-        .perf
-        .iter()
-        .flat_map(|vol| vol.into_point(Some("netapp_volume_stat"), true))
-        .collect();
-    // Set all the timestamps to be identical
-    for p in &mut points {
-        p.timestamp = Some(t);
-    }
+        // Squash all the Vec<Vec<TsPoints>> into Vec<TsPoint>
+        let mut points: Vec<TsPoint> = res
+            .perf
+            .iter()
+            .flat_map(|vol| vol.into_point(Some("netapp_volume_stat"), true))
+            .collect();
+        // Set all the timestamps to be identical
+        for p in &mut points {
+            p.timestamp = Some(t);
+        }
 
-    Ok(points)
-}
-
-pub fn get_volume_usage(
-    client: &Client,
-    config: &NetappConfig,
-    t: DateTime<Utc>,
-) -> MetricsResult<Vec<TsPoint>> {
-    let mut output: Vec<u8> = Vec::new();
-    {
-        let mut writer = EventWriter::new(&mut output);
-        create_volume_request(&mut writer)?;
-    }
-    let res: NetappVolumes = api_request(&client, &config, output)?;
-    debug!("netapp volume usage: {:#?}", res);
-
-    // Squash all the Vec<Vec<TsPoints>> into Vec<TsPoint>
-    let mut points: Vec<TsPoint> = res
-        .vols
-        .iter()
-        .flat_map(|vol| vol.into_point(Some("netapp_volume"), true))
-        .collect();
-    // Set all the timestamps to be identical
-    for p in &mut points {
-        p.timestamp = Some(t);
+        Ok(points)
     }
 
-    Ok(points)
-}
+    pub fn get_volume_usage(&self, t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
+        let mut output: Vec<u8> = Vec::new();
+        {
+            let mut writer = EventWriter::new(&mut output);
+            create_volume_request(&mut writer)?;
+        }
+        let res: NetappVolumes = api_request(&self.client, &self.config, output)?;
+        debug!("netapp volume usage: {:#?}", res);
 
-pub fn system_version_request(
-    client: &Client,
-    config: &NetappConfig,
-) -> MetricsResult<OnTapVersion> {
-    let mut output: Vec<u8> = Vec::new();
-    {
-        let mut writer = EventWriter::new(&mut output);
-        create_version_request(&mut writer)?;
+        // Squash all the Vec<Vec<TsPoints>> into Vec<TsPoint>
+        let mut points: Vec<TsPoint> = res
+            .vols
+            .iter()
+            .flat_map(|vol| vol.into_point(Some("netapp_volume"), true))
+            .collect();
+        // Set all the timestamps to be identical
+        for p in &mut points {
+            p.timestamp = Some(t);
+        }
+
+        Ok(points)
     }
-    let res: OnTapVersion = api_request(&client, &config, output)?;
-    Ok(res)
+
+    pub fn system_version_request(&self) -> MetricsResult<OnTapVersion> {
+        let mut output: Vec<u8> = Vec::new();
+        {
+            let mut writer = EventWriter::new(&mut output);
+            create_version_request(&mut writer)?;
+        }
+        let res: OnTapVersion = api_request(&self.client, &self.config, output)?;
+        Ok(res)
+    }
 }

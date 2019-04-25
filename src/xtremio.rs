@@ -15,7 +15,6 @@
 *
 * SPDX-License-Identifier: Apache-2.0
 */
-
 use crate::deserialize_string_or_float;
 use crate::deserialize_string_or_int;
 use crate::error::MetricsResult;
@@ -44,6 +43,20 @@ pub struct XtremIOConfig {
     pub root_certificate: Option<String>,
     /// The region this cluster is located in
     pub region: String,
+}
+
+pub struct XtremIo {
+    client: reqwest::Client,
+    config: XtremIOConfig,
+}
+
+impl XtremIo {
+    pub fn new(client: &reqwest::Client, config: XtremIOConfig) -> Self {
+        XtremIo {
+            client: client.clone(),
+            config,
+        }
+    }
 }
 
 #[test]
@@ -871,50 +884,46 @@ pub struct Xms {
     pub cpu: f64,
 }
 
-fn get_data<T>(
-    client: &reqwest::Client,
-    config: &XtremIOConfig,
-    api_endpoint: &str,
-    point_name: &str,
-) -> MetricsResult<Vec<TsPoint>>
-where
-    T: DeserializeOwned + Debug + IntoPoint,
-{
-    let url = format!(
-        "https://{}/api/json/v2/types/{}?full=1",
-        config.endpoint, api_endpoint,
-    );
-    let j: T = crate::get(&client, &url, &config.user, Some(&config.password))?;
+impl XtremIo {
+    fn get_data<T>(&self, api_endpoint: &str, point_name: &str) -> MetricsResult<Vec<TsPoint>>
+    where
+        T: DeserializeOwned + Debug + IntoPoint,
+    {
+        let url = format!(
+            "https://{}/api/json/v2/types/{}?full=1",
+            self.config.endpoint, api_endpoint,
+        );
+        let j: T = crate::get(
+            &self.client,
+            &url,
+            &self.config.user,
+            Some(&self.config.password),
+        )?;
 
-    Ok(j.into_point(Some(point_name), true))
-}
+        Ok(j.into_point(Some(point_name), true))
+    }
 
-pub fn get_clusters(
-    client: &reqwest::Client,
-    config: &XtremIOConfig,
-) -> MetricsResult<Vec<TsPoint>> {
-    let points = get_data::<Clusters>(client, config, "clusters", "cluster")?;
-    Ok(points)
-}
+    pub fn get_clusters(&self) -> MetricsResult<Vec<TsPoint>> {
+        let points = self.get_data::<Clusters>("clusters", "cluster")?;
+        Ok(points)
+    }
 
-pub fn get_psus(client: &reqwest::Client, config: &XtremIOConfig) -> MetricsResult<Vec<TsPoint>> {
-    let points = get_data::<Psus>(client, config, "storage-controller-psus", "psu")?;
-    Ok(points)
-}
-pub fn get_ssds(client: &reqwest::Client, config: &XtremIOConfig) -> MetricsResult<Vec<TsPoint>> {
-    let points = get_data::<Ssds>(client, config, "ssds", "ssd")?;
-    Ok(points)
-}
+    pub fn get_psus(&self) -> MetricsResult<Vec<TsPoint>> {
+        let points = self.get_data::<Psus>("storage-controller-psus", "psu")?;
+        Ok(points)
+    }
+    pub fn get_ssds(&self) -> MetricsResult<Vec<TsPoint>> {
+        let points = self.get_data::<Ssds>("ssds", "ssd")?;
+        Ok(points)
+    }
 
-pub fn get_xms(client: &reqwest::Client, config: &XtremIOConfig) -> MetricsResult<Vec<TsPoint>> {
-    let points = get_data::<Xmss>(client, config, "xms", "xms")?;
-    Ok(points)
-}
+    pub fn get_xms(&self) -> MetricsResult<Vec<TsPoint>> {
+        let points = self.get_data::<Xmss>("xms", "xms")?;
+        Ok(points)
+    }
 
-pub fn get_volumes(
-    client: &reqwest::Client,
-    config: &XtremIOConfig,
-) -> MetricsResult<Vec<TsPoint>> {
-    let points = get_data::<Volumes>(client, config, "volumes", "volume")?;
-    Ok(points)
+    pub fn get_volumes(&self) -> MetricsResult<Vec<TsPoint>> {
+        let points = self.get_data::<Volumes>("volumes", "volume")?;
+        Ok(points)
+    }
 }

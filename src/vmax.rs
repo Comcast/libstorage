@@ -29,7 +29,7 @@ use serde::de::DeserializeOwned;
 use serde::ser::Serialize;
 use serde_json::{json, Value};
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)]
 pub struct VmaxConfig {
     /// The scaleio endpoint to use
     pub endpoint: String,
@@ -43,114 +43,17 @@ pub struct VmaxConfig {
     pub region: String,
 }
 
-/* These are the GET and POST functions depending upon the output needed
-*/
-fn get_data<T>(
-    client: &reqwest::Client,
-    config: &VmaxConfig,
-    api_endpoint: &str,
-    point_name: &str,
-    is_time_series: bool,
-) -> MetricsResult<Vec<TsPoint>>
-where
-    T: DeserializeOwned + Debug + IntoPoint,
-{
-    let url = format!(
-        "https://{}/univmax/restapi/{}",
-        config.endpoint, api_endpoint,
-    );
-    let j: T = crate::get(&client, &url, &config.user, Some(&config.password))?;
-
-    Ok(j.into_point(Some(point_name), is_time_series))
+pub struct Vmax {
+    client: reqwest::Client,
+    config: VmaxConfig,
 }
 
-/* Changed the GET to POST and added body parameter to pass additional fields to
-*/
-fn post_data_to_points<T, U>(
-    client: &reqwest::Client,
-    config: &VmaxConfig,
-    api_endpoint: &str,
-    body: &U,
-    point_name: &str,
-    is_time_series: bool,
-) -> MetricsResult<Vec<TsPoint>>
-where
-    T: DeserializeOwned + Debug + IntoPoint,
-    U: Serialize + ?Sized,
-{
-    let array_output = client
-        .post(&format!(
-            "https://{}/univmax/restapi/{}",
-            config.endpoint, api_endpoint,
-        ))
-        .basic_auth(config.user.clone(), Some(config.password.clone()))
-        .header(ACCEPT, "application/json")
-        .json(body)
-        .send()?
-        .error_for_status()?
-        .text()?;
-    trace!("{}", array_output);
-    let json_res: Result<T, serde_json::Error> = serde_json::from_str(&array_output);
-    trace!("json result: {:?}", json_res);
-    let json_res = json_res?;
-    Ok(json_res.into_point(Some(point_name), is_time_series))
-}
-
-/* Changed the GET to POST and added body parameter to pass additional field to w/o IntoPoint
-So this is good for capturing info w/o reporting into the back-end
-*/
-fn post_data<T, U>(
-    client: &reqwest::Client,
-    config: &VmaxConfig,
-    api_endpoint: &str,
-    body: &U,
-) -> MetricsResult<T>
-where
-    T: DeserializeOwned + Debug,
-    U: Serialize + ?Sized,
-{
-    let array_output = client
-        .post(&format!(
-            "https://{}/univmax/restapi/{}",
-            config.endpoint, api_endpoint,
-        ))
-        .basic_auth(config.user.clone(), Some(config.password.clone()))
-        .header(ACCEPT, "application/json")
-        .json(body)
-        .send()?
-        .error_for_status()?
-        .text()?;
-    trace!("{}", array_output);
-    let json_res: Result<T, serde_json::Error> = serde_json::from_str(&array_output);
-    trace!("json result: {:?}", json_res);
-    let json_res = json_res?;
-    Ok(json_res)
-}
-
-// Grab the list of things to operate on from vmax
-fn get_list(
-    client: &reqwest::Client,
-    config: &VmaxConfig,
-    api_endpoint: &str,
-    key: &str,
-) -> MetricsResult<Vec<String>> {
-    let data: Value = client
-        .get(&format!(
-            "https://{}/univmax/restapi/{}",
-            config.endpoint, api_endpoint,
-        ))
-        .basic_auth(config.user.clone(), Some(config.password.clone()))
-        .send()?
-        .error_for_status()?
-        .json()?;
-
-    // Grab the list from the json
-    match data[key].as_array() {
-        Some(v) => Ok(v
-            .iter()
-            .map(|val| val.as_str().expect("Failed to retrieve key").to_string())
-            .collect::<Vec<String>>()),
-        None => Ok(vec![]),
+impl Vmax {
+    pub fn new(client: &reqwest::Client, config: VmaxConfig) -> Self {
+        Vmax {
+            client: client.clone(),
+            config,
+        }
     }
 }
 
@@ -324,26 +227,6 @@ fn test_get_slo_arrays() {
     println!("point: {:#?}", i.into_point(Some("slo_arrays"), true));
 }
 
-pub fn get_slo_arrays(client: &reqwest::Client, config: &VmaxConfig) -> MetricsResult<Vec<String>> {
-    let arrays = get_list(client, config, "sloprovisioning/symmetrix", "symmetrixId")?;
-    Ok(arrays)
-}
-
-pub fn get_slo_array(
-    client: &reqwest::Client,
-    config: &VmaxConfig,
-    id: &str,
-) -> MetricsResult<Vec<TsPoint>> {
-    let points = get_data::<Symmetrix>(
-        client,
-        config,
-        &format!("sloprovisioning/symmetrix/{}", id),
-        "symmetrix",
-        true,
-    )?;
-    Ok(points)
-}
-
 #[test]
 fn test_get_slo_array_srps() {
     use std::fs::File;
@@ -358,36 +241,6 @@ fn test_get_slo_array_srps() {
     println!("point: {:#?}", i.into_point(Some("srp"), true));
 }
 
-pub fn get_slo_array_srps(
-    client: &reqwest::Client,
-    config: &VmaxConfig,
-    id: &str,
-) -> MetricsResult<Vec<String>> {
-    let srps = get_list(
-        client,
-        config,
-        &format!("sloprovisioning/symmetrix/{}/srp", id),
-        "srpId",
-    )?;
-    Ok(srps)
-}
-
-pub fn get_slo_array_srp(
-    client: &reqwest::Client,
-    config: &VmaxConfig,
-    id: &str,
-    srp: &str,
-) -> MetricsResult<Vec<TsPoint>> {
-    let points = get_data::<Srps>(
-        client,
-        config,
-        &format!("sloprovisioning/symmetrix/{}/srp/{}", id, srp),
-        "slo_array_srp",
-        true,
-    )?;
-    Ok(points)
-}
-
 #[test]
 fn test_get_slo_array_storagegroups() {
     use std::fs::File;
@@ -400,43 +253,6 @@ fn test_get_slo_array_storagegroups() {
     let i: StorageGroups = serde_json::from_str(&buff).unwrap();
     println!("result: {:#?}", i);
     println!("point: {:#?}", i.into_point(Some("storage_group"), true));
-}
-
-pub fn get_slo_array_storagegroups(
-    client: &reqwest::Client,
-    config: &VmaxConfig,
-    id: &str,
-) -> MetricsResult<Vec<String>> {
-    let groups = get_list(
-        client,
-        config,
-        &format!("sloprovisioning/symmetrix/{}/storagegroup", id),
-        "storageGroupId",
-    )?;
-    Ok(groups)
-}
-
-pub fn get_slo_array_storagegroup(
-    client: &reqwest::Client,
-    config: &VmaxConfig,
-    id: &str,
-    group: &str,
-) -> MetricsResult<Vec<TsPoint>> {
-    let points = get_data::<StorageGroups>(
-        client,
-        config,
-        &format!("sloprovisioning/symmetrix/{}/storagegroup/{}", id, group),
-        "vmax_slo_array_storagegroup",
-        false,
-    )?;
-    let points_with_symid = points
-        .into_iter()
-        .map(|mut s| {
-            s.add_tag("symmetrix_id", TsValue::String(id.to_string()));
-            s
-        })
-        .collect();
-    Ok(points_with_symid)
 }
 
 //START Section for Collecting VMAX Front-End Port list and Front-End Port Metrics
@@ -546,78 +362,6 @@ pub struct FedResult {
     pub result: Vec<FeDirectorMetrics>,
 }
 
-/*Setting up new function for Metrics Collection. StartDate and endDate are in milliseconds
-https://{server}/univmax/restapi/performance/FEDirector/metrics
-{
-  "startDate"   : "1522104538975",
-  "endDate"     : "1522104573437",
-  "symmetrixId" : "000196702346",
-  "dataFormat"  : "Average",
-  "metrics"     : [ "AvgRDFSWriteResponseTime","AvgReadMissResponseTime","AvgWPDiscTime", "AvgTimePerSyscall", "DeviceWPEvents","HostMBs","HitReqs","HostIOs","MissReqs","PercentBusy","PercentWriteReqs","PercentReadReqs" ],
-  "directorId"  : "FA-1D"
-}
-The startDate and endDate are timestamp in milliseconds, the dataFormat is set to static "Average"
-*/
-pub fn get_fed_metrics(
-    client: &reqwest::Client,
-    config: &VmaxConfig,
-    startdate: u64,
-    enddate: u64,
-    symmetrix_id: &str,
-    director_id: &str,
-    _dataformat: &str,
-) -> MetricsResult<Vec<TsPoint>> {
-    let vmaxmetrics = json! ({
-        "startDate" : startdate.to_string(),
-        "endDate" : enddate.to_string(),
-        "symmetrixId" : symmetrix_id,
-        "dataFormat" : "Average",
-        "directorId" : director_id,
-        "metrics" : [
-            "AvgReadMissResponseTime","AvgWPDiscTime", "AvgTimePerSyscall", "DeviceWPEvents","HostMBs","HitReqs","HostIOs","MissReqs","PercentBusy","PercentWriteReqs","PercentReadReqs","PercentHitReqs","HostIOLimitMBs","AvgOptimizedReadMissSize","OptimizedMBReadMisses","OptimizedReadMisses","PercentReadReqHit","PercentWriteReqHit","QueueDepthUtilization","HostIOLimitIOs","ReadReqs","ReadHitReqs","ReadMissReqs","Reqs","ReadResponseTime","WriteResponseTime","SlotCollisions","SystemWPEvents","TotalReadCount","TotalWriteCount","WriteReqs","WriteHitReqs","WriteMissReqs"
-        ]
-    });
-    debug!("Sending: {} to array", vmaxmetrics);
-    let points = post_data_to_points::<FedArrayMetrics, Value>(
-        client,
-        config,
-        "performance/FEDirector/metrics/",
-        &vmaxmetrics,
-        "fedvmaxmetrics",
-        true,
-    )?;
-    Ok(points)
-}
-
-/*This is for adding the information for the Directors based upon the symmetrixId
-https://{server}/univmax/restapi/performance/FEDirector/keys
-{
-  "symmetrixId" : "000196702346"
-}
-*/
-pub fn get_fed_directors(
-    client: &reqwest::Client,
-    config: &VmaxConfig,
-    symmetrixid: &str,
-) -> MetricsResult<Vec<String>> {
-    let vmaxdirectors = json! ({
-        "symmetrixId" : symmetrixid,
-    });
-    let fedmet: FedArray = post_data::<FedArray, Value>(
-        client,
-        config,
-        "performance/FEDirector/keys/",
-        &vmaxdirectors,
-    )?;
-    let ids: Vec<String> = fedmet
-        .fe_director_info
-        .iter()
-        .map(|f| f.director_id.clone())
-        .collect();
-    Ok(ids)
-}
-//END Section for Collecting VMAX Front-End Port list and Front-End Port Metrics
-
 //START Section for Collecting VMAX PortGroup list and PortGroup Metrics
 //For Collecting the VMAX Array PortGroup Listings
 /* https://{server}/univmax/restapi/performance/PortGroup/keys
@@ -700,59 +444,6 @@ impl IntoPoint for PgResult {
 pub struct PgResult {
     pub result: Vec<PortGroupMetrics>,
 }
-
-pub fn get_portgroup_metrics(
-    client: &reqwest::Client,
-    config: &VmaxConfig,
-    startdate: u64,
-    enddate: u64,
-    symmetrix_id: &str,
-    port_group_id: &str,
-    _dataformat: &str,
-) -> MetricsResult<Vec<TsPoint>> {
-    let vmaxpgmetrics = json! ({
-        "startDate" : startdate.to_string(),
-        "endDate" : enddate.to_string(),
-        "symmetrixId" : symmetrix_id,
-        "dataFormat" : "Average",
-        "portGroupId" : port_group_id,
-        "metrics" : [
-            "Reads","Writes","IOs","MBRead","MBWritten","MBs","AvgIOSize","PercentBusy"
-        ]
-    });
-    let points = post_data_to_points::<PortGroupArrayMetrics, Value>(
-        client,
-        config,
-        "performance/PortGroup/metrics/",
-        &vmaxpgmetrics,
-        "portgroupvmaxmetrics",
-        true,
-    )?;
-    Ok(points)
-}
-
-pub fn get_portgroups(
-    client: &reqwest::Client,
-    config: &VmaxConfig,
-    symmetrix_id: &str,
-) -> MetricsResult<Vec<String>> {
-    let vmaxportgroups = json! ({
-        "symmetrixId" : symmetrix_id,
-    });
-    let pgmet: PortGroupArray = post_data::<PortGroupArray, Value>(
-        client,
-        config,
-        "performance/PortGroup/keys/",
-        &vmaxportgroups,
-    )?;
-    let ids: Vec<String> = pgmet
-        .port_group_info
-        .iter()
-        .map(|f| f.port_group_id.clone())
-        .collect();
-    Ok(ids)
-}
-//END Section for Collecting VMAX PortGroup list and PortGroup Metrics
 
 //START Section for Collecting VMAX StorageGroup list and StorageGroup Metrics different from the SLO information
 //For Collecting the VMAX Array StorageGroup Listings
@@ -864,59 +555,6 @@ pub struct SgResult {
     pub result: Vec<StorageGroupMetrics>,
 }
 
-pub fn get_storagegroup_metrics(
-    client: &reqwest::Client,
-    config: &VmaxConfig,
-    startdate: u64,
-    enddate: u64,
-    symmetrix_id: &str,
-    storage_group_id: &str,
-    _dataformat: &str,
-) -> MetricsResult<Vec<TsPoint>> {
-    let vmaxsgmetrics = json! ({
-        "startDate" : startdate.to_string(),
-        "endDate" : enddate.to_string(),
-        "symmetrixId" : symmetrix_id,
-        "dataFormat" : "Average",
-        "storageGroupId" : storage_group_id,
-        "metrics" : [
-            "HostIOs", "HostReads", "HostWrites", "HostHits", "HostReadHits", "HostWriteHits", "HostMisses", "HostReadMisses", "HostWriteMisses", "HostMBs", "HostMBReads", "HostMBWritten", "ReadResponseTime", "WriteResponseTime", "ReadMissResponseTime", "WriteMissResponseTime", "PercentRead", "PercentWrite", "PercentReadHit", "PercentWriteHit", "PercentReadMiss", "PercentWriteMiss", "SeqIOs", "RandomIOs", "AvgIOSize", "AvgReadSize", "AvgWriteSize", "PercentHit", "PercentMisses", "ResponseTime", "AllocatedCapacity", "PercentRandomIO"
-        ]
-    });
-    let points = post_data_to_points::<StorageGroupArrayMetrics, Value>(
-        client,
-        config,
-        "performance/StorageGroup/metrics/",
-        &vmaxsgmetrics,
-        "storagegroupvmaxmetrics",
-        true,
-    )?;
-    Ok(points)
-}
-
-pub fn get_storagegroups(
-    client: &reqwest::Client,
-    config: &VmaxConfig,
-    symmetrix_id: &str,
-) -> MetricsResult<Vec<String>> {
-    let vmaxstoragegroups = json! ({
-        "symmetrixId" : symmetrix_id,
-    });
-    let sgmet: StorageGroupArray = post_data::<StorageGroupArray, Value>(
-        client,
-        config,
-        "performance/StorageGroup/keys/",
-        &vmaxstoragegroups,
-    )?;
-    let ids: Vec<String> = sgmet
-        .storage_group_info
-        .iter()
-        .map(|f| f.storage_group_id.clone())
-        .collect();
-    Ok(ids)
-}
-//END Section for Collecting VMAX StorageGroup list and StorageGroup Metrics
-
 //START Section for Test Functions
 //For Collecting the VMAX Array Front-end Directors Listing
 #[test]
@@ -1018,23 +656,6 @@ fn test_get_slo_provisioning_system_properties() {
     println!("result: {:#?}", i);
 }
 // END Section for Test Functions
-
-// This function is for get_data only, the get_list was not needed. Note the '90' for v9 of the EMC Unisphere software
-pub fn get_vmax_array_raw(
-    client: &reqwest::Client,
-    config: &VmaxConfig,
-    symmetrixid: &str,
-) -> MetricsResult<Vec<TsPoint>> {
-    let vmax_raw = get_data::<VmaxSystemCapacity>(
-        client,
-        config,
-        &format!("90/sloprovisioning/symmetrix/{}", symmetrixid),
-        "vmax_array_raw",
-        true,
-    )?;
-    debug!("result: {:#?}", vmax_raw);
-    Ok(vmax_raw)
-}
 
 // This is split into objects and sub-objects based upon the new Unisphere release v9
 // Added Option here since some of the arrays polled are not returning the same output, may need to be updated again down the road
@@ -1294,81 +915,358 @@ fn test_get_vmax_json_volumes() {
     println!("Volume IDs: {:?}", all_volume_ids);
 }
 
-/// Returns a list of volume IDs for this array
-// TODO: combine this with the other getters and generalize along with other metrics
-pub fn get_all_slo_volumes(
-    client: &reqwest::Client,
-    config: &VmaxConfig,
-    symmetrixid: &str,
-) -> MetricsResult<Vec<String>> {
-    let data: Value = super::get(
-        client,
-        &format!(
-            "https://{}/univmax/restapi/90/sloprovisioning/symmetrix/{}/volume",
-            config.endpoint, symmetrixid
-        ),
-        &config.user,
-        Some(&config.password),
-    )?;
-
-    let vol_count = match data["count"].as_u64() {
-        Some(count) => count,
-        None => 0,
-    };
-    let iterator_id = match data["id"].as_str() {
-        Some(id) => id,
-        None => "",
-    };
-    let max_count_per_page = match data["maxPageSize"].as_u64() {
-        Some(count) => count,
-        None => 0,
-    };
-    debug!(
-        "Volume count {}, max count per page {}, iterator id {}",
-        vol_count, max_count_per_page, iterator_id
-    );
-
-    if vol_count == 0 || max_count_per_page == 0 || iterator_id.is_empty() {
-        return Ok(vec![]);
-    }
-    let mut num_iterations = vol_count / max_count_per_page;
-
-    // grab the list from what was returned before calling the iterator
-    let mut all_volume_ids = match data["resultList"]["result"].as_array() {
-        Some(v) => v
-            .iter()
-            .map(|val| {
-                val.as_object()
-                    .expect("Failed to find volume ID object")
-                    .values()
-                    .map(|v_i| {
-                        v_i.as_str()
-                            .expect("Failed to retrieve volume ID")
-                            .to_string()
-                    })
-                    .collect::<String>()
-            })
-            .collect(),
-        None => vec![],
-    };
-    while num_iterations != 0 {
-        let from = all_volume_ids.len() + 1;
-        let mut to = all_volume_ids.len() as u64 + max_count_per_page;
-        if to > vol_count {
-            to = vol_count;
-        }
-        debug!("Gathering volumes from {} to {}", from, to);
-        let data: Value = super::get(
-            client,
-            &format!(
-                "https://{}/univmax/restapi/common/Iterator/{}/page?from={}&to={}",
-                config.endpoint, iterator_id, from, to
-            ),
-            &config.user,
-            Some(&config.password),
+impl Vmax {
+    /* These are the GET and POST functions depending upon the output needed
+     */
+    fn get_data<T>(
+        &self,
+        api_endpoint: &str,
+        point_name: &str,
+        is_time_series: bool,
+    ) -> MetricsResult<Vec<TsPoint>>
+    where
+        T: DeserializeOwned + Debug + IntoPoint,
+    {
+        let url = format!(
+            "https://{}/univmax/restapi/{}",
+            self.config.endpoint, api_endpoint,
+        );
+        let j: T = crate::get(
+            &self.client,
+            &url,
+            &self.config.user,
+            Some(&self.config.password),
         )?;
 
-        let page_vols = match data["result"].as_array() {
+        Ok(j.into_point(Some(point_name), is_time_series))
+    }
+
+    /* Changed the GET to POST and added body parameter to pass additional fields to
+     */
+    fn post_data_to_points<T, U>(
+        &self,
+        api_endpoint: &str,
+        body: &U,
+        point_name: &str,
+        is_time_series: bool,
+    ) -> MetricsResult<Vec<TsPoint>>
+    where
+        T: DeserializeOwned + Debug + IntoPoint,
+        U: Serialize + ?Sized,
+    {
+        let array_output = self
+            .client
+            .post(&format!(
+                "https://{}/univmax/restapi/{}",
+                self.config.endpoint, api_endpoint,
+            ))
+            .basic_auth(&self.config.user, Some(&self.config.password))
+            .header(ACCEPT, "application/json")
+            .json(body)
+            .send()?
+            .error_for_status()?
+            .text()?;
+        trace!("{}", array_output);
+        let json_res: Result<T, serde_json::Error> = serde_json::from_str(&array_output);
+        trace!("json result: {:?}", json_res);
+        let json_res = json_res?;
+        Ok(json_res.into_point(Some(point_name), is_time_series))
+    }
+
+    /* Changed the GET to POST and added body parameter to pass additional field to w/o IntoPoint
+    So this is good for capturing info w/o reporting into the back-end
+    */
+    fn post_data<T, U>(&self, api_endpoint: &str, body: &U) -> MetricsResult<T>
+    where
+        T: DeserializeOwned + Debug,
+        U: Serialize + ?Sized,
+    {
+        let array_output = self
+            .client
+            .post(&format!(
+                "https://{}/univmax/restapi/{}",
+                self.config.endpoint, api_endpoint,
+            ))
+            .basic_auth(&self.config.user, Some(&self.config.password))
+            .header(ACCEPT, "application/json")
+            .json(body)
+            .send()?
+            .error_for_status()?
+            .text()?;
+        trace!("{}", array_output);
+        let json_res: Result<T, serde_json::Error> = serde_json::from_str(&array_output);
+        trace!("json result: {:?}", json_res);
+        let json_res = json_res?;
+        Ok(json_res)
+    }
+
+    // This function is for get_data only, the get_list was not needed. Note the '90' for v9 of the EMC Unisphere software
+    pub fn get_vmax_array_raw(&self, symmetrixid: &str) -> MetricsResult<Vec<TsPoint>> {
+        let vmax_raw = self.get_data::<VmaxSystemCapacity>(
+            &format!("90/sloprovisioning/symmetrix/{}", symmetrixid),
+            "vmax_array_raw",
+            true,
+        )?;
+        debug!("result: {:#?}", vmax_raw);
+        Ok(vmax_raw)
+    }
+    // Grab the list of things to operate on from vmax
+    fn get_list(&self, api_endpoint: &str, key: &str) -> MetricsResult<Vec<String>> {
+        let data: Value = self
+            .client
+            .get(&format!(
+                "https://{}/univmax/restapi/{}",
+                self.config.endpoint, api_endpoint,
+            ))
+            .basic_auth(&self.config.user, Some(&self.config.password))
+            .send()?
+            .error_for_status()?
+            .json()?;
+
+        // Grab the list from the json
+        match data[key].as_array() {
+            Some(v) => Ok(v
+                .iter()
+                .map(|val| val.as_str().expect("Failed to retrieve key").to_string())
+                .collect::<Vec<String>>()),
+            None => Ok(vec![]),
+        }
+    }
+
+    /*Setting up new function for Metrics Collection. StartDate and endDate are in milliseconds
+    https://{server}/univmax/restapi/performance/FEDirector/metrics
+    {
+      "startDate"   : "1522104538975",
+      "endDate"     : "1522104573437",
+      "symmetrixId" : "000196702346",
+      "dataFormat"  : "Average",
+      "metrics"     : [ "AvgRDFSWriteResponseTime","AvgReadMissResponseTime","AvgWPDiscTime", "AvgTimePerSyscall", "DeviceWPEvents","HostMBs","HitReqs","HostIOs","MissReqs","PercentBusy","PercentWriteReqs","PercentReadReqs" ],
+      "directorId"  : "FA-1D"
+    }
+    The startDate and endDate are timestamp in milliseconds, the dataFormat is set to static "Average"
+    */
+    pub fn get_fed_metrics(
+        &self,
+        startdate: u64,
+        enddate: u64,
+        symmetrix_id: &str,
+        director_id: &str,
+        _dataformat: &str,
+    ) -> MetricsResult<Vec<TsPoint>> {
+        let vmaxmetrics = json! ({
+            "startDate" : startdate.to_string(),
+            "endDate" : enddate.to_string(),
+            "symmetrixId" : symmetrix_id,
+            "dataFormat" : "Average",
+            "directorId" : director_id,
+            "metrics" : [
+                "AvgReadMissResponseTime","AvgWPDiscTime", "AvgTimePerSyscall", "DeviceWPEvents","HostMBs","HitReqs","HostIOs","MissReqs","PercentBusy","PercentWriteReqs","PercentReadReqs","PercentHitReqs","HostIOLimitMBs","AvgOptimizedReadMissSize","OptimizedMBReadMisses","OptimizedReadMisses","PercentReadReqHit","PercentWriteReqHit","QueueDepthUtilization","HostIOLimitIOs","ReadReqs","ReadHitReqs","ReadMissReqs","Reqs","ReadResponseTime","WriteResponseTime","SlotCollisions","SystemWPEvents","TotalReadCount","TotalWriteCount","WriteReqs","WriteHitReqs","WriteMissReqs"
+            ]
+        });
+        debug!("Sending: {} to array", vmaxmetrics);
+        let points = self.post_data_to_points::<FedArrayMetrics, Value>(
+            "performance/FEDirector/metrics/",
+            &vmaxmetrics,
+            "fedvmaxmetrics",
+            true,
+        )?;
+        Ok(points)
+    }
+
+    /*This is for adding the information for the Directors based upon the symmetrixId
+    https://{server}/univmax/restapi/performance/FEDirector/keys
+    {
+      "symmetrixId" : "000196702346"
+    }
+    */
+    pub fn get_fed_directors(&self, symmetrixid: &str) -> MetricsResult<Vec<String>> {
+        let vmaxdirectors = json! ({
+            "symmetrixId" : symmetrixid,
+        });
+        let fedmet: FedArray =
+            self.post_data::<FedArray, Value>("performance/FEDirector/keys/", &vmaxdirectors)?;
+        let ids: Vec<String> = fedmet
+            .fe_director_info
+            .iter()
+            .map(|f| f.director_id.clone())
+            .collect();
+        Ok(ids)
+    }
+    //END Section for Collecting VMAX Front-End Port list and Front-End Port Metrics
+
+    pub fn get_storagegroup_metrics(
+        &self,
+        startdate: u64,
+        enddate: u64,
+        symmetrix_id: &str,
+        storage_group_id: &str,
+        _dataformat: &str,
+    ) -> MetricsResult<Vec<TsPoint>> {
+        let vmaxsgmetrics = json! ({
+            "startDate" : startdate.to_string(),
+            "endDate" : enddate.to_string(),
+            "symmetrixId" : symmetrix_id,
+            "dataFormat" : "Average",
+            "storageGroupId" : storage_group_id,
+            "metrics" : [
+                "HostIOs", "HostReads", "HostWrites", "HostHits", "HostReadHits", "HostWriteHits", "HostMisses", "HostReadMisses", "HostWriteMisses", "HostMBs", "HostMBReads", "HostMBWritten", "ReadResponseTime", "WriteResponseTime", "ReadMissResponseTime", "WriteMissResponseTime", "PercentRead", "PercentWrite", "PercentReadHit", "PercentWriteHit", "PercentReadMiss", "PercentWriteMiss", "SeqIOs", "RandomIOs", "AvgIOSize", "AvgReadSize", "AvgWriteSize", "PercentHit", "PercentMisses", "ResponseTime", "AllocatedCapacity", "PercentRandomIO"
+            ]
+        });
+        let points = self.post_data_to_points::<StorageGroupArrayMetrics, Value>(
+            "performance/StorageGroup/metrics/",
+            &vmaxsgmetrics,
+            "storagegroupvmaxmetrics",
+            true,
+        )?;
+        Ok(points)
+    }
+
+    pub fn get_storagegroups(&self, symmetrix_id: &str) -> MetricsResult<Vec<String>> {
+        let vmaxstoragegroups = json! ({
+            "symmetrixId" : symmetrix_id,
+        });
+        let sgmet: StorageGroupArray = self.post_data::<StorageGroupArray, Value>(
+            "performance/StorageGroup/keys/",
+            &vmaxstoragegroups,
+        )?;
+        let ids: Vec<String> = sgmet
+            .storage_group_info
+            .iter()
+            .map(|f| f.storage_group_id.clone())
+            .collect();
+        Ok(ids)
+    }
+    //END Section for Collecting VMAX StorageGroup list and StorageGroup Metrics
+    pub fn get_portgroup_metrics(
+        &self,
+        startdate: u64,
+        enddate: u64,
+        symmetrix_id: &str,
+        port_group_id: &str,
+        _dataformat: &str,
+    ) -> MetricsResult<Vec<TsPoint>> {
+        let vmaxpgmetrics = json! ({
+            "startDate" : startdate.to_string(),
+            "endDate" : enddate.to_string(),
+            "symmetrixId" : symmetrix_id,
+            "dataFormat" : "Average",
+            "portGroupId" : port_group_id,
+            "metrics" : [
+                "Reads","Writes","IOs","MBRead","MBWritten","MBs","AvgIOSize","PercentBusy"
+            ]
+        });
+        let points = self.post_data_to_points::<PortGroupArrayMetrics, Value>(
+            "performance/PortGroup/metrics/",
+            &vmaxpgmetrics,
+            "portgroupvmaxmetrics",
+            true,
+        )?;
+        Ok(points)
+    }
+
+    pub fn get_portgroups(&self, symmetrix_id: &str) -> MetricsResult<Vec<String>> {
+        let vmaxportgroups = json! ({
+            "symmetrixId" : symmetrix_id,
+        });
+        let pgmet: PortGroupArray = self
+            .post_data::<PortGroupArray, Value>("performance/PortGroup/keys/", &vmaxportgroups)?;
+        let ids: Vec<String> = pgmet
+            .port_group_info
+            .iter()
+            .map(|f| f.port_group_id.clone())
+            .collect();
+        Ok(ids)
+    }
+    //END Section for Collecting VMAX PortGroup list and PortGroup Metrics
+    pub fn get_slo_array_storagegroups(&self, id: &str) -> MetricsResult<Vec<String>> {
+        let groups = self.get_list(
+            &format!("sloprovisioning/symmetrix/{}/storagegroup", id),
+            "storageGroupId",
+        )?;
+        Ok(groups)
+    }
+
+    pub fn get_slo_array_storagegroup(&self, id: &str, group: &str) -> MetricsResult<Vec<TsPoint>> {
+        let points = self.get_data::<StorageGroups>(
+            &format!("sloprovisioning/symmetrix/{}/storagegroup/{}", id, group),
+            "vmax_slo_array_storagegroup",
+            false,
+        )?;
+        let points_with_symid = points
+            .into_iter()
+            .map(|mut s| {
+                s.add_tag("symmetrix_id", TsValue::String(id.to_string()));
+                s
+            })
+            .collect();
+        Ok(points_with_symid)
+    }
+
+    pub fn get_slo_array_srps(&self, id: &str) -> MetricsResult<Vec<String>> {
+        let srps = self.get_list(&format!("sloprovisioning/symmetrix/{}/srp", id), "srpId")?;
+        Ok(srps)
+    }
+
+    pub fn get_slo_array_srp(&self, id: &str, srp: &str) -> MetricsResult<Vec<TsPoint>> {
+        let points = self.get_data::<Srps>(
+            &format!("sloprovisioning/symmetrix/{}/srp/{}", id, srp),
+            "slo_array_srp",
+            true,
+        )?;
+        Ok(points)
+    }
+
+    pub fn get_slo_arrays(&self) -> MetricsResult<Vec<String>> {
+        let arrays = self.get_list("sloprovisioning/symmetrix", "symmetrixId")?;
+        Ok(arrays)
+    }
+
+    pub fn get_slo_array(&self, id: &str) -> MetricsResult<Vec<TsPoint>> {
+        let points = self.get_data::<Symmetrix>(
+            &format!("sloprovisioning/symmetrix/{}", id),
+            "symmetrix",
+            true,
+        )?;
+        Ok(points)
+    }
+
+    /// Returns a list of volume IDs for this array
+    // TODO: combine this with the other getters and generalize along with other metrics
+    pub fn get_all_slo_volumes(&self, symmetrixid: &str) -> MetricsResult<Vec<String>> {
+        let data: Value = super::get(
+            &self.client,
+            &format!(
+                "https://{}/univmax/restapi/90/sloprovisioning/symmetrix/{}/volume",
+                self.config.endpoint, symmetrixid
+            ),
+            &self.config.user,
+            Some(&self.config.password),
+        )?;
+
+        let vol_count = match data["count"].as_u64() {
+            Some(count) => count,
+            None => 0,
+        };
+        let iterator_id = match data["id"].as_str() {
+            Some(id) => id,
+            None => "",
+        };
+        let max_count_per_page = match data["maxPageSize"].as_u64() {
+            Some(count) => count,
+            None => 0,
+        };
+        debug!(
+            "Volume count {}, max count per page {}, iterator id {}",
+            vol_count, max_count_per_page, iterator_id
+        );
+
+        if vol_count == 0 || max_count_per_page == 0 || iterator_id.is_empty() {
+            return Ok(vec![]);
+        }
+        let mut num_iterations = vol_count / max_count_per_page;
+
+        // grab the list from what was returned before calling the iterator
+        let mut all_volume_ids = match data["resultList"]["result"].as_array() {
             Some(v) => v
                 .iter()
                 .map(|val| {
@@ -1385,35 +1283,67 @@ pub fn get_all_slo_volumes(
                 .collect(),
             None => vec![],
         };
-        all_volume_ids.extend(page_vols);
-        debug!("Gathered {} volume IDs", all_volume_ids.len());
-        num_iterations -= 1;
-    }
-    Ok(all_volume_ids)
-}
+        while num_iterations != 0 {
+            let from = all_volume_ids.len() + 1;
+            let mut to = all_volume_ids.len() as u64 + max_count_per_page;
+            if to > vol_count {
+                to = vol_count;
+            }
+            debug!("Gathering volumes from {} to {}", from, to);
+            let data: Value = super::get(
+                &self.client,
+                &format!(
+                    "https://{}/univmax/restapi/common/Iterator/{}/page?from={}&to={}",
+                    self.config.endpoint, iterator_id, from, to
+                ),
+                &self.config.user,
+                Some(&self.config.password),
+            )?;
 
-pub fn get_slo_volume(
-    client: &reqwest::Client,
-    config: &VmaxConfig,
-    volume_id: &str,
-    symmetrixid: &str,
-) -> MetricsResult<Vec<TsPoint>> {
-    let volume = get_data::<Volume>(
-        client,
-        config,
-        &format!(
-            "90/sloprovisioning/symmetrix/{}/volume/{}",
-            symmetrixid, volume_id
-        ),
-        "vmax_slo_volume",
-        true,
-    )?;
-    let new_vol = volume
-        .into_iter()
-        .map(|mut v| {
-            v.add_tag("symmetrix_id", TsValue::String(symmetrixid.to_string()));
-            v
-        })
-        .collect();
-    Ok(new_vol)
+            let page_vols = match data["result"].as_array() {
+                Some(v) => v
+                    .iter()
+                    .map(|val| {
+                        val.as_object()
+                            .expect("Failed to find volume ID object")
+                            .values()
+                            .map(|v_i| {
+                                v_i.as_str()
+                                    .expect("Failed to retrieve volume ID")
+                                    .to_string()
+                            })
+                            .collect::<String>()
+                    })
+                    .collect(),
+                None => vec![],
+            };
+            all_volume_ids.extend(page_vols);
+            debug!("Gathered {} volume IDs", all_volume_ids.len());
+            num_iterations -= 1;
+        }
+        Ok(all_volume_ids)
+    }
+
+    pub fn get_slo_volume(
+        &self,
+        volume_id: &str,
+        symmetrixid: &str,
+    ) -> MetricsResult<Vec<TsPoint>> {
+        let volume = self.get_data::<Volume>(
+            &format!(
+                "90/sloprovisioning/symmetrix/{}/volume/{}",
+                symmetrixid, volume_id
+            ),
+            "vmax_slo_volume",
+            true,
+        )?;
+        let new_vol = volume
+            .into_iter()
+            .map(|mut v| {
+                v.add_tag("symmetrix_id", TsValue::String(symmetrixid.to_string()));
+                v
+            })
+            .collect();
+        Ok(new_vol)
+    }
 }
