@@ -360,7 +360,9 @@ fn impl_struct_point_fields(name: &syn::Ident, fields: &syn::Fields, child: bool
                                     Some(ref vec_type) => {
                                         if *vec_type == s {
                                             result.push(quote! {
+                                                if self.#ident.is_some() {
                                             p.add_field(stringify!(#ident), TsValue::StringVec(self.#ident.clone().unwrap()));
+                                                }
                                 });
                                         } // TODO: add other types here
                                     }
