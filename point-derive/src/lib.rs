@@ -17,11 +17,10 @@
 */
 extern crate proc_macro;
 
-use quote::quote;
 use proc_macro::TokenStream;
 use proc_macro2::{Ident, Span};
+use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
-
 
 #[proc_macro_derive(IntoPoint)]
 pub fn point_derive(input: TokenStream) -> TokenStream {
@@ -68,18 +67,18 @@ fn find_optional_type(field: syn::Field) -> Option<Ident> {
                         //println!("{:?}", a);
                         for ty in a.args {
                             match ty {
-                                syn::GenericArgument::Type(p2) => {
-                                    match p2 {
-                                        syn::Type::Path(p2) => {
-                                            if let Some(i2) = p2.path.segments.clone().into_iter().next() {
-                                                return Some(i2.ident);
-                                            } else {
-                                                return None;
-                                            }
+                                syn::GenericArgument::Type(p2) => match p2 {
+                                    syn::Type::Path(p2) => {
+                                        if let Some(i2) =
+                                            p2.path.segments.clone().into_iter().next()
+                                        {
+                                            return Some(i2.ident);
+                                        } else {
+                                            return None;
                                         }
-                                        _ => return None
                                     }
-                                }
+                                    _ => return None,
+                                },
                                 _ => return None,
                             }
                         }
@@ -97,11 +96,73 @@ fn find_optional_type(field: syn::Field) -> Option<Ident> {
     }
 }
 
-fn impl_struct_point_fields(
-    name: &syn::Ident,
-    fields: &syn::Fields,
-    child: bool,
-) -> TokenStream {
+// TODO: Merge this with find_optional_type()
+fn find_optional_vec_type(field: syn::Field) -> Option<Ident> {
+    match field.clone().ty {
+        syn::Type::Path(p) => {
+            if let Some(i) = p.path.segments.clone().into_iter().next() {
+                match i.arguments {
+                    syn::PathArguments::AngleBracketed(a) => {
+                        for ty in a.args {
+                            match ty {
+                                syn::GenericArgument::Type(p2) => match p2 {
+                                    syn::Type::Path(p2) => {
+                                        if let Some(i2) =
+                                            p2.path.segments.clone().into_iter().next()
+                                        {
+                                            match i2.arguments {
+                                                syn::PathArguments::AngleBracketed(a2) => {
+                                                    for ty2 in a2.args {
+                                                        match ty2 {
+                                                            syn::GenericArgument::Type(p3) => {
+                                                                match p3 {
+                                                                    syn::Type::Path(p3) => {
+                                                                        if let Some(i3) = p3
+                                                                            .path
+                                                                            .segments
+                                                                            .clone()
+                                                                            .into_iter()
+                                                                            .next()
+                                                                        {
+                                                                            return Some(i3.ident);
+                                                                        } else {
+                                                                            return None;
+                                                                        }
+                                                                    }
+                                                                    _ => return None,
+                                                                }
+                                                            }
+                                                            _ => return None,
+                                                        }
+                                                    } // ends for ty2
+                                                }
+                                                _ => return None,
+                                            }
+                                            return None;
+                                        } else {
+                                            return None;
+                                        }
+                                    }
+                                    _ => return None,
+                                },
+                                _ => return None,
+                            }
+                        }
+                    }
+                    _ => {
+                        return None;
+                    }
+                }
+                return None;
+            } else {
+                return None;
+            }
+        }
+        _ => return None,
+    }
+}
+
+fn impl_struct_point_fields(name: &syn::Ident, fields: &syn::Fields, child: bool) -> TokenStream {
     let _bool: Ident = Ident::new("bool", Span::call_site());
     let bwc: Ident = Ident::new("BWC", Span::call_site());
     let f_64: Ident = Ident::new("f64", Span::call_site());
@@ -292,6 +353,25 @@ fn impl_struct_point_fields(
                                             TsValue::Float(self.#ident.unwrap()));
                                     }
                                 });
+                            } else if option_type == _vec {
+                                let inner_vec_angle_type: Option<Ident> =
+                                    find_optional_vec_type(field.clone());
+                                match &inner_vec_angle_type {
+                                    Some(ref vec_type) => {
+                                        if *vec_type == s {
+                                            result.push(quote! {
+                                            p.add_field(stringify!(#ident), TsValue::StringVec(self.#ident.clone().unwrap()));
+                                });
+                                        } // TODO: add other types here
+                                    }
+                                    None => {
+                                        // Unable to identify this type
+                                        println!(
+                                            "Unable to identify vec type for option_type = {:?} ident= {:?} i_type= {:?} vec_angle_type = {:?}",
+                                            option_type, ident, i_type, inner_vec_angle_type
+                                        );
+                                    }
+                                }
                             } else {
                                 //println!("optional else: {:?}", option_type);
                             }
