@@ -133,7 +133,8 @@ pub struct StorageGroup {
     pub group_type: Option<String>,
     pub child_storage_group: Option<Vec<String>>,
     pub parent_storage_group: Option<Vec<String>>,
-    pub maskingview: Option<Vec<String>>,
+    #[serde(rename = "maskingview")]
+    pub masking_view: Option<Vec<String>>,
 }
 
 #[derive(Debug, Deserialize)]
