@@ -40,7 +40,7 @@ treexml = "~0.6"
 uname = "~0.1"
 uuid = { version = "~0.7", features = ["serde"] }
 quick-xml = "~0.12"
-xml-attributes-derive = "~0.1"
+xml-attributes-derive = {path = "xml-attributes-derive"}
 xml-rs = "~0.7"
 simplelog = "~0.5"
 
