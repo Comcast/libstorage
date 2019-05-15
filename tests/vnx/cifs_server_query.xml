@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<ResponsePacket xmlns="http://www.emc.com/schemas/celerra/xml_api">
+
+  <Response>
+
+    <QueryStatus maxSeverity="ok">
+
+       </QueryStatus>
+
+            <CifsServer interfaces="1.1.1.1" localUsers="false" type="W2K"
+
+name="abcdef" mover="5" moverIdIsVdm="false">
+
+             <Aliases>
+
+             <li>abcdef-1</li>
+
+             <li>abcdef-2</li>
+
+             <li>abcdef-3</li>
+
+             </Aliases>
+
+            <W2KServerData compName="abcdef" domain="abc.def"
+
+domainJoined="true"/>
+
+            </CifsServer>
+
+  </Response>
+
+</ResponsePacket>
+

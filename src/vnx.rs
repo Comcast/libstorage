@@ -190,6 +190,83 @@ pub struct DeviceCounter {
     out: u64,
 }
 
+#[test]
+fn test_cifs_servers_parser() {
+    use std::fs::File;
+    use std::io::Read;
+
+    let data = {
+        let mut s = String::new();
+        let mut f = File::open("tests/vnx/cifs_server_query.xml").unwrap();
+        f.read_to_string(&mut s).unwrap();
+        s
+    };
+    let res = CifsServers::from_xml(&data).unwrap();
+    println!("result: {:#?}", res);
+    let points = res.into_point(Some("vnx_cifs_servers"), false);
+    println!("points: {:#?}", points);
+}
+
+#[derive(Clone, Debug)]
+pub struct CifsServers {
+    pub cifs_servers: Vec<CifsServer>,
+}
+
+impl IntoPoint for CifsServers {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        let all_cifs: Vec<TsPoint> = self
+            .cifs_servers
+            .iter()
+            .flat_map(|f| f.into_point(name, is_time_series))
+            .collect();
+
+        all_cifs
+    }
+}
+
+impl FromXml for CifsServers {
+    fn from_xml(data: &str) -> MetricsResult<Self> {
+        let mut reader = Reader::from_str(data);
+        reader.trim_text(true);
+        let mut buf = Vec::new();
+
+        let mut cifs_servers: Vec<CifsServer> = Vec::new();
+
+        loop {
+            match reader.read_event(&mut buf) {
+                Ok(Event::Start(ref e)) => {
+                    if b"CifsServer" == e.name() {
+                        cifs_servers.push(CifsServer::from_xml_attributes(e.attributes())?);
+                    }
+                }
+                Ok(Event::Empty(_e)) => {}
+                Ok(Event::End(_e)) => {}
+                Err(e) => {
+                    return Err(StorageError::new(format!(
+                        "invalid xml data  from server at position: {}: {:?}",
+                        reader.buffer_position(),
+                        e
+                    )));
+                }
+                Ok(Event::Eof) => break,
+                _ => (),
+            }
+            buf.clear();
+        }
+        Ok(CifsServers { cifs_servers })
+    }
+}
+
+#[derive(Clone, Debug, Default, FromXmlAttributes, IntoPoint)]
+pub struct CifsServer {
+    pub mover: String,
+    pub name: String,
+    //pub r#type: String,
+    pub localUsers: bool,
+    pub moverIdIsVdm: bool,
+    pub interfaces: String,
+}
+
 #[derive(Clone, Debug)]
 pub struct FileSystemCapacities {
     pub capacity: Vec<FileSystemCapacity>,
@@ -443,7 +520,7 @@ fn test_mount_parser() {
         s
     };
     let res = Mounts::from_xml(&data).unwrap();
-    let points = res.into_point(None, true);
+    let points = res.into_point(Some("vnx_mounts"), false);
     println!("result: {:#?}", points);
 }
 
@@ -2470,6 +2547,21 @@ impl Vnx {
         Ok(res.into_point(Some("vnx_disk_info"), true))
     }
 
+    pub fn cifs_server_request(&mut self) -> MetricsResult<Vec<TsPoint>> {
+        let mut output: Vec<u8> = Vec::new();
+
+        {
+            let mut writer = EventWriter::new(&mut output);
+            begin_query_request(&mut writer)?;
+            start_element(&mut writer, "CifsServerQueryParams", None, None)?;
+            end_element(&mut writer, "CifsServerQueryParams")?;
+            end_query_request(&mut writer)?;
+        }
+
+        let res: CifsServers = self.api_request(output)?;
+        Ok(res.into_point(Some("vnx_cifs_servers"), false))
+    }
+
     pub fn filesystem_capacity_request(&mut self) -> MetricsResult<Vec<TsPoint>> {
         let mut output: Vec<u8> = Vec::new();
         {
@@ -2518,7 +2610,7 @@ impl Vnx {
         }
         // Request the mount info from the VNX
         let res: Mounts = self.api_request(output)?;
-        Ok(res.into_point(None, true))
+        Ok(res.into_point(Some("vnx_mounts"), false))
     }
 }
 
