@@ -520,7 +520,7 @@ fn test_mount_parser() {
         s
     };
     let res = Mounts::from_xml(&data).unwrap();
-    let points = res.into_point(None, true);
+    let points = res.into_point(Some("vnx_mounts"), false);
     println!("result: {:#?}", points);
 }
 
@@ -2610,7 +2610,7 @@ impl Vnx {
         }
         // Request the mount info from the VNX
         let res: Mounts = self.api_request(output)?;
-        Ok(res.into_point(None, true))
+        Ok(res.into_point(Some("vnx_mounts"), false))
     }
 }
 
