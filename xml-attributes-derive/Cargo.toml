@@ -1,6 +1,6 @@
 [package]
 name = "xml-attributes-derive"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Chris Holcombe <christopher_holcombe@comcast.com>"]
 license = "Apache-2.0"
 description = "Proc macro to help with xml to ts point conversion" 
