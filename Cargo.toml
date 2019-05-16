@@ -1,6 +1,6 @@
 [package]
 name = "libstorage"
-version = "0.4.1"
+version = "0.4.2"
 authors = ["Chris Holcombe <christopher_holcombe@comcast.com>", "Sravanthi Dandamudi <sravanthi_dandamudi@comcast.com>", "Rob Powers <comcastrp@gmail.com>"]
 description = "Storage helper functions"
 documentation = "https://github.com/Comcast/libstorage"
@@ -27,7 +27,7 @@ log = "~0.4"
 native-tls = "~0.2"
 nom = "~3.2"
 #point-derive = "~0.1"
-point-derive = {path = "point-derive"}
+point-derive = "~0.1"
 postgres = "~0.15"
 rayon = "~1.0"
 reqwest = "~0.9"
@@ -40,7 +40,7 @@ treexml = "~0.6"
 uname = "~0.1"
 uuid = { version = "~0.7", features = ["serde"] }
 quick-xml = "~0.12"
-xml-attributes-derive = {path = "xml-attributes-derive"}
+xml-attributes-derive = "0.1"
 xml-rs = "~0.7"
 simplelog = "~0.5"
 
