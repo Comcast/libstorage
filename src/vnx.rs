@@ -190,17 +190,16 @@ impl FromXml for NfsMountedShares {
         let mut buf = Vec::new();
 
         let mut nfs_mounted_shares: Vec<NfsMountedShare> = Vec::new();
-            let mut mover: String = String::new();
-            let mut path: String = String::new();
-            let mut share_name: String = String::new();
-            let mut alternate_name: String = String::new();
-            let mut is_share: bool = false;
-            let mut root_access: Vec<String> = Vec::new(); 
-            let mut rw_access: Vec<String> = Vec::new(); 
-            let mut access: Vec<String> = Vec::new(); 
+        let mut mover: String = String::new();
+        let mut path: String = String::new();
+        let mut share_name: String = String::new();
+        let mut alternate_name: String = String::new();
+        let mut is_share: bool = false;
+        let mut root_access: Vec<String> = Vec::new();
+        let mut rw_access: Vec<String> = Vec::new();
+        let mut access: Vec<String> = Vec::new();
 
         loop {
-
             match reader.read_event(&mut buf) {
                 Ok(Event::Start(ref e)) => {
                     // mover name
@@ -241,8 +240,9 @@ impl FromXml for NfsMountedShares {
                                 _ => {
                                     debug!(
                                         "Unknown attribute {} for export on mover {}",
-                                        String::from_utf8_lossy(attribute_name.key), mover);
-
+                                        String::from_utf8_lossy(attribute_name.key),
+                                        mover
+                                    );
                                 }
                             }
                         }
@@ -255,13 +255,10 @@ impl FromXml for NfsMountedShares {
                             Some(attribute_name) => {
                                 let a_name = attribute_name?;
                                 match a_name.key {
-                                    b"anon" => {},
-                                    b"access" => {
-                                    },
-                                    b"root" => {
-                                    },
-                                    b"rw" => {
-                                    },
+                                    b"anon" => {}
+                                    b"access" => {}
+                                    b"root" => {}
+                                    b"rw" => {}
                                     _ => {
                                         debug!("Found unknown attribute {} for options of share {} on mover {}",
                                         String::from_utf8_lossy(a_name.key), path, mover);
@@ -269,8 +266,11 @@ impl FromXml for NfsMountedShares {
                                 }
                             }
                             None => {
-                              debug!("No attributes found for share {} options on mover {}", path, mover);
-                              }
+                                debug!(
+                                    "No attributes found for share {} options on mover {}",
+                                    path, mover
+                                );
+                            }
                         }
                     }
                 }
@@ -281,14 +281,16 @@ impl FromXml for NfsMountedShares {
                     } else if b"EXPORT" == e.name() {
                         // encountered end tag for export.
                         // create new struct instance and add to vector
-                        nfs_mounted_shares.push(NfsMountedShare { 
-                            mover: mover.clone(), path: path.clone(), is_share, 
-                            share_name: share_name.clone(), 
+                        nfs_mounted_shares.push(NfsMountedShare {
+                            mover: mover.clone(),
+                            path: path.clone(),
+                            is_share,
+                            share_name: share_name.clone(),
                             alternate_name: alternate_name.clone(),
-                            rw_access: rw_access.clone(), 
-                            root_access: root_access.clone(), 
-                            access: access.clone()
-                            });
+                            rw_access: rw_access.clone(),
+                            root_access: root_access.clone(),
+                            access: access.clone(),
+                        });
                         root_access.clear();
                         rw_access.clear();
                         access.clear();
