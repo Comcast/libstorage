@@ -190,9 +190,17 @@ impl FromXml for NfsMountedShares {
         let mut buf = Vec::new();
 
         let mut nfs_mounted_shares: Vec<NfsMountedShare> = Vec::new();
+            let mut mover: String = String::new();
+            let mut path: String = String::new();
+            let mut share_name: String = String::new();
+            let mut alternate_name: String = String::new();
+            let mut is_share: bool = false;
+            let mut root_access: Vec<String> = Vec::new(); 
+            let mut rw_access: Vec<String> = Vec::new(); 
+            let mut access: Vec<String> = Vec::new(); 
 
         loop {
-            let mut mover: String = String::new();
+
             match reader.read_event(&mut buf) {
                 Ok(Event::Start(ref e)) => {
                     // mover name
@@ -212,13 +220,80 @@ impl FromXml for NfsMountedShares {
                                 }
                             }
                         }
+                    } else if b"EXPORT" == e.name() {
+                        // exports for each mover
+                        for a in e.attributes() {
+                            let attribute_name = a?;
+                            let attribute_val = String::from_utf8_lossy(&attribute_name.value);
+                            match attribute_name.key {
+                                b"PATH" => {
+                                    path = attribute_val.to_string();
+                                }
+                                b"IS_SHARE" => {
+                                    is_share = bool::from_str(&attribute_val)?;
+                                }
+                                b"SHARE_NAME" => {
+                                    share_name = attribute_val.to_string();
+                                }
+                                b"ALTERNATE_NAME" => {
+                                    alternate_name = attribute_val.to_string();
+                                }
+                                _ => {
+                                    debug!(
+                                        "Unknown attribute {} for export on mover {}",
+                                        String::from_utf8_lossy(attribute_name.key), mover);
+
+                                }
+                            }
+                        }
                     }
                 }
-                Ok(Event::Empty(_e)) => {
-                    // exports for each mover
-                    // mount access, root and rw for each export
+                Ok(Event::Empty(ref e)) => {
+                    // access, root and rw attributes for each export
+                    if b"OPTION" == e.name() {
+                        match e.attributes().next() {
+                            Some(attribute_name) => {
+                                let a_name = attribute_name?;
+                                match a_name.key {
+                                    b"anon" => {},
+                                    b"access" => {
+                                    },
+                                    b"root" => {
+                                    },
+                                    b"rw" => {
+                                    },
+                                    _ => {
+                                        debug!("Found unknown attribute {} for options of share {} on mover {}",
+                                        String::from_utf8_lossy(a_name.key), path, mover);
+                                    }
+                                }
+                            }
+                            None => {
+                              debug!("No attributes found for share {} options on mover {}", path, mover);
+                              }
+                        }
+                    }
                 }
-                Ok(Event::End(_e)) => {}
+                Ok(Event::End(ref e)) => {
+                    if b"MOVER" == e.name() {
+                        // encountered end tag for mover, reset
+                        mover.clear();
+                    } else if b"EXPORT" == e.name() {
+                        // encountered end tag for export.
+                        // create new struct instance and add to vector
+                        nfs_mounted_shares.push(NfsMountedShare { 
+                            mover: mover.clone(), path: path.clone(), is_share, 
+                            share_name: share_name.clone(), 
+                            alternate_name: alternate_name.clone(),
+                            rw_access: rw_access.clone(), 
+                            root_access: root_access.clone(), 
+                            access: access.clone()
+                            });
+                        root_access.clear();
+                        rw_access.clear();
+                        access.clear();
+                    }
+                }
                 Err(e) => {
                     return Err(StorageError::new(format!(
                         "invalid xml data  from server at position: {}: {:?}",
@@ -239,12 +314,12 @@ impl FromXml for NfsMountedShares {
 pub struct NfsMountedShare {
     pub mover: String,
     pub path: String,
-    pub is_share: Option<bool>,
-    pub share_name: Option<String>,
-    pub alternate_name: Option<String>,
-    pub rw_access: Option<Vec<String>>,
-    pub root_access: Option<Vec<String>>,
-    pub access: Option<Vec<String>>,
+    pub is_share: bool,
+    pub share_name: String,
+    pub alternate_name: String,
+    pub rw_access: Vec<String>,
+    pub root_access: Vec<String>,
+    pub access: Vec<String>,
 }
 
 #[test]
