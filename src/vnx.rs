@@ -72,7 +72,7 @@ impl ToString for MoverStatsRequest {
 
 #[derive(Clone, Deserialize, Debug)]
 pub struct VnxConfig {
-    /// The scaleio endpoint to use
+    /// The vnx endpoint to use
     pub endpoint: String,
     pub user: String,
     /// This gets replaced with the token at runtime
@@ -82,6 +82,8 @@ pub struct VnxConfig {
     /// Optional certificate file to use against the server
     /// der encoded
     pub certificate: Option<String>,
+    /// Location of the XML dump files created by nas-xml
+    pub shares_dump_location: Option<String>,
 }
 
 fn parse_data_services_policies(s: &str) -> MetricsResult<HashMap<String, String>> {
@@ -2748,14 +2750,13 @@ impl Vnx {
     /// control array and exported onto the local system.
     /// This alternative has been choosen because vnx APIs
     /// donot expose this information. With Unity, it may be available via REST.
-    pub fn get_nfs_share_mounts(&mut self, dump_path: &str) -> MetricsResult<Vec<TsPoint>> {
+    pub fn get_nfs_share_mounts(&mut self, dump_path: &Path) -> MetricsResult<Vec<TsPoint>> {
         // Check if given path points to a valid file and if non-empty
-        let path = Path::new(dump_path);
-        let metadata = path.metadata()?;
+        let metadata = dump_path.metadata()?;
         if !metadata.is_file() || metadata.len() == 0 {
             return Err(StorageError::new(format!(
                 "{} is neither not a file or is empty",
-                dump_path
+                dump_path.display()
             )));
         }
         let data = {
