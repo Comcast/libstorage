@@ -211,8 +211,6 @@ impl FromXml for NfsMountedShares {
         let mut share_name: String = String::new();
         let mut alternate_name: String = String::new();
         let mut is_share: bool = false;
-        let mut root_access: Vec<String> = Vec::new();
-        let mut rw_access: Vec<String> = Vec::new();
         let mut access: Vec<String> = Vec::new();
 
         loop {
@@ -244,47 +242,7 @@ impl FromXml for NfsMountedShares {
                                 }
                             }
                         }
-                    } else if b"OPTION" == e.name() {
-                        // access, root and rw attributes for each export
-                        match e.attributes().next() {
-                            Some(attribute_name) => {
-                                let a_name = attribute_name?;
-                                match a_name.key {
-                                    // these potentially could have duplicates of
-                                    // IP and server names
-                                    b"anon" => {}
-                                    b"access" => {
-                                        access = String::from_utf8_lossy(&a_name.value)
-                                            .split(':')
-                                            .map(|s| s.to_string())
-                                            .collect::<Vec<String>>();
-                                    }
-                                    b"root" => {
-                                        root_access = String::from_utf8_lossy(&a_name.value)
-                                            .split(':')
-                                            .map(|s| s.to_string())
-                                            .collect::<Vec<String>>();
-                                    }
-                                    b"rw" => {
-                                        rw_access = String::from_utf8_lossy(&a_name.value)
-                                            .split(':')
-                                            .map(|s| s.to_string())
-                                            .collect::<Vec<String>>();
-                                    }
-                                    _ => {
-                                        println!(
-                                            "Found unknown attribute {} for options of share {}",
-                                            String::from_utf8_lossy(a_name.key),
-                                            path
-                                        );
-                                    }
-                                }
-                            }
-                            None => {
-                                println!("No attributes found for share {} options", path);
-                            }
-                        }
-                    }
+                    } 
                 }
                 Ok(Event::Text(e)) => {
                     // access, root and rw attributes for each export
@@ -309,14 +267,12 @@ impl FromXml for NfsMountedShares {
                             alternate_name: alternate_name.clone(),
                             access: access.clone(),
                         });
-                        root_access.clear();
-                        rw_access.clear();
                         access.clear();
                     }
                 }
                 Err(e) => {
                     return Err(StorageError::new(format!(
-                        "invalid xml data  from server at position: {}: {:?}",
+                        "invalid xml data from server at position: {}: {:?}",
                         reader.buffer_position(),
                         e
                     )));
