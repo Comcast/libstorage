@@ -237,8 +237,8 @@ impl FromXml for NfsMountedShares {
                                     alternate_name = attribute_val.to_string();
                                 }
                                 _ => {
-                                    debug!(
-                                        "Unknown attribute {} for export",
+                                    trace!(
+                                        "attribute {} for export",
                                         String::from_utf8_lossy(attribute_name.key)
                                     );
                                 }
