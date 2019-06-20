@@ -1,6 +1,6 @@
 [package]
 name = "libstorage"
-version = "0.4.2"
+version = "0.4.3"
 authors = ["Chris Holcombe <christopher_holcombe@comcast.com>", "Sravanthi Dandamudi <sravanthi_dandamudi@comcast.com>", "Rob Powers <comcastrp@gmail.com>"]
 description = "Storage helper functions"
 documentation = "https://github.com/Comcast/libstorage"
