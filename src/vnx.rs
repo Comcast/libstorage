@@ -18,7 +18,10 @@
 * SPDX-License-Identifier: Apache-2.0
 */
 use std::collections::HashMap;
+use std::fs::File;
+use std::io::Read;
 use std::io::Write;
+use std::path::Path;
 use std::str::FromStr;
 
 use crate::error::*;
@@ -26,7 +29,7 @@ use crate::IntoPoint;
 
 use crate::ir::{TsPoint, TsValue};
 use cookie::{Cookie, CookieJar};
-use log::{debug, error, warn};
+use log::{debug, error, warn, trace};
 use quick_xml::events::attributes::Attributes;
 use quick_xml::events::Event;
 use quick_xml::Reader;
@@ -69,7 +72,7 @@ impl ToString for MoverStatsRequest {
 
 #[derive(Clone, Deserialize, Debug)]
 pub struct VnxConfig {
-    /// The scaleio endpoint to use
+    /// The vnx endpoint to use
     pub endpoint: String,
     pub user: String,
     /// This gets replaced with the token at runtime
@@ -79,32 +82,8 @@ pub struct VnxConfig {
     /// Optional certificate file to use against the server
     /// der encoded
     pub certificate: Option<String>,
-}
-
-pub struct Vnx {
-    client: reqwest::Client,
-    config: VnxConfig,
-    cookie_jar: CookieJar,
-}
-
-impl Vnx {
-    pub fn new(client: &reqwest::Client, config: VnxConfig) -> MetricsResult<Self> {
-        let mut cookie_jar = CookieJar::new();
-        login_request(&client, &config, &mut cookie_jar)?;
-        Ok(Vnx {
-            client: client.clone(),
-            config,
-            cookie_jar,
-        })
-    }
-}
-
-impl Drop for Vnx {
-    fn drop(&mut self) {
-        if let Err(e) = self.logout_request() {
-            error!("Vnx logout request failed: {}", e);
-        }
-    }
+    /// Location of the XML dump files created by nas-xml
+    pub shares_dump_location: Option<String>,
 }
 
 fn parse_data_services_policies(s: &str) -> MetricsResult<HashMap<String, String>> {
@@ -188,6 +167,134 @@ pub struct DeviceCounter {
     device: String,
     _in: u64,
     out: u64,
+}
+
+#[test]
+fn test_nfs_mounted_shares() {
+    use std::fs::File;
+    use std::io::Read;
+
+    let data = {
+        let mut s = String::new();
+        let mut f = File::open("tests/vnx/nfs_mounted_shares.xml").unwrap();
+        f.read_to_string(&mut s).unwrap();
+        s
+    };
+    let res = NfsMountedShares::from_xml(&data).unwrap();
+    println!("result: {:#?}", res);
+    let points = res.into_point(Some("vnx_mounted_shares"), false);
+    println!("points: {:#?}, {}", points, points.len());
+}
+
+#[derive(Clone, Debug)]
+pub struct NfsMountedShares {
+    pub nfs_mounted_shares: Vec<NfsMountedShare>,
+}
+
+impl IntoPoint for NfsMountedShares {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+        let all_nfs_mounted_servers: Vec<TsPoint> = self
+            .nfs_mounted_shares
+            .iter()
+            .flat_map(|f| f.into_point(name, is_time_series))
+            .collect();
+        all_nfs_mounted_servers
+    }
+}
+
+impl FromXml for NfsMountedShares {
+    fn from_xml(data: &str) -> MetricsResult<Self> {
+        let mut reader = Reader::from_str(data);
+        reader.trim_text(true);
+        let mut buf = Vec::new();
+
+        let mut nfs_mounted_shares: Vec<NfsMountedShare> = Vec::new();
+        let mut path: String = String::new();
+        let mut share_name: String = String::new();
+        let mut alternate_name: String = String::new();
+        let mut is_share: bool = false;
+        let mut access: Vec<String> = Vec::new();
+
+        loop {
+            match reader.read_event(&mut buf) {
+                Ok(Event::Start(ref e)) => {
+                    if b"EXPORT" == e.name() {
+                        // exports for each mover
+                        for a in e.attributes() {
+                            let attribute_name = a?;
+                            let attribute_val = String::from_utf8_lossy(&attribute_name.value);
+                            match attribute_name.key {
+                                b"PATH" => {
+                                    path = attribute_val.to_string();
+                                }
+                                b"IS_SHARE" => {
+                                    is_share = bool::from_str(&attribute_val.to_lowercase())?;
+                                }
+                                b"SHARE_NAME" => {
+                                    share_name = attribute_val.to_string();
+                                }
+                                b"ALTERNATE_NAME" => {
+                                    alternate_name = attribute_val.to_string();
+                                }
+                                _ => {
+                                    trace!(
+                                        "attribute {} for export",
+                                        String::from_utf8_lossy(attribute_name.key)
+                                    );
+                                }
+                            }
+                        }
+                    } 
+                }
+                Ok(Event::Text(e)) => {
+                    // access, root and rw attributes for each export
+                    let text = e.unescape_and_decode(&reader)?;
+                    if text.starts_with("access") {
+                        access = text
+                            .trim_start_matches("access=")
+                            .split(':')
+                            .map(|s| s.to_string())
+                            .collect::<Vec<String>>();
+                    }
+                }
+                Ok(Event::Empty(_e)) => {}
+                Ok(Event::End(ref e)) => {
+                    if b"EXPORT" == e.name() {
+                        // encountered end tag for export.
+                        // create new struct instance and add to vector
+                        nfs_mounted_shares.push(NfsMountedShare {
+                            path: path.clone(),
+                            is_share,
+                            share_name: share_name.clone(),
+                            alternate_name: alternate_name.clone(),
+                            access: access.clone(),
+                        });
+                        access.clear();
+                    }
+                }
+                Err(e) => {
+                    return Err(StorageError::new(format!(
+                        "invalid xml data from server at position: {}: {:?}",
+                        reader.buffer_position(),
+                        e
+                    )));
+                }
+                Ok(Event::Eof) => break,
+                _ => (),
+            }
+            buf.clear();
+        }
+        Ok(NfsMountedShares { nfs_mounted_shares })
+    }
+}
+
+#[derive(Clone, Debug, Default, IntoPoint)]
+pub struct NfsMountedShare {
+    pub path: String,
+    pub is_share: bool,
+    pub share_name: String,
+    pub alternate_name: String,
+    pub access: Vec<String>,
 }
 
 #[test]
@@ -2278,7 +2385,8 @@ fn test_xml_reader() {
 
     println!("Result: {:?}", result);
 }
-pub fn login_request(
+
+fn login_request(
     client: &reqwest::Client,
     config: &VnxConfig,
     cookie_jar: &mut CookieJar,
@@ -2308,7 +2416,31 @@ pub fn login_request(
     }
 }
 
+pub struct Vnx {
+    client: reqwest::Client,
+    config: VnxConfig,
+    cookie_jar: CookieJar,
+}
+
+impl Drop for Vnx {
+    fn drop(&mut self) {
+        if let Err(e) = self.logout_request() {
+            error!("Vnx logout request failed: {}", e);
+        }
+    }
+}
+
 impl Vnx {
+    pub fn new(client: &reqwest::Client, config: VnxConfig) -> MetricsResult<Self> {
+        let mut cookie_jar = CookieJar::new();
+        login_request(&client, &config, &mut cookie_jar)?;
+        Ok(Vnx {
+            client: client.clone(),
+            config,
+            cookie_jar,
+        })
+    }
+
     pub fn logout_request(&self) -> MetricsResult<()> {
         let mut headers = HeaderMap::new();
         headers.insert(CONTENT_LENGTH, HeaderValue::from_str("0")?);
@@ -2611,6 +2743,30 @@ impl Vnx {
         // Request the mount info from the VNX
         let res: Mounts = self.api_request(output)?;
         Ok(res.into_point(Some("vnx_mounts"), false))
+    }
+
+    /// Reads an XML file to parse which servers mounted the shares
+    /// The XML file is a dump created by the cli commands run on the
+    /// control array and exported onto the local system.
+    /// This alternative has been choosen because vnx APIs
+    /// donot expose this information. With Unity, it may be available via REST.
+    pub fn get_nfs_share_mounts(&mut self, dump_path: &Path) -> MetricsResult<Vec<TsPoint>> {
+        // Check if given path points to a valid file and if non-empty
+        let metadata = dump_path.metadata()?;
+        if !metadata.is_file() || metadata.len() == 0 {
+            return Err(StorageError::new(format!(
+                "{} is neither not a file or is empty",
+                dump_path.display()
+            )));
+        }
+        let data = {
+            let mut s = String::new();
+            let mut f = File::open(dump_path)?;
+            f.read_to_string(&mut s)?;
+            s
+        };
+        let res = NfsMountedShares::from_xml(&data)?;
+        Ok(res.into_point(Some("vnx_mounted_shares"), false))
     }
 }
 
