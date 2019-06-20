@@ -1,0 +1,48 @@
+<CELERRA SRC='controlstation' >
+<CELERRA_CABINET NAME='some cabinet' TYPE='Celerra Argonaut'
+ PRODUCT_NAME='VNX product' SERIAL_NO='ABC123'
+ DMSLOTS='4' CSSLOTS='3' CID='some cid 123'>
+ <CONTROL_STATION HOSTNAME='vnx-hostname' VERSION='7.1.83-2' NXV='7.1.83-2'
+  DATE_TIME_GMT='2019/05/31-19:56:49' DATE_TIME_LOCAL='2019/05/31-15:56:49'/>
+ <DATA_MOVERS>
+  <MOVER NAME=mover_name>
+   <EXPORTS>
+   <EXPORT PATH="/" MTIME="1558541910" MODSTAMP="1558541910:242188" 
+    IS_SHARE="False" SHARE_NAME="" ALTERNATE_NAME="" >
+    <OPTION>anon=0</OPTION>
+    <OPTION>access=1.1.1.1:2.2.2.2:3.3.3.3 </OPTION>
+   </EXPORT>
+   <EXPORT PATH="/abc_def_10/pqr" MTIME="1558541910" MODSTAMP="1558541910:242188" 
+    IS_SHARE="False" SHARE_NAME="" ALTERNATE_NAME="/pqr" >
+    <OPTION>root=host1.net:1.2.1.1:host2.net:1.2.1.7:host3.net:0.2.6.7</OPTION>
+    <OPTION>access=host1.net:1.2.1.1:host2.net:1.2.1.7:host3.net:0.2.6.7</OPTION>
+   </EXPORT>
+   <EXPORT PATH="/abc_def_10/pqr2" MTIME="1558541910" MODSTAMP="1558541910:242188" 
+    IS_SHARE="False" SHARE_NAME="pqr2" ALTERNATE_NAME="" >
+    <OPTION>root=host5.net:3.2.1.1:host2.net:1.2.1.7:host3.net:0.2.6.7</OPTION>
+    <OPTION>access=host5.net:3.2.1.1:host2.net:1.2.1.7:host3.net:0.2.6.7</OPTION>
+   </EXPORT>
+   <EXPORT PATH="/something/anotherthing" MTIME="1558541910" MODSTAMP="1558541910:242188" 
+    IS_SHARE="False" SHARE_NAME="" ALTERNATE_NAME="/anotherthing" >
+    <OPTION>root=1.2.1.4</OPTION>
+    <OPTION>access=1.5.7.8</OPTION>
+   </EXPORT>
+   <EXPORT PATH="/somevolume/anothervol" MTIME="1558541910" MODSTAMP="1558541910:242188" 
+    IS_SHARE="False" SHARE_NAME="" ALTERNATE_NAME="/anothervol" >
+    <OPTION>rw=ms:1.2.1.9:mt-dt:1.5.1.6</OPTION>
+    <OPTION>root=ms:1.2.1.9:mt-dt:1.5.1.6</OPTION>
+   </EXPORT>
+   </EXPORTS>
+  </MOVER>
+  <MOVER NAME=mover_name_2>
+   <EXPORTS>
+   <EXPORT PATH="/" MTIME="1550731670" MODSTAMP="1550731670:242533" 
+    IS_SHARE="False" SHARE_NAME="" ALTERNATE_NAME="" >
+    <OPTION>anon=0</OPTION>
+    <OPTION>access=18.1.2.0:8.1.2.1:12.21.22.11:2.2.2.1</OPTION>
+   </EXPORT>
+   </EXPORTS>
+  </MOVER>
+ </DATA_MOVERS>
+</CELERRA_CABINET>
+</CELERRA>
