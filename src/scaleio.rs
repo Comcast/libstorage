@@ -63,17 +63,6 @@ pub struct Scaleio {
     config: ScaleioConfig,
 }
 
-impl Scaleio {
-    pub fn new(client: &reqwest::Client, mut config: ScaleioConfig) -> MetricsResult<Self> {
-        let token = get_api_token(&client, &config)?;
-        config.password = token;
-        Ok(Scaleio {
-            client: client.clone(),
-            config,
-        })
-    }
-}
-
 #[test]
 fn test_get_system_config() {
     use std::fs::File;
@@ -655,7 +644,7 @@ fn test_selected_stats() {
 
     let i: ClusterSelectedStatisticsResponse = serde_json::from_str(&buff).unwrap();
     println!("result: {:#?}", i);
-    
+
     // Test sdcstats response
     let mut f = File::open("tests/scaleio/sdcSelectedStatisticsResponse.json").unwrap();
     let mut buff = String::new();
@@ -1464,7 +1453,39 @@ pub fn get_api_token(client: &reqwest::Client, config: &ScaleioConfig) -> Metric
     }
 }
 
+#[test]
+fn test_api_token_parser() {
+    let raw_token = "\"YXV0b21hdGlvbjoxNTE1MTk4NjYzNDg0OjJiOWFhODhiYzliY2Y5O\
+                     WU3OTc1OGVjMmM0MzgyZGE0\"";
+    let expected = "YXV0b21hdGlvbjoxNTE1MTk4NjYzNDg0OjJiOWFhODhi\
+                    YzliY2Y5OWU3OTc1OGVjMmM0MzgyZGE0";
+    let res = api_token(raw_token.as_bytes());
+    println!("parsed api_token: {:?}", res);
+    assert_eq!(
+        api_token(raw_token.as_bytes()),
+        IResult::Done(&b""[..], expected)
+    );
+}
+
+// We parse any value surrounded by quotes, ignoring all whitespaces around those
+named!(
+    api_token<&str>,
+    ws!(delimited!(
+        tag!("\""),
+        map_res!(take_until!("\""), str::from_utf8),
+        tag!("\"")
+    ))
+);
+
 impl Scaleio {
+    pub fn new(client: &reqwest::Client, mut config: ScaleioConfig) -> MetricsResult<Self> {
+        let token = get_api_token(&client, &config)?;
+        config.password = token;
+        Ok(Scaleio {
+            client: client.clone(),
+            config,
+        })
+    }
     // Get the basic cluster configuration
     pub fn get_configuration(&self) -> MetricsResult<SystemConfig> {
         // Ask scaleio for the system configuration information
@@ -1617,33 +1638,7 @@ impl Scaleio {
 
         Ok(())
     }
-}
 
-#[test]
-fn test_api_token_parser() {
-    let raw_token = "\"YXV0b21hdGlvbjoxNTE1MTk4NjYzNDg0OjJiOWFhODhiYzliY2Y5O\
-                     WU3OTc1OGVjMmM0MzgyZGE0\"";
-    let expected = "YXV0b21hdGlvbjoxNTE1MTk4NjYzNDg0OjJiOWFhODhi\
-                    YzliY2Y5OWU3OTc1OGVjMmM0MzgyZGE0";
-    let res = api_token(raw_token.as_bytes());
-    println!("parsed api_token: {:?}", res);
-    assert_eq!(
-        api_token(raw_token.as_bytes()),
-        IResult::Done(&b""[..], expected)
-    );
-}
-
-// We parse any value surrounded by quotes, ignoring all whitespaces around those
-named!(
-    api_token<&str>,
-    ws!(delimited!(
-        tag!("\""),
-        map_res!(take_until!("\""), str::from_utf8),
-        tag!("\"")
-    ))
-);
-
-impl Scaleio {
     pub fn get_pool_info(&self, pool_id: &str) -> MetricsResult<PoolInstanceResponse> {
         let pool_info = get::<PoolInstanceResponse>(
             &self.client,
@@ -1692,33 +1687,35 @@ impl Scaleio {
         let json_resp: ClusterSelectedStatisticsResponse = resp.json()?;
         Ok(json_resp)
     }
-    
+
     pub fn get_sdc_stats(&self) -> MetricsResult<SdcSelectedStatisticsResponse> {
         let stats_req = SelectedStatisticsRequest {
-                selected_statistics_list: vec![StatsRequest {
-                    req_type: StatsRequestType::Sdc,
-                    all_ids: vec![],
-                    properties: vec![
-                        "userDataReadBwc".into(),
-                        "userDataWriteBwc".into(),
-                        "userDataTrimBwc".into(),
-                        "volumeIds".into(),
-                        "numOfMappedVolumes".into(),
-                    ],
-                }],
-                };
-        let mut resp = self.client.post(&format!(    
+            selected_statistics_list: vec![StatsRequest {
+                req_type: StatsRequestType::Sdc,
+                all_ids: vec![],
+                properties: vec![
+                    "userDataReadBwc".into(),
+                    "userDataWriteBwc".into(),
+                    "userDataTrimBwc".into(),
+                    "volumeIds".into(),
+                    "numOfMappedVolumes".into(),
+                ],
+            }],
+        };
+        let mut resp = self
+            .client
+            .post(&format!(
                 "https://{}/api/instances/querySelectedStatistics",
-                self.config.endpoint))
-                .header(CONTENT_TYPE, "application/json")
-                .basic_auth(&self.config.user, Some(&self.config.password))
-                .json(&stats_req)
-                .send()?
-                .error_for_status()?;
+                self.config.endpoint
+            ))
+            .header(CONTENT_TYPE, "application/json")
+            .basic_auth(&self.config.user, Some(&self.config.password))
+            .json(&stats_req)
+            .send()?
+            .error_for_status()?;
         let json_resp: SdcSelectedStatisticsResponse = resp.json()?;
         Ok(json_resp)
     }
-
 
     pub fn get_sdc_objects(
         &self,
@@ -1811,87 +1808,7 @@ impl Scaleio {
             })?;
         Ok(sds_vols)
     }
-}
 
-#[derive(Serialize, Debug)]
-pub enum VolumeRequestType {
-    ThinProvisioned,
-    ThickProvisioned,
-}
-
-#[serde(rename_all = "camelCase")]
-#[derive(Serialize, Debug)]
-pub struct VolumeRequest {
-    pub volume_size_in_kb: String,
-    pub storage_pool_id: String,
-    pub name: String,
-    pub volume_type: VolumeRequestType,
-    pub use_rmcache: bool,
-}
-
-impl VolumeRequest {
-    fn new(volume_size_int: u64, storage_pool_id: String, name: String) -> VolumeRequest {
-        VolumeRequest {
-            volume_size_in_kb: volume_size_int.to_string(),
-            storage_pool_id,
-            name,
-            volume_type: VolumeRequestType::ThinProvisioned,
-            use_rmcache: true,
-        }
-    }
-}
-
-/// Finds the ideal pools where volumes need to be created.
-/// Returns a vector of pool_ids, will never return an empty list
-/// Available space and percent provisioned are considered
-/// when identifying the pools.
-fn identify_ideal_pools(
-    mut storage_pools: Vec<PoolInstanceResponse>,
-    num_of_pools: usize,
-    spare_cutoff: u8,
-) -> MetricsResult<Vec<String>> {
-    if !storage_pools.is_empty() {
-        let mut ids: Vec<String> = Vec::new();
-
-        // Retain only those pools which pass the cutoff
-        storage_pools.retain(|ref each| each.spare_percentage > spare_cutoff);
-        if storage_pools.is_empty() {
-            // None have enough spare space
-            return Err(StorageError::new(format!(
-                "All storage pools are above
-                                    cutoff of {}%",
-                spare_cutoff
-            )));
-        }
-        // Now reverse sort storage_pools based on the 'spare_percentage' field
-        storage_pools.sort_unstable_by(|a, b| b.spare_percentage.cmp(&a.spare_percentage));
-
-        let available_pools: usize = if storage_pools.len() < num_of_pools {
-            storage_pools.len()
-        } else {
-            num_of_pools
-        };
-
-        for i in 0..available_pools {
-            if let Some(element) = storage_pools.get(i) {
-                let pool_id = &element.id;
-                ids.push(pool_id.to_string());
-            }
-        }
-        if !ids.is_empty() {
-            Ok(ids)
-        } else {
-            // storage_pools is not empty, but did not find any elements?
-            Err(StorageError::new(
-                "Failed to identify ideal pool to create volume".to_string(),
-            ))
-        }
-    } else {
-        Err(StorageError::new("No storage pools found".to_string()))
-    }
-}
-
-impl Scaleio {
     /// Creates a volume on the given endpoint using the credentials specified
     /// in the config file. Automatically selects a storage pool
     /// vol_name_prefix refers to the tracking ID/ticket ID of the request
@@ -2067,6 +1984,84 @@ impl Scaleio {
         Ok(true)
     }
 }
+
+#[derive(Serialize, Debug)]
+pub enum VolumeRequestType {
+    ThinProvisioned,
+    ThickProvisioned,
+}
+
+#[serde(rename_all = "camelCase")]
+#[derive(Serialize, Debug)]
+pub struct VolumeRequest {
+    pub volume_size_in_kb: String,
+    pub storage_pool_id: String,
+    pub name: String,
+    pub volume_type: VolumeRequestType,
+    pub use_rmcache: bool,
+}
+
+impl VolumeRequest {
+    fn new(volume_size_int: u64, storage_pool_id: String, name: String) -> VolumeRequest {
+        VolumeRequest {
+            volume_size_in_kb: volume_size_int.to_string(),
+            storage_pool_id,
+            name,
+            volume_type: VolumeRequestType::ThinProvisioned,
+            use_rmcache: true,
+        }
+    }
+}
+/// Finds the ideal pools where volumes need to be created.
+/// Returns a vector of pool_ids, will never return an empty list
+/// Available space and percent provisioned are considered
+/// when identifying the pools.
+fn identify_ideal_pools(
+    mut storage_pools: Vec<PoolInstanceResponse>,
+    num_of_pools: usize,
+    spare_cutoff: u8,
+) -> MetricsResult<Vec<String>> {
+    if !storage_pools.is_empty() {
+        let mut ids: Vec<String> = Vec::new();
+
+        // Retain only those pools which pass the cutoff
+        storage_pools.retain(|ref each| each.spare_percentage > spare_cutoff);
+        if storage_pools.is_empty() {
+            // None have enough spare space
+            return Err(StorageError::new(format!(
+                "All storage pools are above
+                                    cutoff of {}%",
+                spare_cutoff
+            )));
+        }
+        // Now reverse sort storage_pools based on the 'spare_percentage' field
+        storage_pools.sort_unstable_by(|a, b| b.spare_percentage.cmp(&a.spare_percentage));
+
+        let available_pools: usize = if storage_pools.len() < num_of_pools {
+            storage_pools.len()
+        } else {
+            num_of_pools
+        };
+
+        for i in 0..available_pools {
+            if let Some(element) = storage_pools.get(i) {
+                let pool_id = &element.id;
+                ids.push(pool_id.to_string());
+            }
+        }
+        if !ids.is_empty() {
+            Ok(ids)
+        } else {
+            // storage_pools is not empty, but did not find any elements?
+            Err(StorageError::new(
+                "Failed to identify ideal pool to create volume".to_string(),
+            ))
+        }
+    } else {
+        Err(StorageError::new("No storage pools found".to_string()))
+    }
+}
+
 /* Uncomment this when this test should run
 #[test]
 fn test_create_and_map_volume() {
