@@ -655,10 +655,18 @@ fn test_selected_stats() {
 
     let i: ClusterSelectedStatisticsResponse = serde_json::from_str(&buff).unwrap();
     println!("result: {:#?}", i);
+    
+    // Test sdcstats response
+    let mut f = File::open("tests/scaleio/sdcSelectedStatisticsResponse.json").unwrap();
+    let mut buff = String::new();
+    f.read_to_string(&mut buff).unwrap();
+
+    let i: SdcSelectedStatisticsResponse = serde_json::from_str(&buff).unwrap();
+    println!("result: {:#?}", i);
 }
 
 #[derive(Deserialize, Debug)]
-pub struct SelectedStatisticsResponse {
+pub struct DeviceSelectedStatisticsResponse {
     #[serde(rename = "Device")]
     pub device: HashMap<String, HashMap<String, u64>>,
 }
@@ -684,6 +692,22 @@ pub struct StoragePoolInfo {
     pub thin_capacity_allocated_in_km: u64,
     pub total_write_bwc: BWC,
     pub total_read_bwc: BWC,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct SdcSelectedStatisticsResponse {
+    #[serde(rename = "StoragePool")]
+    pub sdc_stats_info: HashMap<String, SdcStatsInfo>,
+}
+
+#[serde(rename_all = "camelCase")]
+#[derive(Deserialize, Debug, IntoPoint)]
+pub struct SdcStatsInfo {
+    pub user_data_read_bwc: BWC,
+    pub user_data_write_bwc: BWC,
+    pub user_data_trim_bwc: BWC,
+    pub volume_ids: Vec<String>,
+    pub num_of_mapped_volumes: u64,
 }
 
 #[serde(rename_all = "camelCase")]
@@ -1546,7 +1570,7 @@ impl Scaleio {
     }
 
     // Get all the drive stats.  This hashmap is referenced by sdsId.
-    pub fn get_drive_stats(&self) -> MetricsResult<SelectedStatisticsResponse> {
+    pub fn get_drive_stats(&self) -> MetricsResult<DeviceSelectedStatisticsResponse> {
         let stats_req = SelectedStatisticsRequest {
             selected_statistics_list: vec![StatsRequest {
                 req_type: StatsRequestType::Device,
@@ -1576,7 +1600,7 @@ impl Scaleio {
             .json(&stats_req)
             .send()?
             .error_for_status()?;
-        let json_resp: SelectedStatisticsResponse = resp.json()?;
+        let json_resp: DeviceSelectedStatisticsResponse = resp.json()?;
         Ok(json_resp)
     }
 
@@ -1668,6 +1692,33 @@ impl Scaleio {
         let json_resp: ClusterSelectedStatisticsResponse = resp.json()?;
         Ok(json_resp)
     }
+    
+    pub fn get_sdc_stats(&self) -> MetricsResult<SdcSelectedStatisticsResponse> {
+        let stats_req = SelectedStatisticsRequest {
+                selected_statistics_list: vec![StatsRequest {
+                    req_type: StatsRequestType::Sdc,
+                    all_ids: vec![],
+                    properties: vec![
+                        "userDataReadBwc".into(),
+                        "userDataWriteBwc".into(),
+                        "userDataTrimBwc".into(),
+                        "volumeIds".into(),
+                        "numOfMappedVolumes".into(),
+                    ],
+                }],
+                };
+        let mut resp = self.client.post(&format!(    
+                "https://{}/api/instances/querySelectedStatistics",
+                self.config.endpoint))
+                .header(CONTENT_TYPE, "application/json")
+                .basic_auth(&self.config.user, Some(&self.config.password))
+                .json(&stats_req)
+                .send()?
+                .error_for_status()?;
+        let json_resp: SdcSelectedStatisticsResponse = resp.json()?;
+        Ok(json_resp)
+    }
+
 
     pub fn get_sdc_objects(
         &self,
