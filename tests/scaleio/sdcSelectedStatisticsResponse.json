@@ -1,0 +1,37 @@
+{
+    "7c9": {
+        "numOfMappedVolumes": 3,
+        "userDataReadBwc": {
+            "numOccured": 0,
+            "numSeconds": 1,
+            "totalWeightInKb": 0
+        },
+        "userDataWriteBwc": {
+            "numOccured": 0,
+            "numSeconds": 1,
+            "totalWeightInKb": 0
+        },
+        "volumeIds": [
+            "1f01",
+            "1defghijkmlnmopq",
+            "1dffghijkmlnmopq"
+        ]
+    },
+    "7d9": {
+        "numOfMappedVolumes": 2,
+        "userDataReadBwc": {
+            "numOccured": 0,
+            "numSeconds": 1,
+            "totalWeightInKb": 0
+        },
+        "userDataWriteBwc": {
+            "numOccured": 0,
+            "numSeconds": 1,
+            "totalWeightInKb": 0
+        },
+        "volumeIds": [
+            "1kefghijkmlnmopq",
+            "1lffghijkmlnmopq"
+        ]
+    }
+}
