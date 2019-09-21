@@ -650,21 +650,9 @@ fn test_selected_stats() {
     let mut buff = String::new();
     f.read_to_string(&mut buff).unwrap();
 
-    let i: HashMap<String, SdcStatsInfo> = serde_json::from_str(&buff).unwrap();
+    let i: SdcSelectedStatisticsResponse = serde_json::from_str(&buff).unwrap();
     println!("result: {:#?}", i);
-    let mut all_sdc_stats: Vec<TsPoint> = Vec::new();
-    for (key, value) in i.iter() {
-        let point: Vec<TsPoint> = value
-            .into_point(Some("scaleio_sdc_stats"), true)
-            .iter_mut()
-            .map(|p| {
-                p.add_tag("sdc_id", TsValue::String(key.to_string()));
-                p.clone()
-            })
-            .collect();
-        all_sdc_stats.extend(point);
-    }
-
+    let all_sdc_stats = i.into_point(Some("scaleio_sdc_stats"), true);
     println!("points: {:#?}", all_sdc_stats);
 }
 
@@ -695,6 +683,31 @@ pub struct StoragePoolInfo {
     pub thin_capacity_allocated_in_km: u64,
     pub total_write_bwc: BWC,
     pub total_read_bwc: BWC,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct SdcSelectedStatisticsResponse {
+    #[serde(rename = "Sdc")]
+    pub sdc: HashMap<String, SdcStatsInfo>,
+}
+
+impl IntoPoint for SdcSelectedStatisticsResponse {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
+    let mut all_sdc_stats: Vec<TsPoint> = Vec::new();
+    for (key, value) in self.sdc.iter() {
+        let point: Vec<TsPoint> = value
+            .into_point(name, is_time_series)
+            .iter_mut()
+            .map(|p| {
+                p.add_tag("sdc_id", TsValue::String(key.to_string()));
+                p.clone()
+            })
+            .collect();
+        all_sdc_stats.extend(point);
+    }
+    all_sdc_stats
+    }
+
 }
 
 #[serde(rename_all = "camelCase")]
@@ -1708,6 +1721,7 @@ impl Scaleio {
                 ],
             }],
         };
+        debug!("Sravanthi before");
         let mut resp = self
             .client
             .post(&format!(
@@ -1719,20 +1733,11 @@ impl Scaleio {
             .json(&stats_req)
             .send()?
             .error_for_status()?;
-        let json_resp: HashMap<String, SdcStatsInfo> = resp.json()?;
-        let mut all_sdc_stats: Vec<TsPoint> = Vec::new();
-        for (key, value) in json_resp.iter() {
-            let point: Vec<TsPoint> = value
-                .into_point(Some("scaleio_sdc_stats"), true)
-                .iter_mut()
-                .map(|p| {
-                    p.add_tag("sdc_id", TsValue::String(key.to_string()));
-                    p.clone()
-                })
-                .collect();
-            all_sdc_stats.extend(point);
-        }
-        Ok(all_sdc_stats)
+        debug!("Sravanthi after");
+        debug!("deserialized: {:?}", resp);
+        let json_resp: SdcSelectedStatisticsResponse = resp.json()?;
+        trace!("json response {:#?}", json_resp);
+        Ok(json_resp.into_point(Some("scaleio_sdc_stats"), true))
     }
 
     pub fn get_sdc_objects(
