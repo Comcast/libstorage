@@ -1721,7 +1721,6 @@ impl Scaleio {
                 ],
             }],
         };
-        debug!("Sravanthi before");
         let mut resp = self
             .client
             .post(&format!(
@@ -1733,10 +1732,8 @@ impl Scaleio {
             .json(&stats_req)
             .send()?
             .error_for_status()?;
-        debug!("Sravanthi after");
         debug!("deserialized: {:?}", resp);
         let json_resp: SdcSelectedStatisticsResponse = resp.json()?;
-        trace!("json response {:#?}", json_resp);
         Ok(json_resp.into_point(Some("scaleio_sdc_stats"), true))
     }
 
