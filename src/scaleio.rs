@@ -1606,9 +1606,9 @@ impl Scaleio {
                 .iter_mut()
                 .map(|point| {
                     point.timestamp = Some(t);
-                    point.add_tag("device_id", TsValue::String(ids.0.to_string()));
-                    point.add_tag("sds_id", TsValue::String(ids.1.to_string()));
-                    point.add_tag("storage_pool_id", TsValue::String(ids.2.to_string()));
+                    point.add_tag("device_id", TsValue::String(ids.0.clone()));
+                    point.add_tag("sds_id", TsValue::String(ids.1.clone()));
+                    point.add_tag("storage_pool_id", TsValue::String(ids.2.clone()));
                     point.clone()
                 })
                 .collect();
