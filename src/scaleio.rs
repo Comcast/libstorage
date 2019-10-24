@@ -1593,7 +1593,7 @@ impl Scaleio {
     pub fn get_drive_statistics(
         &self,
         t: DateTime<Utc>,
-        ids: (&str, &str, &str),
+        ids: &(String, String, String),
     ) -> MetricsResult<Vec<TsPoint>> {
         let instance_statistics = get::<DeviceStatistics>(
             &self.client,
