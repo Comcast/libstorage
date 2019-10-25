@@ -1610,8 +1610,8 @@ impl Scaleio {
         .and_then(|instance| {
             let points: Vec<TsPoint> = instance
                 .into_point(Some("scaleio_drive_stat"), true)
-                .iter_mut()
-                .map(|point| {
+                .into_iter()
+                .map(|mut point| {
                     point.timestamp = Some(t);
                     point.add_tag("device_id", TsValue::String(ids.id.to_string()));
                     point.add_tag("sds_id", TsValue::String(ids.sds_id.to_string()));
@@ -1619,7 +1619,7 @@ impl Scaleio {
                         "storage_pool_id",
                         TsValue::String(ids.storage_pool_id.to_string()),
                     );
-                    point.clone()
+                    point
                 })
                 .collect();
             Ok(points)
