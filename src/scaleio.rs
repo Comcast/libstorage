@@ -1600,7 +1600,7 @@ impl Scaleio {
     pub fn get_drive_statistics(
         &self,
         t: DateTime<Utc>,
-        ids: DriveId,
+        ids: &DriveId,
     ) -> MetricsResult<Vec<TsPoint>> {
         let instance_statistics = get::<DeviceStatistics>(
             &self.client,
