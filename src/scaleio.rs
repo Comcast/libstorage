@@ -314,6 +314,7 @@ fn test_scaleio_drive_stats() {
     println!("points: {:?}", points);
 }
 
+#[derive(Debug, Clone)]
 pub struct DriveId {
     id: String,              //device id
     sds_id: String,          // sds id
