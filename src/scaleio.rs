@@ -314,6 +314,13 @@ fn test_scaleio_drive_stats() {
     println!("points: {:?}", points);
 }
 
+#[derive(Debug, Clone)]
+pub struct DriveId {
+    id: String,              //device id
+    sds_id: String,          // sds id
+    storage_pool_id: String, // storage pool id
+}
+
 #[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Debug)]
 pub struct DeviceStatistics {
@@ -693,21 +700,20 @@ pub struct SdcSelectedStatisticsResponse {
 
 impl IntoPoint for SdcSelectedStatisticsResponse {
     fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
-    let mut all_sdc_stats: Vec<TsPoint> = Vec::new();
-    for (key, value) in self.sdc.iter() {
-        let point: Vec<TsPoint> = value
-            .into_point(name, is_time_series)
-            .iter_mut()
-            .map(|p| {
-                p.add_tag("sdc_id", TsValue::String(key.to_string()));
-                p.clone()
-            })
-            .collect();
-        all_sdc_stats.extend(point);
+        let mut all_sdc_stats: Vec<TsPoint> = Vec::new();
+        for (key, value) in self.sdc.iter() {
+            let point: Vec<TsPoint> = value
+                .into_point(name, is_time_series)
+                .iter_mut()
+                .map(|p| {
+                    p.add_tag("sdc_id", TsValue::String(key.to_string()));
+                    p.clone()
+                })
+                .collect();
+            all_sdc_stats.extend(point);
+        }
+        all_sdc_stats
     }
-    all_sdc_stats
-    }
-
 }
 
 #[serde(rename_all = "camelCase")]
@@ -1531,14 +1537,20 @@ impl Scaleio {
         Ok(instances)
     }
 
-    pub fn get_drive_ids(&self) -> MetricsResult<Vec<String>> {
+    pub fn get_drive_ids(&self) -> MetricsResult<Vec<DriveId>> {
         let instance_ids =
             get::<Vec<Instance>>(&self.client, &self.config, "types/Device/instances").and_then(
                 |instances| {
                     let ids = instances
                         .iter()
-                        .map(|instance| instance.id.clone())
-                        .collect::<Vec<String>>();
+                        .map(|instance| {
+                            (DriveId {
+                                id: instance.id.clone(),
+                                sds_id: instance.sds_id.clone(),
+                                storage_pool_id: instance.storage_pool_id.clone(),
+                            })
+                        })
+                        .collect::<Vec<(DriveId)>>();
                     Ok(ids)
                 },
             )?;
@@ -1584,24 +1596,30 @@ impl Scaleio {
         Ok(instance_statistics)
     }
 
+    //ids is (device_id, sds_id, storage_pool_id)
     pub fn get_drive_statistics(
         &self,
         t: DateTime<Utc>,
-        device_id: &str,
+        ids: &DriveId,
     ) -> MetricsResult<Vec<TsPoint>> {
         let instance_statistics = get::<DeviceStatistics>(
             &self.client,
             &self.config,
-            &format!("instances/Device::{}/relationships/Statistics", device_id),
+            &format!("instances/Device::{}/relationships/Statistics", ids.id),
         )
         .and_then(|instance| {
             let points: Vec<TsPoint> = instance
                 .into_point(Some("scaleio_drive_stat"), true)
-                .iter_mut()
-                .map(|point| {
+                .into_iter()
+                .map(|mut point| {
                     point.timestamp = Some(t);
-                    point.add_tag("device_id", TsValue::String(device_id.to_string()));
-                    point.clone()
+                    point.add_tag("device_id", TsValue::String(ids.id.to_string()));
+                    point.add_tag("sds_id", TsValue::String(ids.sds_id.to_string()));
+                    point.add_tag(
+                        "storage_pool_id",
+                        TsValue::String(ids.storage_pool_id.to_string()),
+                    );
+                    point
                 })
                 .collect();
             Ok(points)
