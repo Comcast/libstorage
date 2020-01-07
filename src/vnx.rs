@@ -29,7 +29,7 @@ use crate::IntoPoint;
 
 use crate::ir::{TsPoint, TsValue};
 use cookie::{Cookie, CookieJar};
-use log::{debug, error, warn, trace};
+use log::{debug, error, trace, warn};
 use quick_xml::events::attributes::Attributes;
 use quick_xml::events::Event;
 use quick_xml::Reader;
@@ -176,11 +176,11 @@ fn test_nfs_mounted_shares() {
 
     let data = {
         let mut s = String::new();
-        let mut f = File::open("tests/vnx/nfs_mounted_shares.xml").unwrap();
+        let mut f = File::open("tests/vnx/vnxexportnfs").unwrap();
         f.read_to_string(&mut s).unwrap();
         s
     };
-    let res = NfsMountedShares::from_xml(&data).unwrap();
+    let res = NfsMountedShares::from_str(&data).unwrap();
     println!("result: {:#?}", res);
     let points = res.into_point(Some("vnx_mounted_shares"), false);
     println!("points: {:#?}, {}", points, points.len());
@@ -199,6 +199,50 @@ impl IntoPoint for NfsMountedShares {
             .flat_map(|f| f.into_point(name, is_time_series))
             .collect();
         all_nfs_mounted_servers
+    }
+}
+
+impl NfsMountedShares {
+    fn from_str(data: &str) -> MetricsResult<Self> {
+        let mut nfs_mounted_shares: Vec<NfsMountedShare> = Vec::new();
+        let lines: Vec<&str> = data.split("\n").collect();
+        let mut skip = 0;
+        for (i, line) in lines.iter().enumerate() {
+            if i == skip && skip != 0 {
+                continue;
+            }
+            let share: Vec<&str> = line.split_whitespace().collect();
+            if share.len() != 2 {
+                continue;
+            }
+            let path = share[0].to_string();
+            let access: Vec<String> = share[1].split(",").map(|s| s.to_string()).collect();
+            let p = Path::new(&path);
+
+            //check if next share is actually just the alternate name
+            let next_share: Vec<&str> = lines[i + 1].split_whitespace().collect();
+            let mut alternate_name = match p.file_name() {
+                Some(alt) => alt.to_string_lossy().to_string(),
+                None => String::new(),
+            };
+            if next_share.len() == 2 {
+                let next_path = next_share[0].to_string();
+                let next_access: Vec<String> =
+                    next_share[1].split(",").map(|s| s.to_string()).collect();
+                if next_access == access || path.contains(&next_path) {
+                    alternate_name = next_path;
+                    skip = i + 1;
+                }
+            }
+            nfs_mounted_shares.push(NfsMountedShare {
+                path: path.clone(),
+                is_share: true,
+                share_name: path.clone(),
+                alternate_name: alternate_name.clone(),
+                access: access.clone(),
+            });
+        }
+        Ok(NfsMountedShares { nfs_mounted_shares })
     }
 }
 
@@ -244,7 +288,7 @@ impl FromXml for NfsMountedShares {
                                 }
                             }
                         }
-                    } 
+                    }
                 }
                 Ok(Event::Text(e)) => {
                     // access, root and rw attributes for each export
@@ -2765,7 +2809,7 @@ impl Vnx {
             f.read_to_string(&mut s)?;
             s
         };
-        let res = NfsMountedShares::from_xml(&data)?;
+        let res = NfsMountedShares::from_str(&data)?;
         Ok(res.into_point(Some("vnx_mounted_shares"), false))
     }
 }
