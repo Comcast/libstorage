@@ -1,0 +1,11 @@
+/               255.172.72.23,1.1.1.1,host1.net
+/abcd/efgh      5.5.5.5,2.2.2.2,host2.net
+/efgh           5.5.5.5,2.2.2.2,host2.net
+/root/share     1.1.1.2,1.1.1.3,host3.net,host4.net
+/share          1.1.1.2,1.1.1.3,host3.net,host4.net
+/root/nfs       2.2.2.3,3.3.3.4
+/root/libnfs    1.1.1.4,2.2.2.4,host-name.com
+/vvv/zed        0.0.0.5
+/zed            0.0.0.5
+/vvv/arma       proxy-host.org,10.88.88.88/24,actual-host.com
+/arma           proxy-host.org,10.88.88.88/24,actual-host.com
