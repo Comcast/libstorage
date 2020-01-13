@@ -182,10 +182,23 @@ fn test_nfs_mounted_shares() {
         f.read_to_string(&mut s).unwrap();
         s
     };
-    let res = NfsMountedShares::from_str(&data).unwrap();
-    println!("result: {:#?}", res);
-    let points = res.into_point(Some("vnx_mounted_shares"), false);
-    println!("points: {:#?}, {}", points, points.len());
+    let t: DateTime<Utc> = Utc::now();
+    let res = NfsMountedShares::from_str(&data)
+        .and_then(|instance| {
+            let points: Vec<TsPoint> = instance
+                .into_point(Some("vnx_mounted_shares"), true)
+                .into_iter()
+                .map(|mut point| {
+                    point.timestamp = Some(t);
+                    point
+                })
+                .collect();
+            Ok(points)
+        })
+        .unwrap();
+    //println!("result: {:#?}", res);
+    //let points = res.into_point(Some("vnx_mounted_shares"), false);
+    println!("points: {:#?}, {}", res, res.len());
 }
 
 #[derive(Clone, Debug)]
@@ -672,9 +685,22 @@ fn test_mount_parser() {
         f.read_to_string(&mut s).unwrap();
         s
     };
-    let res = Mounts::from_xml(&data).unwrap();
-    let points = res.into_point(Some("vnx_mounts"), false);
-    println!("result: {:#?}", points);
+    let t = DateTime::from(Utc::now());
+    let res = Mounts::from_xml(&data)
+        .and_then(|instance| {
+            let points: Vec<TsPoint> = instance
+                .into_point(Some("vnx_mounts"), true)
+                .iter_mut()
+                .map(|point| {
+                    point.timestamp = Some(t);
+                    point.clone()
+                })
+                .collect();
+            Ok(points)
+        })
+        .unwrap();
+    //let points = res.into_point(Some("vnx_mounts"), false);
+    println!("result: {:#?}", res);
 }
 
 #[derive(Clone, Debug)]
