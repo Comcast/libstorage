@@ -322,6 +322,11 @@ impl Openstack {
         }
     }
 
+    /// get the config pass
+    pub fn get_pass(&self) -> String {
+        self.config.password.clone()
+    }
+
     fn get<T>(&self, api: &str) -> MetricsResult<T>
     where
         T: DeserializeOwned + Debug,
