@@ -108,11 +108,11 @@ pub struct Server {
     #[serde(rename = "OS-EXT-AZ:availability_zone")]
     az_availability_zone: String,
     #[serde(rename = "OS-EXT-SRV-ATTR:host")]
-    host: String,
+    host: Option<String>,
     #[serde(rename = "OS-EXT-SRV-ATTR:hostname")]
     hostname: Option<String>,
     #[serde(rename = "OS-EXT-SRV-ATTR:hypervisor_hostname")]
-    hypervisor_hostname: String,
+    hypervisor_hostname: Option<String>,
     #[serde(rename = "OS-EXT-SRV-ATTR:instance_name")]
     instance_name: String,
     #[serde(rename = "OS-EXT-STS:power_state")]
@@ -122,7 +122,7 @@ pub struct Server {
     #[serde(rename = "OS-EXT-STS:vm_state")]
     vm_state: String,
     #[serde(rename = "OS-SRV-USG:launched_at")]
-    launched_at: String,
+    launched_at: Option<String>,
     #[serde(rename = "OS-SRV-USG:terminated_at")]
     terminated_at: Option<String>,
     created: String,
@@ -136,7 +136,7 @@ pub struct Server {
     volumes_attached: Vec<HashMap<String, String>>,
     #[serde(rename = "os-extended-volumes:volumes_attached.id")]
     volumes_attached_id: Option<String>,
-    progress: u64,
+    progress: Option<u64>,
     status: String,
     tenant_id: String,
     updated: String,
@@ -150,14 +150,18 @@ impl IntoPoint for Server {
             "az_availability_zone",
             TsValue::String(self.az_availability_zone.clone()),
         );
-        p.add_tag("host", TsValue::String(self.host.clone()));
+        if let Some(host) = &self.host {
+            p.add_tag("host", TsValue::String(host.clone()));
+        }
         if let Some(hostname) = &self.hostname {
             p.add_tag("hostname", TsValue::String(hostname.clone()));
         }
-        p.add_tag(
-            "hypervisor_hostname",
-            TsValue::String(self.hypervisor_hostname.clone()),
-        );
+        if let Some(hypervisor_hostname) = &self.hypervisor_hostname {
+            p.add_tag(
+                "hypervisor_hostname",
+                TsValue::String(hypervisor_hostname.clone()),
+            );
+        }
         p.add_tag("instance_name", TsValue::String(self.instance_name.clone()));
         p.add_tag(
             "power_state",
@@ -167,7 +171,9 @@ impl IntoPoint for Server {
             p.add_tag("task_state", TsValue::String(task_state.clone()));
         }
         p.add_tag("vm_state", TsValue::String(self.vm_state.clone()));
-        p.add_tag("launched_at", TsValue::String(self.launched_at.clone()));
+        if let Some(launched_at) = &self.launched_at {
+            p.add_tag("launched_at", TsValue::String(launched_at.clone()));
+        }
         if let Some(terminated_at) = &self.terminated_at {
             p.add_tag("terminated_at", TsValue::String(terminated_at.clone()));
         }
@@ -197,7 +203,9 @@ impl IntoPoint for Server {
                 TsValue::String(volumes_attached_id.clone()),
             );
         }
-        p.add_field("progress", TsValue::Long(self.progress));
+        if let Some(progress) = &self.progress {
+            p.add_field("progress", TsValue::Long(progress.clone()));
+        }
         p.add_tag("status", TsValue::String(self.status.clone()));
         p.add_tag("tenant_id", TsValue::String(self.tenant_id.clone()));
         p.add_tag("updated", TsValue::String(self.updated.clone()));
@@ -425,7 +433,7 @@ impl Openstack {
     }
 
     pub fn list_servers(&self) -> MetricsResult<Vec<TsPoint>> {
-        let servers: Servers = self.get("v2.1/servers/detail")?;
+        let servers: Servers = self.get("v2.1/servers/detail?all_tenants=True")?;
         Ok(servers.into_point(Some("openstack_server"), false))
     }
 
