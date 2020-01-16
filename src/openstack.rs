@@ -433,7 +433,7 @@ impl Openstack {
     }
 
     pub fn list_servers(&self) -> MetricsResult<Vec<TsPoint>> {
-        let servers: Servers = self.get("v2.1/servers/detail?all_tenants=True")?;
+        let servers: Servers = self.get("v2.1/servers/detail")?;
         Ok(servers.into_point(Some("openstack_server"), false))
     }
 
