@@ -346,16 +346,25 @@ impl Openstack {
 
         // This could be more efficient by deserializing immediately but when errors
         // occur it can be really difficult to debug.
-        let res: Result<String, reqwest::Error> = self
-            .client
-            .get(&url)
-            .header(
-                HeaderName::from_str("X-Auth-Token")?,
-                HeaderValue::from_str(&self.config.password)?,
-            )
-            .send()?
-            .error_for_status()?
-            .text();
+        let res: Result<String, reqwest::Error> = loop {
+            match self
+                .client
+                .get(&url)
+                .header(
+                    HeaderName::from_str("X-Auth-Token")?,
+                    HeaderValue::from_str(&self.config.password)?,
+                )
+                .send()?
+                .error_for_status()
+            {
+                Ok(mut s) => break s.text(),
+                Err(e) => match e.status() {
+                    Some(reqwest::StatusCode::REQUEST_TIMEOUT) => {}
+                    Some(reqwest::StatusCode::GATEWAY_TIMEOUT) => {}
+                    _ => return Err(StorageError::from(e)),
+                },
+            }
+        };
         debug!("raw response: {:?}", res);
         let res = serde_json::from_str(&res?);
         Ok(res?)
