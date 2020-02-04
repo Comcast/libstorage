@@ -183,22 +183,11 @@ fn test_nfs_mounted_shares() {
         s
     };
     let t: DateTime<Utc> = Utc::now();
-    let res = NfsMountedShares::from_str(&data)
-        .and_then(|instance| {
-            let points: Vec<TsPoint> = instance
-                .into_point(Some("vnx_mounted_shares"), true)
-                .into_iter()
-                .map(|mut point| {
-                    point.timestamp = Some(t);
-                    point
-                })
-                .collect();
-            Ok(points)
-        })
-        .unwrap();
-    //println!("result: {:#?}", res);
-    //let points = res.into_point(Some("vnx_mounted_shares"), false);
-    println!("points: {:#?}, {}", res, res.len());
+    let res = NfsMountedShares::from_str(&data).unwrap();
+    println!("result: {:#?}", res);
+    let points = res.into_point(Some("vnx_mounted_shares"), false);
+    println!("points: {:#?}", points);
+    //println!("points: {:#?}, {}", res, res.len());
 }
 
 #[derive(Clone, Debug)]
@@ -685,21 +674,17 @@ fn test_mount_parser() {
         f.read_to_string(&mut s).unwrap();
         s
     };
-    let t = DateTime::from(Utc::now());
-    let res = Mounts::from_xml(&data)
-        .and_then(|instance| {
-            let points: Vec<TsPoint> = instance
-                .into_point(Some("vnx_mounts"), true)
-                .iter_mut()
-                .map(|point| {
-                    point.timestamp = Some(t);
-                    point.clone()
-                })
-                .collect();
-            Ok(points)
-        })
-        .unwrap();
-    //let points = res.into_point(Some("vnx_mounts"), false);
+    //let t = DateTime::from(Utc::now());
+    let res = Mounts::from_xml(&data).unwrap();
+    /*.and_then(|instance| {
+        let points: Vec<TsPoint> = instance
+            .into_point(Some("vnx_mounts"), false)
+            .iter_mut()
+            .collect();
+        Ok(points)
+    })
+    .unwrap();*/
+    let points = res.into_point(Some("vnx_mounts"), false);
     println!("result: {:#?}", res);
 }
 
@@ -2813,18 +2798,10 @@ impl Vnx {
             end_query_request(&mut writer)?;
         }
         // Request the mount info from the VNX
-        let res = self.api_request::<Mounts>(output).and_then(|instance| {
-            let points: Vec<TsPoint> = instance
-                .into_point(Some("vnx_mounts"), true)
-                .iter_mut()
-                .map(|point| {
-                    point.timestamp = Some(t);
-                    point.clone()
-                })
-                .collect();
-            Ok(points)
-        })?;
-        Ok(res)
+        let res = self.api_request::<Mounts>(output)?;
+
+        let points = res.into_point(Some("vnx_mounts"), false);
+        Ok(points)
     }
 
     /// Reads an XML file to parse which servers mounted the shares
@@ -2851,18 +2828,9 @@ impl Vnx {
             f.read_to_string(&mut s)?;
             s
         };
-        let res = NfsMountedShares::from_str(&data).and_then(|instance| {
-            let points: Vec<TsPoint> = instance
-                .into_point(Some("vnx_mounted_shares"), true)
-                .into_iter()
-                .map(|mut point| {
-                    point.timestamp = Some(t);
-                    point
-                })
-                .collect();
-            Ok(points)
-        })?;
-        Ok(res)
+        let res = NfsMountedShares::from_str(&data)?;
+        let points = res.into_point(Some("vnx_mounted_shares"), false);
+        Ok(points)
     }
 }
 
