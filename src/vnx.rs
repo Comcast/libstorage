@@ -686,6 +686,7 @@ fn test_mount_parser() {
     .unwrap();*/
     let points = res.into_point(Some("vnx_mounts"), false);
     println!("result: {:#?}", res);
+    println!("points: {:#?}", points);
 }
 
 #[derive(Clone, Debug)]
