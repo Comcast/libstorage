@@ -354,15 +354,21 @@ impl Openstack {
                     HeaderName::from_str("X-Auth-Token")?,
                     HeaderValue::from_str(&self.config.password)?,
                 )
-                .send()?
-                .error_for_status()
+                .send()
             {
-                Ok(mut s) => break s.text(),
-                Err(e) => match e.status() {
-                    Some(reqwest::StatusCode::REQUEST_TIMEOUT) => {}
-                    Some(reqwest::StatusCode::GATEWAY_TIMEOUT) => {}
-                    _ => return Err(StorageError::from(e)),
+                Ok(status) => match status.error_for_status() {
+                    Ok(mut s) => break s.text(),
+                    Err(e) => match e.status() {
+                        Some(reqwest::StatusCode::REQUEST_TIMEOUT) => {}
+                        Some(reqwest::StatusCode::GATEWAY_TIMEOUT) => {}
+                        _ => return Err(StorageError::from(e)),
+                    },
                 },
+                Err(e) => {
+                    if !e.is_timeout() {
+                        return Err(StorageError::from(e));
+                    }
+                }
             }
         };
         debug!("raw response: {:?}", res);
@@ -401,19 +407,20 @@ impl Openstack {
             None => format!("https://{}/v3/auth/tokens", self.config.endpoint),
         };
         let resp: reqwest::Response = loop {
-            match self
-                .client
-                .post(&url)
-                .json(&auth_json)
-                .send()?
-                .error_for_status()
-            {
-                Ok(resp) => break resp,
-                Err(e) => match e.status() {
-                    Some(reqwest::StatusCode::REQUEST_TIMEOUT) => {}
-                    Some(reqwest::StatusCode::GATEWAY_TIMEOUT) => {}
-                    _ => return Err(StorageError::from(e)),
+            match self.client.post(&url).json(&auth_json).send() {
+                Ok(status) => match status.error_for_status() {
+                    Ok(resp) => break resp,
+                    Err(e) => match e.status() {
+                        Some(reqwest::StatusCode::REQUEST_TIMEOUT) => {}
+                        Some(reqwest::StatusCode::GATEWAY_TIMEOUT) => {}
+                        _ => return Err(StorageError::from(e)),
+                    },
                 },
+                Err(e) => {
+                    if !e.is_timeout() {
+                        return Err(StorageError::from(e));
+                    }
+                }
             }
         };
         match resp.status() {
