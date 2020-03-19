@@ -497,7 +497,26 @@ impl IntoPoint for DeviceStatistics {
             "rebalance_write_bwc",
             TsValue::Long(self.rebalance_write_bwc.average()),
         );
-
+        p.add_field(
+            "secondary_read_from_dev_bwc",
+            TsValue::Long(self.secondary_read_from_dev_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "secondary_vac_in_kb",
+            TsValue::Long(self.secondary_vac_in_kb),
+        );
+        p.add_field(
+            "secondary_read_bwc",
+            TsValue::Long(self.secondary_read_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "secondary_read_from_rmcache_bwc",
+            TsValue::Long(self.secondary_read_from_rmcache_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "secondary_write_bwc",
+            TsValue::Long(self.secondary_write_bwc.total_weight_in_kb),
+        );
         vec![p]
     }
 }
