@@ -450,7 +450,7 @@ impl IntoPoint for DeviceStatistics {
         );
         p.add_field(
             "primary_read_bwc",
-            TsValue::Long(self.primary_read_bwc.average()),
+            TsValue::Long(self.primary_read_bwc.total_weight_in_kb),
         );
         p.add_field("primary_vac_in_kb", TsValue::Long(self.primary_vac_in_kb));
         p.add_field(
@@ -459,7 +459,7 @@ impl IntoPoint for DeviceStatistics {
         );
         p.add_field(
             "primary_write_bwc",
-            TsValue::Long(self.primary_write_bwc.average()),
+            TsValue::Long(self.primary_write_bwc.total_weight_in_kb),
         );
         p.add_field(
             "thick_capacity_in_use_in_kb",
@@ -475,11 +475,11 @@ impl IntoPoint for DeviceStatistics {
         );
         p.add_field(
             "total_read_bwc",
-            TsValue::Long(self.total_read_bwc.average()),
+            TsValue::Long(self.total_read_bwc.total_weight_in_kb),
         );
         p.add_field(
             "total_write_bwc",
-            TsValue::Long(self.total_write_bwc.average()),
+            TsValue::Long(self.total_write_bwc.total_weight_in_kb),
         );
         p.add_field(
             "unused_capacity_in_kb",
@@ -491,11 +491,11 @@ impl IntoPoint for DeviceStatistics {
         );
         p.add_field(
             "rebalance_read_bwc",
-            TsValue::Long(self.rebalance_read_bwc.average()),
+            TsValue::Long(self.rebalance_read_bwc.total_weight_in_kb),
         );
         p.add_field(
             "rebalance_write_bwc",
-            TsValue::Long(self.rebalance_write_bwc.average()),
+            TsValue::Long(self.rebalance_write_bwc.total_weight_in_kb),
         );
 
         vec![p]
