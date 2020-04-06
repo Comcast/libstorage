@@ -501,10 +501,19 @@ impl IntoPoint for DeviceStatistics {
             "total_read_bwc",
             TsValue::Long(self.total_read_bwc.total_weight_in_kb),
         );
+        p.add_field("total_read_bwc_total_weight_in_kb", TsValue::Long(self.total_read_bwc.total_weight_in_kb));
+        p.add_field("total_read_bwc_num_seconds", TsValue::Long(self.total_read_bwc.num_seconds));
+        p.add_field("total_read_bwc_num_occured", TsValue::Long(self.total_read_bwc.num_occured));
+
+        //not used
         p.add_field(
             "total_write_bwc",
             TsValue::Long(self.total_write_bwc.total_weight_in_kb),
         );
+        p.add_field("total_write_bwc_total_weight_in_kb", TsValue::Long(self.total_write_bwc.total_weight_in_kb));
+        p.add_field("total_write_bwc_num_seconds", TsValue::Long(self.total_write_bwc.num_seconds));
+        p.add_field("total_write_bwc_num_occured", TsValue::Long(self.total_write_bwc.num_occured));
+
         p.add_field(
             "unused_capacity_in_kb",
             TsValue::Long(self.unused_capacity_in_kb),
@@ -513,34 +522,62 @@ impl IntoPoint for DeviceStatistics {
             "unreachable_unused_capacity_in_kb",
             TsValue::Long(self.unreachable_unused_capacity_in_kb),
         );
+        //not used
         p.add_field(
             "rebalance_read_bwc",
             TsValue::Long(self.rebalance_read_bwc.total_weight_in_kb),
         );
+        p.add_field("rebalance_read_bwc_total_weight_in_kb", TsValue::Long(self.rebalance_read_bwc.total_weight_in_kb));
+        p.add_field("rebalance_read_bwc_num_seconds", TsValue::Long(self.rebalance_read_bwc.num_seconds));
+        p.add_field("rebalance_read_bwc_num_occured", TsValue::Long(self.rebalance_read_bwc.num_occured));
+        // not used
         p.add_field(
             "rebalance_write_bwc",
             TsValue::Long(self.rebalance_write_bwc.total_weight_in_kb),
         );
+        p.add_field("rebalance_write_bwc_total_weight_in_kb", TsValue::Long(self.rebalance_write_bwc.total_weight_in_kb));
+        p.add_field("rebalance_write_bwc_num_seconds", TsValue::Long(self.rebalance_write_bwc.num_seconds));
+        p.add_field("rebalance_write_bwc_num_occured", TsValue::Long(self.rebalance_write_bwc.num_occured));
+
+        // not used
         p.add_field(
             "secondary_read_from_dev_bwc",
             TsValue::Long(self.secondary_read_from_dev_bwc.total_weight_in_kb),
         );
+        p.add_field("secondary_read_from_dev_bwc_total_weight_in_kb", TsValue::Long(self.secondary_read_from_dev_bwc.total_weight_in_kb));
+        p.add_field("secondary_read_from_dev_bwc_num_seconds", TsValue::Long(self.secondary_read_from_dev_bwc.num_seconds));
+        p.add_field("secondary_read_from_dev_bwc_num_occured", TsValue::Long(self.secondary_read_from_dev_bwc.num_occured));
+
         p.add_field(
             "secondary_vac_in_kb",
             TsValue::Long(self.secondary_vac_in_kb),
         );
+        //not used
         p.add_field(
             "secondary_read_bwc",
             TsValue::Long(self.secondary_read_bwc.total_weight_in_kb),
         );
+        p.add_field("secondary_read_bwc_total_weight_in_kb", TsValue::Long(self.secondary_read_bwc.total_weight_in_kb));
+        p.add_field("secondary_read_bwc_num_seconds", TsValue::Long(self.secondary_read_bwc.num_seconds));
+        p.add_field("secondary_read_bwc_num_occured", TsValue::Long(self.secondary_read_bwc.num_occured));
+
+        //not used
         p.add_field(
             "secondary_read_from_rmcache_bwc",
             TsValue::Long(self.secondary_read_from_rmcache_bwc.total_weight_in_kb),
         );
+        p.add_field("secondary_read_from_rmcache_bwc_total_weight_in_kb", TsValue::Long(self.secondary_read_from_rmcache_bwc.total_weight_in_kb));
+        p.add_field("secondary_read_from_rmcache_bwc_num_seconds", TsValue::Long(self.secondary_read_from_rmcache_bwc.num_seconds));
+        p.add_field("secondary_read_from_rmcache_bwc_num_occured", TsValue::Long(self.secondary_read_from_rmcache_bwc.num_occured));
+        //not used
         p.add_field(
             "secondary_write_bwc",
             TsValue::Long(self.secondary_write_bwc.total_weight_in_kb),
         );
+        p.add_field("secondary_write_bwc_total_weight_in_kb", TsValue::Long(self.secondary_write_bwc.total_weight_in_kb));
+        p.add_field("secondary_write_bwc_num_seconds", TsValue::Long(self.secondary_write_bwc.num_seconds));
+        p.add_field("secondary_write_bwc_num_occured", TsValue::Long(self.secondary_write_bwc.num_occured));
+
         vec![p]
     }
 }
