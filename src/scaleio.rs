@@ -105,6 +105,21 @@ pub struct BWC {
 }
 
 impl BWC {
+    // Calculate IOPS 
+    fn iops(self) -> u64 {
+        let iops = self.num_occured.checked_div(self.num_occured).unwrap_or(0);
+        iops
+    }
+    // Calculate Bandwidth
+    fn bandwidth(self) -> u64 {
+        let bandwidth = self.total_weight_in_kb.checked_div(self.num_seconds).unwrap_or(0);
+        bandwidth
+    }
+    // Calculate IO Size or Latency: totalWeightIn* / numOccured
+    fn iosize_or_latency(self) -> u64 {
+        let iosize = self.total_weight_in_kb.checked_div(self.num_occured).unwrap_or(0);
+        iosize
+    }
     // Calculate the average kb/s from the fields
     fn average(&self) -> u64 {
         let avg = self
@@ -448,19 +463,28 @@ impl IntoPoint for DeviceStatistics {
             "degraded_failed_vac_in_kb",
             TsValue::Long(self.degraded_failed_vac_in_kb),
         );
+        // not in use
         p.add_field(
             "primary_read_bwc",
             TsValue::Long(self.primary_read_bwc.total_weight_in_kb),
         );
+        p.add_field("primary_read_bwc_total_weight_in_kb", TsValue::Long(self.primary_read_bwc.total_weight_in_kb));
+        p.add_field("primary_read_bwc_num_seconds", TsValue::Long(self.primary_read_bwc.num_seconds));
+        p.add_field("primary_read_bwc_num_occured", TsValue::Long(self.primary_read_bwc.num_occured));
         p.add_field("primary_vac_in_kb", TsValue::Long(self.primary_vac_in_kb));
         p.add_field(
             "protected_vac_in_kb",
             TsValue::Long(self.protected_vac_in_kb),
         );
+        //Not in use
         p.add_field(
             "primary_write_bwc",
             TsValue::Long(self.primary_write_bwc.total_weight_in_kb),
         );
+        p.add_field("primary_write_bwc_total_weight_in_kb", TsValue::Long(self.primary_write_bwc.total_weight_in_kb));
+        p.add_field("primary_write_bwc_num_seconds", TsValue::Long(self.primary_write_bwc.num_seconds));
+        p.add_field("primary_write_bwc_num_occured", TsValue::Long(self.primary_write_bwc.num_occured));
+        
         p.add_field(
             "thick_capacity_in_use_in_kb",
             TsValue::Long(self.thick_capacity_in_use_in_kb),
