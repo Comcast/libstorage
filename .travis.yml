@@ -6,7 +6,7 @@ addons:
     packages:
       # Dependencies for this package
 
-cache: cargo
+cache: travis_wait cargo
 rust:
   - stable
   - beta
@@ -17,12 +17,15 @@ matrix:
     - rust: nightly
 
 before_script:
+  - "travis_wait"
   - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == "$CLIPPY_RUST_VERSION" ]]; then
       rustup component add clippy;
     fi'
 
 script:
+  - "travis_wait"
   - cargo test --verbose --all-features
+  - "travis_wait"
   - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == "$CLIPPY_RUST_VERSION" ]]; then
       cargo clippy -- -D warnings;
     fi'
