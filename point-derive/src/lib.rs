@@ -218,6 +218,9 @@ fn impl_struct_point_fields(name: &syn::Ident, fields: &syn::Fields, child: bool
                 if i_type == bwc {
                     result.push(quote! {
                         p.add_field(stringify!(#ident), TsValue::Long(self.#ident.average()));
+                        p.add_field(format!("{}_total_weight_in_kb",stringify!(#ident)), TsValue::Long(self.#ident.total_weight_in_kb));
+                        p.add_field(format!("{}_num_seconds",stringify!(#ident)), TsValue::Long(self.#ident.num_seconds));
+                        p.add_field(format!("{}_num_occured",stringify!(#ident)), TsValue::Long(self.#ident.num_occured));
                     });
                 } else if i_type == s {
                     result.push(quote! {
