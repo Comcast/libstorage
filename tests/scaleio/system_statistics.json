@@ -10,9 +10,9 @@
       "numOccured": 0
     },
     "primaryReadFromDevBwc": {
-      "numSeconds": 5,
-      "totalWeightInKb": 3990698,
-      "numOccured": 48703
+      "numSeconds": 0,
+      "totalWeightInKb": 10000,
+      "numOccured": 40000
     },
     "BackgroundScannedInMB": 31140673181,
     "rfcacheReadsSkippedAlignedSizeTooLarge": 969543123,
@@ -25,13 +25,13 @@
     "rfcacheFdAvgWriteTime": 0,
     "totalReadBwc": {
       "numSeconds": 5,
-      "totalWeightInKb": 3990698,
-      "numOccured": 48703
+      "totalWeightInKb": 300000,
+      "numOccured": 4000
     },
     "totalWriteBwc": {
       "numSeconds": 5,
-      "totalWeightInKb": 3170086,
-      "numOccured": 135423
+      "totalWeightInKb": 30000,
+      "numOccured": 10000
     },
     "rmPendingAllocatedInKb": 0,
     "numOfVolumes": 42,
@@ -85,8 +85,8 @@
     "numOfSnapshots": 0,
     "rmcacheBigBlockEvictionCount": 0,
     "sdcIds": [
-      "2222222200000000",
-      "2555555500000001",
+      "5555555500000000",
+      "5555555500000001",
       "5555555500000002"
     ],
     "pendingFwdRebuildCapacityInKb": 0,
@@ -97,8 +97,8 @@
     "rmcacheSizeInUseInKb": 0,
     "primaryWriteBwc": {
       "numSeconds": 5,
-      "totalWeightInKb": 1602122,
-      "numOccured": 68256
+      "totalWeightInKb": 100000,
+      "numOccured": 60000
     },
     "numOfThickBaseVolumes": 0,
     "rfcachePoolReadPendingG10Millis": 173,
@@ -148,8 +148,8 @@
     "pendingMovingInNormRebuildJobs": 0,
     "primaryReadBwc": {
       "numSeconds": 5,
-      "totalWeightInKb": 3990698,
-      "numOccured": 48703
+      "totalWeightInKb": 3000000,
+      "numOccured": 40000
     },
     "failedVacInKb": 0,
     "pendingRebalanceCapacityInKb": 0,
@@ -174,8 +174,8 @@
     "semiProtectedVacInKb": 0,
     "userDataReadBwc": {
       "numSeconds": 1,
-      "totalWeightInKb": 720660,
-      "numOccured": 9569
+      "totalWeightInKb": 700000,
+      "numOccured": 9000
     },
     "pendingBckRebuildCapacityInKb": 0,
     "rmcacheCurrNumOf4kbEntries": 0,
@@ -187,8 +187,8 @@
     "rfcacheFdWriteTimeGreater5Sec": 0,
     "userDataWriteBwc": {
       "numSeconds": 1,
-      "totalWeightInKb": 321856,
-      "numOccured": 14490
+      "totalWeightInKb": 0,
+      "numOccured": 0
     },
     "inMaintenanceVacInKb": 0,
     "rfcacheReadsSkipped": 125432941059,
