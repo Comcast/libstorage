@@ -1,6 +1,6 @@
 [package]
 name = "libstorage"
-version = "0.4.5"
+version = "0.4.6"
 authors = ["Chris Holcombe <christopher_holcombe@comcast.com>", "Sravanthi Dandamudi <sravanthi_dandamudi@comcast.com>", "Rob Powers <comcastrp@gmail.com>"]
 description = "Storage helper functions"
 documentation = "https://github.com/Comcast/libstorage"
@@ -27,7 +27,7 @@ log = "~0.4"
 native-tls = "~0.2"
 nom = "~3.2"
 #point-derive = "~0.1"
-point-derive = "~0.1"
+point-derive = {git = "https://github.com/Comcast/libstorage.git"}#"~0.1"
 postgres = "~0.15"
 rayon = "~1.0"
 reqwest = "~0.9"
