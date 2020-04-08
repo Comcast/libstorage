@@ -142,33 +142,7 @@ impl StorageError {
         StorageError::Error(err)
     }
 
-    /// Convert a StorageError into a String representation.
-    pub fn to_string(&self) -> String {
-        match *self {
-            StorageError::CookieError(ref err) => err.to_string(),
-            StorageError::CsvError(ref err) => err.to_string(),
-            StorageError::Error(ref err) => err.to_string(),
-            StorageError::FromUtf8Error(ref err) => err.utf8_error().to_string(),
-            StorageError::HttpError(ref err) => err.description().to_string(),
-            StorageError::InfluxError(ref err) => err.to_string(),
-            StorageError::InvalidHeaderName(ref err) => err.description().to_string(),
-            StorageError::InvalidHeaderValue(ref err) => err.description().to_string(),
-            StorageError::IoError(ref err) => err.description().to_string(),
-            #[cfg(feature = "isilon-library")]
-            StorageError::IsilonError(ref err) => err.description().to_string(),
-            StorageError::JsonError(ref err) => err.description().to_string(),
-            StorageError::NativeTlsError(ref err) => err.description().to_string(),
-            StorageError::ParseBoolError(ref err) => err.description().to_string(),
-            StorageError::ParseError(ref err) => err.description().to_string(),
-            StorageError::ParseFloatError(ref err) => err.description().to_string(),
-            StorageError::ParseIntError(ref err) => err.description().to_string(),
-            StorageError::PostgresError(ref err) => err.description().to_string(),
-            StorageError::ThreadPoolBuildError(ref err) => err.description().to_string(),
-            StorageError::TreeXmlError(ref err) => err.description().to_string(),
-            StorageError::ToStrError(ref err) => err.description().to_string(),
-            StorageError::XmlEmitterError(ref err) => err.description().to_string(),
-        }
-    }
+    
 }
 
 impl From<CookieParseError> for StorageError {

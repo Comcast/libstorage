@@ -1,0 +1,218 @@
+[
+    {
+      "restrictedSdcModeEnabled": false,
+      "restrictedSdcMode": "None",
+      "enterpriseFeaturesEnabled": true,
+      "defaultIsVolumeObfuscated": false,
+      "perfProfile": "HighPerformance",
+      "installId": "0e5687a95fa1dfff",
+      "swid": "ELMSIO0218JFB7",
+      "daysInstalled": 556,
+      "maxCapacityInGb": "4915200",
+      "capacityTimeLeftInDays": "Unlimited",
+      "isInitialLicense": false,
+      "systemVersionName": "DellEMC ScaleIO Version: R2_6.11000.113",
+      "capacityAlertHighThresholdPercent": 80,
+      "capacityAlertCriticalThresholdPercent": 90,
+      "remoteReadOnlyLimitState": false,
+      "upgradeState": "NoUpgrade",
+      "mdmManagementPort": 6611,
+      "sdcMdmNetworkDisconnectionsCounterParameters": {
+        "shortWindow": {
+          "windowSizeInSec": 60,
+          "threshold": 300
+        },
+        "mediumWindow": {
+          "windowSizeInSec": 3600,
+          "threshold": 500
+        },
+        "longWindow": {
+          "windowSizeInSec": 86400,
+          "threshold": 700
+        }
+      },
+      "sdcSdsNetworkDisconnectionsCounterParameters": {
+        "shortWindow": {
+          "windowSizeInSec": 60,
+          "threshold": 800
+        },
+        "mediumWindow": {
+          "windowSizeInSec": 3600,
+          "threshold": 4000
+        },
+        "longWindow": {
+          "windowSizeInSec": 86400,
+          "threshold": 20000
+        }
+      },
+      "sdcMemoryAllocationFailuresCounterParameters": {
+        "shortWindow": {
+          "windowSizeInSec": 60,
+          "threshold": 300
+        },
+        "mediumWindow": {
+          "windowSizeInSec": 3600,
+          "threshold": 500
+        },
+        "longWindow": {
+          "windowSizeInSec": 86400,
+          "threshold": 700
+        }
+      },
+      "sdcSocketAllocationFailuresCounterParameters": {
+        "shortWindow": {
+          "windowSizeInSec": 60,
+          "threshold": 300
+        },
+        "mediumWindow": {
+          "windowSizeInSec": 3600,
+          "threshold": 500
+        },
+        "longWindow": {
+          "windowSizeInSec": 86400,
+          "threshold": 700
+        }
+      },
+      "sdcLongOperationsCounterParameters": {
+        "shortWindow": {
+          "windowSizeInSec": 60,
+          "threshold": 10000
+        },
+        "mediumWindow": {
+          "windowSizeInSec": 3600,
+          "threshold": 100000
+        },
+        "longWindow": {
+          "windowSizeInSec": 86400,
+          "threshold": 1000000
+        }
+      },
+      "cliPasswordAllowed": true,
+      "managementClientSecureCommunicationEnabled": true,
+      "tlsVersion": "TLSv1.2",
+      "showGuid": true,
+      "authenticationMethod": "NativeAndLdap",
+      "mdmToSdsPolicy": "None",
+      "mdmCluster": {
+        "master": {
+          "virtualInterfaces": [],
+          "opensslVersion": "OpenSSL 1.0.2k-fips  26 Jan 2017",
+          "managementIPs": [
+            "10.131.21.36"
+          ],
+          "ips": [
+            "10.131.21.36"
+          ],
+          "versionInfo": "R2_6.11000.0",
+          "role": "Manager",
+          "name": "storsrvf1-ho-a01p",
+          "id": "389eb008503ec2b0",
+          "port": 9011
+        },
+        "slaves": [
+          {
+            "virtualInterfaces": [],
+            "opensslVersion": "OpenSSL 1.0.2k-fips  26 Jan 2017",
+            "managementIPs": [
+              "10.131.21.100"
+            ],
+            "ips": [
+              "10.131.21.100"
+            ],
+            "versionInfo": "R2_6.11000.0",
+            "role": "Manager",
+            "status": "Normal",
+            "name": "storsrvf3-ho-a37p",
+            "id": "25f1701940f2d1a2",
+            "port": 9011
+          },
+          {
+            "virtualInterfaces": [],
+            "opensslVersion": "OpenSSL 1.0.2k-fips  26 Jan 2017",
+            "managementIPs": [
+              "10.131.21.68"
+            ],
+            "ips": [
+              "10.131.21.68"
+            ],
+            "versionInfo": "R2_6.11000.0",
+            "role": "Manager",
+            "status": "Normal",
+            "name": "storsrvf2-ho-a19p",
+            "id": "78a1d74022299b91",
+            "port": 9011
+          }
+        ],
+        "tieBreakers": [
+          {
+            "opensslVersion": "N/A",
+            "managementIPs": [
+              "10.131.21.69"
+            ],
+            "ips": [
+              "10.131.21.69"
+            ],
+            "versionInfo": "R2_6.11000.0",
+            "role": "TieBreaker",
+            "status": "Normal",
+            "name": "storsrvf2-ho-a20p",
+            "id": "680204c466301e64",
+            "port": 9011
+          },
+          {
+            "opensslVersion": "N/A",
+            "managementIPs": [
+              "10.131.21.37"
+            ],
+            "ips": [
+              "10.131.21.37"
+            ],
+            "versionInfo": "R2_6.11000.0",
+            "role": "TieBreaker",
+            "status": "Normal",
+            "name": "storsrvf1-ho-a02p",
+            "id": "62eacb8e05ad4193",
+            "port": 9011
+          }
+        ],
+        "goodNodesNum": 5,
+        "goodReplicasNum": 3,
+        "clusterState": "ClusteredNormal",
+        "clusterMode": "FiveNodes",
+        "name": "SIOHOGRN01",
+        "id": "1624478711854053546"
+      },
+      "sdcSdsConnectivityInfo": {
+        "sdcSdsConnectivityStatus": "AllConnected",
+        "disconnectedSdcId": null,
+        "disconnectedSdcName": null,
+        "disconnectedSdsId": null,
+        "disconnectedSdsName": null,
+        "disconnectedSdsIp": null
+      },
+      "name": "SIOHOGRN01",
+      "id": "168b4ec8153eb8aa",
+      "links": [
+        {
+          "rel": "self",
+          "href": "/api/instances/System::168b4ec8153eb8aa"
+        },
+        {
+          "rel": "/api/System/relationship/Statistics",
+          "href": "/api/instances/System::168b4ec8153eb8aa/relationships/Statistics"
+        },
+        {
+          "rel": "/api/System/relationship/ProtectionDomain",
+          "href": "/api/instances/System::168b4ec8153eb8aa/relationships/ProtectionDomain"
+        },
+        {
+          "rel": "/api/System/relationship/Sdc",
+          "href": "/api/instances/System::168b4ec8153eb8aa/relationships/Sdc"
+        },
+        {
+          "rel": "/api/System/relationship/User",
+          "href": "/api/instances/System::168b4ec8153eb8aa/relationships/User"
+        }
+      ]
+    }
+  ]
