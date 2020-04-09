@@ -1504,7 +1504,7 @@ pub struct System {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Debug, Deserialize, IntoPoint)]
+#[derive(Debug, Deserialize)]
 pub struct SystemStatistics {
     pub capacity_limit_in_kb: u64,
     pub max_capacity_in_kb: u64,
@@ -1741,7 +1741,7 @@ pub struct SystemStatistics {
     pub net_provisioned_addresses_in_kb: Option<u64>,
     pub net_unused_capacity_in_kb: Option<u64>,
     pub thin_and_snapshot_ratio: Option<u64>,
-    pub overall_usage_ratio: Option<u64>,
+    pub overall_usage_ratio: Option<f64>,
     pub net_capacity_in_use_in_kb: Option<u64>,
     pub aggregate_compression_level: Option<u64>,
     pub fgl_user_data_capacity_in_kb: Option<u64>,
@@ -1765,6 +1765,168 @@ pub struct SystemStatistics {
     pub num_cmatrix_policy_changes: Option<u64>
 }
 
+impl IntoPoint for SystemStatistics{
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint>{
+        let mut points = Vec::new();
+        let mut p = TsPoint::new(name.unwrap_or_else(|| "scaleio_sys_stat"), is_time_series);
+        p.add_field("capacity_limit_in_kb", TsValue::Long(self.capacity_limit_in_kb));
+        p.add_field("max_capacity_in_kb", TsValue::Long(self.max_capacity_in_kb));
+        p.add_field("capacity_in_use_in_kb", TsValue::Long(self.capacity_in_use_in_kb));
+        p.add_field("thick capacity_in_use_in_kb", TsValue::Long(self.thick_capacity_in_use_in_kb));
+        p.add_field("thin_capacity_in_use_in_kb", TsValue::Long(self.thin_capacity_in_use_in_kb));
+        p.add_field("snap_capacity_in_use_in_kb", TsValue::Long(self.snap_capacity_in_use_in_kb));
+        p.add_field("unreachable_unused_capacity_in_kb", TsValue::Long(self.unreachable_unused_capacity_in_kb));
+        p.add_field("unused_capacity_in_kb", TsValue::Long(self.unused_capacity_in_kb));
+        p.add_field("snap_capacity_in_use_occupied_in_kb", TsValue::Long(self.snap_capacity_in_use_occupied_in_kb));
+        p.add_field("thin_capacity_allocated_in_kb", TsValue::Long(self.thin_capacity_allocated_in_kb));
+        p.add_field("spare_capacity_in_kb", TsValue::Long(self.spare_capacity_in_kb));
+        p.add_field("fixed_read_error_count", TsValue::Long(self.fixed_read_error_count));
+        p.add_field("num_of_unmapped_volumes", TsValue::Long(self.num_of_unmapped_volumes));
+        p.add_field("num_of_mapped_to_all_volumes", TsValue::Long(self.num_of_mapped_to_all_volumes));
+        p.add_field("num_of_thick_base_volumes", TsValue::Long(self.num_of_thick_base_volumes));
+        p.add_field("num_of_thin_base_volumes", TsValue::Long(self.num_of_thin_base_volumes));
+        p.add_field("num_of_snapshots", TsValue::Long(self.num_of_snapshots));
+        p.add_field("num_of_volumes_in_deletion", TsValue::Long(self.num_of_volumes_in_deletion));
+        p.add_field("num_of_devices", TsValue::Long(self.num_of_devices));
+        p.add_field("num_of_sds", TsValue::Long(self.num_of_sds));
+        p.add_field("num_of_storage_pools", TsValue::Long(self.num_of_storage_pools));
+        p.add_field("num_of_volumes", TsValue::Long(self.num_of_volumes));
+        p.add_field("num_of_sdc", TsValue::Long(self.num_of_sdc));
+        if let Some(compression_ratio) = self.compression_ratio {
+            p.add_field("compression_ratio", TsValue::Float(compression_ratio));
+        }
+        if let Some(user_data_capacity_in_kb) = self.user_data_capacity_in_kb {
+            p.add_field("user_data_capacity_in_kb", TsValue::Long(user_data_capacity_in_kb));
+        }
+        if let Some(snapshot_capacity_in_kb) = self.snapshot_capacity_in_kb{
+            p.add_field("snapshot_capacity_in_kb", TsValue::Long(snapshot_capacity_in_kb));
+        }
+        if let Some(overall_usage_ratio) = self.overall_usage_ratio {
+            p.add_field("overall_usage_ratio", TsValue::Float(overall_usage_ratio));
+        }
+        if let Some(num_sds_reconnections) = self.num_sds_reconnections {
+            p.add_field("num_sds_reconnections", TsValue::Long(num_sds_reconnections));
+        }
+        if let Some(num_sd_sdc_disconnections) = self.num_sd_sdc_disconnections {
+            p.add_field("num_sd_sdc_disconnections", TsValue::Long(num_sd_sdc_disconnections));
+        }
+        p.add_field("primary_read_bwc_total_weight_in_kb", TsValue::Long(self.primary_read_bwc.total_weight_in_kb));
+        p.add_field("primary_read_bwc_num_seconds", TsValue::Long(self.primary_read_bwc.num_seconds));
+        p.add_field("primary_read_bwc_num_occured", TsValue::Long(self.primary_read_bwc.num_occured));
+
+        p.add_field("primary_read_from_dev_bwc_total_weight_in_kb", TsValue::Long(self.primary_read_from_dev_bwc.total_weight_in_kb));
+        p.add_field("primary_read_from_dev_bwc_num_seconds", TsValue::Long(self.primary_read_from_dev_bwc.num_seconds));
+        p.add_field("primary_read_from_dev_bwc_num_occured", TsValue::Long(self.primary_read_from_dev_bwc.num_occured));
+
+        p.add_field("primary_write_bwc_total_weight_in_kb", TsValue::Long(self.primary_write_bwc.total_weight_in_kb));
+        p.add_field("primary_write_bwc_num_seconds", TsValue::Long(self.primary_write_bwc.num_seconds));
+        p.add_field("primary_write_bwc_num_occured", TsValue::Long(self.primary_write_bwc.num_occured));
+
+        p.add_field("secondary_read_bwc_total_weight_in_kb", TsValue::Long(self.secondary_read_bwc.total_weight_in_kb));
+        p.add_field("secondary_read_bwc_num_seconds", TsValue::Long(self.secondary_read_bwc.num_seconds));
+        p.add_field("secondary_read_bwc_num_occured", TsValue::Long(self.secondary_read_bwc.num_occured));
+
+        p.add_field("secondary_read_from_dev_bwc_total_weight_in_kb", TsValue::Long(self.secondary_read_from_dev_bwc.total_weight_in_kb));
+        p.add_field("secondary_read_from_dev_bwc_num_seconds", TsValue::Long(self.secondary_read_from_dev_bwc.num_seconds));
+        p.add_field("secondary_read_from_dev_bwc_num_occured", TsValue::Long(self.secondary_read_from_dev_bwc.num_occured));
+
+        p.add_field("fwd_rebuild_read_bwc_total_weight_in_kb", TsValue::Long(self.fwd_rebuild_read_bwc.total_weight_in_kb));
+        p.add_field("fwd_rebuild_read_bwc_num_seconds", TsValue::Long(self.fwd_rebuild_read_bwc.num_seconds));
+        p.add_field("fwd_rebuild_read_bwc_num_occured", TsValue::Long(self.fwd_rebuild_read_bwc.num_occured));
+
+        p.add_field("fwd_rebuild_write_bwc_total_weight_in_kb", TsValue::Long(self.fwd_rebuild_write_bwc.total_weight_in_kb));
+        p.add_field("fwd_rebuild_write_bwc_num_seconds", TsValue::Long(self.fwd_rebuild_write_bwc.num_seconds));
+        p.add_field("fwd_rebuild_write_bwc_num_occured", TsValue::Long(self.fwd_rebuild_write_bwc.num_occured));
+
+        p.add_field("bck_rebuild_read_bwc_total_weight_in_kb", TsValue::Long(self.bck_rebuild_read_bwc.total_weight_in_kb));
+        p.add_field("bck_rebuild_read_bwc_num_seconds", TsValue::Long(self.bck_rebuild_read_bwc.num_seconds));
+        p.add_field("bck_rebuild_read_bwc_num_occured", TsValue::Long(self.bck_rebuild_read_bwc.num_occured));
+
+        p.add_field("bck_rebuild_write_bwc_total_weight_in_kb", TsValue::Long(self.bck_rebuild_write_bwc.total_weight_in_kb));
+        p.add_field("bck_rebuild_write_bwc_num_seconds", TsValue::Long(self.bck_rebuild_write_bwc.num_seconds));
+        p.add_field("bck_rebuild_write_bwc_num_occured", TsValue::Long(self.bck_rebuild_write_bwc.num_occured));
+
+        p.add_field("rebalance_read_bwc_total_weight_in_kb", TsValue::Long(self.rebalance_read_bwc.total_weight_in_kb));
+        p.add_field("rebalance_read_bwc_num_seconds", TsValue::Long(self.rebalance_read_bwc.num_seconds));
+        p.add_field("rebalance_read_bwc_num_occured", TsValue::Long(self.rebalance_read_bwc.num_occured));
+
+        p.add_field("rebalance_write_bwc_total_weight_in_kb", TsValue::Long(self.rebalance_write_bwc.total_weight_in_kb));
+        p.add_field("rebalance_write_bwc_num_seconds", TsValue::Long(self.rebalance_write_bwc.num_seconds));
+        p.add_field("rebalance_write_bwc_num_occured", TsValue::Long(self.rebalance_write_bwc.num_occured));
+
+        p.add_field("total_read_bwc_total_weight_in_kb", TsValue::Long(self.total_read_bwc.total_weight_in_kb));
+        p.add_field("total_read_bwc_num_seconds", TsValue::Long(self.total_read_bwc.num_seconds));
+        p.add_field("total_read_bwc_num_occured", TsValue::Long(self.total_read_bwc.num_occured));
+
+        p.add_field("total_write_bwc_total_weight_in_kb", TsValue::Long(self.total_write_bwc.total_weight_in_kb));
+        p.add_field("total_write_bwc_num_seconds", TsValue::Long(self.total_write_bwc.num_seconds));
+        p.add_field("total_write_bwc_num_occured", TsValue::Long(self.total_write_bwc.num_occured));
+
+        p.add_field("primary_read_from_rmcache_bwc_total_weight_in_kb", TsValue::Long(self.primary_read_from_rmcache_bwc.total_weight_in_kb));
+        p.add_field("primary_read_from_rmcache_bwc_num_seconds", TsValue::Long(self.primary_read_from_rmcache_bwc.num_seconds));
+        p.add_field("primary_read_from_rmcache_bwc_num_occured", TsValue::Long(self.primary_read_from_rmcache_bwc.num_occured));
+
+        p.add_field("secondary_read_from_rmcache_bwc_total_weight_in_kb", TsValue::Long(self.secondary_read_from_rmcache_bwc.total_weight_in_kb));
+        p.add_field("secondary_read_from_rmcache_bwc_num_seconds", TsValue::Long(self.secondary_read_from_rmcache_bwc.num_seconds));
+        p.add_field("secondary_read_from_rmcache_bwc_num_seconds", TsValue::Long(self.secondary_read_from_rmcache_bwc.num_occured));
+
+        p.add_field("norm_rebuild_read_bwc_total_weight_in_kb", TsValue::Long(self.norm_rebuild_read_bwc.total_weight_in_kb));
+        p.add_field("norm_rebuild_read_bwc_num_seconds", TsValue::Long(self.norm_rebuild_read_bwc.num_seconds));
+        p.add_field("norm_rebuild_read_bwc_num_occured", TsValue::Long(self.norm_rebuild_read_bwc.num_occured));
+
+        p.add_field("norm_rebuild_write_bwc_total_weight_in_kb", TsValue::Long(self.norm_rebuild_write_bwc.total_weight_in_kb));
+        p.add_field("norm_rebuild_write_bwc_num_seconds", TsValue::Long(self.norm_rebuild_write_bwc.num_seconds));
+        p.add_field("norm_rebuild_write_bwc_num_occured", TsValue::Long(self.norm_rebuild_write_bwc.num_occured));
+
+        if let Some(vol_migration_read_bwc) = &self.vol_migration_read_bwc {
+            p.add_field("vol_migration_read_bwc_total_weight_in_kb", TsValue::Long(vol_migration_read_bwc.total_weight_in_kb));
+            p.add_field("vol_migration_read_bwc_num_seconds", TsValue::Long(vol_migration_read_bwc.num_seconds));
+            p.add_field("vol_migration_read_bwc_num_occured", TsValue::Long(vol_migration_read_bwc.num_occured));
+        }
+
+        if let Some(vol_migration_write_bwc) = &self.vol_migration_write_bwc {
+            p.add_field("vol_migration_write_bwc_total_weight_in_kb", TsValue::Long(vol_migration_write_bwc.total_weight_in_kb));
+            p.add_field("vol_migration_write_bwc_num_seconds", TsValue::Long(vol_migration_write_bwc.num_seconds));
+            p.add_field("vol_migration_write_bwc_num_occured", TsValue::Long(vol_migration_write_bwc.num_occured));
+        }
+
+        p.add_field("user_data_read_bwc_total_weight_in_kb", TsValue::Long(self.user_data_read_bwc.total_weight_in_kb));
+        p.add_field("user_data_read_bwc_num_seconds", TsValue::Long(self.user_data_read_bwc.num_seconds));
+        p.add_field("user_data_read_bwc_num_occured", TsValue::Long(self.user_data_read_bwc.num_occured));
+
+        p.add_field("user_data_write_bwc_total_weight_in_kb", TsValue::Long(self.user_data_write_bwc.total_weight_in_kb));
+        p.add_field("user_data_write_bwc_num_seconds", TsValue::Long(self.user_data_write_bwc.num_seconds));
+        p.add_field("user_data_write_bwc_num_occured", TsValue::Long(self.user_data_write_bwc.num_occured));
+        
+        if let Some(user_data_trim_bwc) = &self.user_data_trim_bwc {
+            p.add_field("user_data_trim_bwc_total_weight_in_kb", TsValue::Long(user_data_trim_bwc.total_weight_in_kb));
+            p.add_field("user_data_trim_bwc_num_seconds", TsValue::Long(user_data_trim_bwc.num_seconds));
+            p.add_field("user_data_trim_bwc_num_occured", TsValue::Long(user_data_trim_bwc.num_occured));
+        }
+
+        if let Some(user_data_sdc_read_latency) = &self.user_data_sdc_read_latency{
+            p.add_field("user_data_sdc_read_latency_total_weight_in_kb", TsValue::Long(user_data_sdc_read_latency.total_weight_in_kb));
+            p.add_field("user_data_sdc_read_latency_num_seconds", TsValue::Long(user_data_sdc_read_latency.num_seconds));
+            p.add_field("user_data_sdc_read_latency_num_occured", TsValue::Long(user_data_sdc_read_latency.num_occured));
+        }
+
+        if let Some(user_data_sdc_write_latency) = &self.user_data_sdc_write_latency{
+            p.add_field("user_data_sdc_write_latency_total_weight_in_kb", TsValue::Long(user_data_sdc_write_latency.total_weight_in_kb));
+            p.add_field("user_data_sdc_write_latency_num_seconds", TsValue::Long(user_data_sdc_write_latency.num_seconds));
+            p.add_field("user_data_sdc_write_latency_num_occured", TsValue::Long(user_data_sdc_write_latency.num_occured));
+        }
+
+        if let Some(user_data_sdc_trim_latency) = &self.user_data_sdc_trim_latency{
+            p.add_field("user_data_sdc_trim_latency_total_weight_in_kb", TsValue::Long(user_data_sdc_trim_latency.total_weight_in_kb));
+            p.add_field("user_data_sdc_trim_latency_num_seconds", TsValue::Long(user_data_sdc_trim_latency.num_seconds));
+            p.add_field("user_data_sdc_trim_latency_num_occured", TsValue::Long(user_data_sdc_trim_latency.num_occured));
+        }
+
+        points.push(p);
+        points
+    }
+}
+
 #[test]
 fn test_system_stats() {
     use std::fs::File;
@@ -1777,6 +1939,8 @@ fn test_system_stats() {
 
     let i: SystemStatistics = serde_json::from_str(&buff).unwrap();
     println!("result: {:#?}", i);
+
+    let points = i.into_point(None, true);
 }
 
 
