@@ -1504,6 +1504,447 @@ pub struct System {
 }
 
 #[serde(rename_all = "camelCase")]
+#[derive(Debug, Deserialize)]
+pub struct SystemStatistics {
+    pub capacity_limit_in_kb: u64,
+    pub max_capacity_in_kb: u64,
+    pub capacity_in_use_in_kb: u64,
+    pub thick_capacity_in_use_in_kb: u64,
+    pub thin_capacity_in_use_in_kb: u64,
+    pub snap_capacity_in_use_in_kb: u64,
+    pub unreachable_unused_capacity_in_kb: u64,
+    pub unused_capacity_in_kb: u64,
+    pub snap_capacity_in_use_occupied_in_kb: u64,
+    pub thin_capacity_allocated_in_kb: u64,
+    pub rm_pending_allocated_in_kb: u64,
+    pub rm_pending_thick_in_kb: Option<u64>,
+    pub checksum_capacity_in_kb: Option<u64>,
+    pub spare_capacity_in_kb: u64,
+    pub capacity_available_for_volume_allocation_in_kb: u64,
+    pub volume_allocation_limit_in_kb: Option<u64>,
+    pub protected_capacity_in_kb: u64,
+    pub degraded_healthy_capacity_in_kb: u64,
+    pub degraded_failed_capacity_in_kb: u64,
+    pub failed_capacity_in_kb: u64,
+    pub semi_protected_capacity_in_kb: u64,
+    pub in_maintenance_capacity_in_kb: u64,
+    pub temp_capacity_in_kb: Option<u64>,
+    pub protected_vac_in_kb: u64,
+    pub degraded_healthy_vac_in_kb: u64,
+    pub degraded_failed_vac_in_kb: u64,
+    pub failed_vac_in_kb: u64,
+    pub semi_protected_vac_in_kb: u64,
+    pub in_maintenance_vac_in_kb: u64,
+    pub temp_capacity_vac_in_kb: Option<u64>,
+    pub moving_capacity_in_kb: u64,
+    pub active_moving_capacity_in_kb: u64,
+    pub pending_moving_capacity_in_kb: u64,
+    pub fwd_rebuild_capacity_in_kb: u64,
+    pub active_fwd_rebuild_capacity_in_kb: u64,
+    pub pending_fwd_rebuild_capacity_in_kb: u64,
+    pub bck_rebuild_capacity_in_kb: u64,
+    pub active_bck_rebuild_capacity_in_kb: u64,
+    pub pending_bck_rebuild_capacity_in_kb:u64,
+    pub rebalance_capacity_in_kb: u64,
+    pub active_rebalance_capacity_in_kb: u64,
+    pub pending_rebalance_capacity_in_kb: u64,
+    pub at_rest_capacity_in_kb: u64,
+    pub norm_rebuild_capacity_in_kb: u64,
+    pub active_norm_rebuild_capacity_in_kb: u64,
+    pub pending_norm_rebuild_capacity_in_kb: u64,
+    pub active_moving_in_fwd_rebuild_jobs: u64,
+    pub active_moving_in_bck_rebuild_jobs: u64,
+    pub active_moving_in_rebalance_jobs: u64,
+    pub active_moving_out_fwd_rebuild_jobs: u64,
+    pub active_moving_out_bck_rebuild_jobs: u64,
+    pub active_moving_rebalance_jobs: u64,
+    pub pending_moving_in_fwd_rebuild_jobs: u64,
+    pub pending_moving_in_bck_rebuild_jobs: u64,
+    pub pending_moving_in_rebalance_jobs: u64,
+    pub pending_moving_out_fwd_rebuild_jobs: u64,
+    pub pending_moving_out_bck_rebuild_jobs: u64,
+    pub pending_moving_rebalance_jobs: u64,
+    pub active_moving_in_norm_rebuild_jobs: u64,
+    pub active_moving_out_norm_rebuild_jobs: u64,
+    pub pending_moving_in_norm_rebuild_jobs: u64,
+    pub pending_moving_out_normrebuild_jobs: u64,
+    pub in_use_vac_in_kb: u64,
+    pub primary_vac_in_kb: u64,
+    pub secondary_vac_in_kb: u64,
+    pub rebuild_wait_send_q_length: u64,
+    pub rebalance_wait_send_q_length: u64,
+    pub rebuild_per_receive_job_net_throttling_in_kbps: u64,
+    pub rebalance_per_receive_job_net_throttling_in_kbps: u64,
+    pub fixed_read_error_count: u64,
+    #[serde(rename = "BackgroundScanCompareCount")]
+    pub background_scan_compare_count: u64,
+    #[serde( rename = "BackgroundScannedInMB")]
+    pub background_scanned_in_mb: u64,
+    pub primary_read_bwc: BWC,
+    pub primary_read_from_dev_bwc: BWC,
+    pub primary_write_bwc: BWC,
+    pub secondary_read_bwc: BWC,
+    pub secondary_read_from_dev_bwc: BWC,
+    pub fwd_rebuild_read_bwc: BWC,
+    pub fwd_rebuild_write_bwc: BWC,
+    pub bck_rebuild_read_bwc: BWC,
+    pub bck_rebuild_write_bwc: BWC,
+    pub rebalance_read_bwc: BWC,
+    pub rebalance_write_bwc: BWC,
+    pub total_read_bwc: BWC,
+    pub total_write_bwc: BWC,
+    pub primary_read_from_rmcache_bwc: BWC,
+    pub secondary_read_from_rmcache_bwc: BWC,
+    pub norm_rebuild_read_bwc: BWC,
+    pub norm_rebuild_write_bwc: BWC,
+    pub vol_migration_read_bwc: Option<BWC>,
+    pub vol_migration_write_bwc: Option<BWC>,
+    pub user_data_read_bwc: BWC,
+    pub user_data_write_bwc: BWC,
+    pub user_data_trim_bwc: Option<BWC>,
+    pub user_data_sdc_read_latency: Option<BWC>, // THIS IS A BWC
+    pub user_data_sdc_write_latency: Option<BWC>,
+    pub user_data_sdc_trim_latency: Option<BWC>,
+    pub rmcache_size_in_kb: u64,
+    pub rmcache_size_in_use_in_kb: u64,
+    pub rmcache_entry_eviction_size_count_in_kb: u64,
+    pub rmcache_big_block_eviction_size_count_in_kb: u64,
+    pub rmcache_curr_num_of4kb_entries: u64,
+    pub rmcache_curr_num_of8kb_entries: u64,
+    pub rmcache_curr_num_of16kb_entries: u64,
+    pub rmcache_curr_num_of32kb_entries: u64,
+    pub rmcache_curr_num_of64kb_entries: u64,
+    pub rmcache_curr_num_of128kb_entries: u64,
+    pub rmcache_entry_eviction_count: u64,
+    pub rmcache_big_block_eviction_count: u64,
+    pub rmcache_no_eviction_count: u64,
+    pub rmcache_skip_count_large_io: u64,
+    pub rmcache_skip_count_unaligned4kb_io: u64,
+    pub rmcache_skip_count_cache_all_busy: u64,
+    pub num_of_unmapped_volumes: u64,
+    pub num_of_mapped_to_all_volumes: u64,
+    pub num_of_thick_base_volumes: u64,
+    pub num_of_thin_base_volumes: u64,
+    pub num_of_snapshots: u64,
+    pub num_of_volumes_in_deletion: u64,
+    pub num_of_devices: u64,
+    pub num_of_sds: u64,
+    pub num_of_storage_pools: u64,
+    pub num_of_volumes: u64,
+    pub num_of_vtrees: u64,
+    pub protection_domain_ids: Vec<String>,
+    pub num_of_protection_domains: u64,
+    pub sdc_ids: Vec<String>,
+    pub num_of_sdc: u64,
+    pub num_of_fault_sets: u64,
+    pub num_of_rfcache_devices: u64,
+    pub num_of_acceleration_pools: Option<u64>,
+    pub sp_sds_ids: Option<Vec<String>>,
+    pub num_of_vtree_migrations_in_system: Option<u64>,
+    pub compression_ratio: Option<f64>,
+    pub snap_policy_ids: Option<Vec<String>>,
+    pub num_of_snap_policies: Option<u64>,
+    pub rfcache_reads_received: u64,
+    pub rfcache_writes_received: u64,
+    pub rfcache_avg_read_time: u64,
+    pub rfcache_avg_write_time: u64,
+    pub rfcache_source_device_reads: u64,
+    pub rfcache_source_device_writes: u64,
+    pub rfache_read_hit: u64,
+    pub rfcache_read_miss: u64,
+    pub rfache_write_hit: u64,
+    pub rfcache_write_miss: u64,
+    pub rfcache_ios_skipped: u64,
+    pub rfcache_reads_skipped: u64,
+    pub rfcache_reads_skipped_aligned_size_too_large: u64,
+    pub rfcache_reads_skipped_max_io_size: u64,
+    pub rfcache_reads_skipped_heavy_load: u64,
+    pub rfcache_reads_skipped_stuck_io: u64,
+    pub rfcache_reads_skipped_low_resources: u64,
+    pub rfcache_reads_skipped_internal_error: u64,
+    pub rfcache_reads_skipped_lock_ios: u64,
+    pub rfcache_writes_skipped_max_io_size: u64,
+    pub rfcache_writes_skipped_heavy_load: u64,
+    pub rfcache_writes_skipped_stuck_io: u64,
+    pub rfcache_writes_skipped_low_resources: u64,
+    pub rfcache_writes_skipped_internal_error: u64,
+    pub rfcache_writes_skipped_cache_miss: u64,
+    pub rfcache_io_errors: u64,
+    pub rfcache_reads_from_cache: u64,
+    pub rfcache_ios_outstanding: u64,
+    pub rfcache_reads_pending: u64,
+    pub rfcache_write_pending: u64,
+    pub rfcache_fd_reads_received: u64,
+    pub rfcache_fd_writes_received: u64,
+    pub rfcache_fd_inlight_reads: u64,
+    pub rfcache_fd_inlight_writes: u64,
+    pub rfcache_fd_read_time_greater500_millis: u64,
+    pub rfcache_fd_read_time_greater1_sec: u64,
+    pub rfcache_fd_read_time_greater5_sec: u64,
+    pub rfcache_fd_read_time_greater1_min: u64,
+    pub rfcache_fd_write_time_greater500_millis: u64,
+    pub rfcache_fd_write_time_greater1_sec: u64,
+    pub rfcache_fd_write_time_greater5_sec: u64,
+    pub rfcache_fd_write_time_greater1_min: u64,
+    pub rfcache_fd_avg_read_time: u64,
+    pub rfcache_fd_avg_write_time: u64,
+    pub rfcache_fd_io_errors: u64,
+    pub rfcache_fd_cache_overloaded: u64,
+    pub rfcache_fd_monitor_error_stuck_io: u64,
+    pub rfcache_pool_num_src_devs: u64,
+    pub rfcache_pool_num_cache_devs: u64,
+    pub rfcache_pool_size: u64,
+    pub rfcache_pool_read_hit: u64,
+    pub rfcache_pool_read_miss: u64,
+    pub rfcache_pool_write_hit: u64,
+    pub rfcache_pool_write_miss: u64,
+    pub rfcache_pool_cache_pages: u64,
+    pub rfcache_pool_pages_inuse: u64,
+    pub rfcache_pool_evictions: u64,
+    pub rfcache_pool_in_low_memory_condition: u64,
+    pub rfcache_pool_io_time_greater1_min: u64,
+    pub rfcache_pool_lock_time_greater1_sec: u64,
+    pub rfcache_pool_suspended_ios: u64,
+    pub rfcache_pool_low_resources_initiated_passthrough_mode: u64,
+    pub rfcache_poo_ios_outstanding: u64,
+    pub rfcache_pool_reads_pending: u64,
+    pub rfcache_pool_write_pending: u64,
+    pub rfcache_pool_suspended_pequests_redundant_searchs: u64,
+    pub rfcache_pool_read_pending_g1_sec: u64,
+    pub rfcache_pool_read_pending_g10_millis: u64,
+    pub rfcache_pool_read_pending_g1_millis: u64,
+    pub rfcache_pool_read_pending_g500_micro: u64,
+    pub rfcache_pool_write_pending_g1_sec: u64,
+    pub rfcache_pool_write_pending_g10_millis: u64,
+    pub rfcache_pool_write_pending_g1_millis: u64,
+    pub rfcache_pool_write_pending_g500_micro: u64,
+    pub rfcache_pool_source_id_mismatch: u64,
+    pub vtree_migration_wait_send_q_length: Option<u64>,
+    pub vtree_migration_per_receive_job_net_throttling_in_kbps: Option<u64>,
+    pub log_written_blocks_in_kb: Option<u64>,
+    pub fgl_uncompressed_data_size_in_kb: Option<u64>,
+    pub fgl_compressed_data_size_in_kb: Option<u64>,
+    pub user_data_capacity_in_kb: Option<u64>,
+    pub snapshot_capacity_in_kb: Option<u64>,
+    pub trimmed_user_data_capacity_in_kb: Option<u64>,
+    pub provisioned_addresses_in_kb: Option<u64>,
+    pub volume_address_space_in_kb: Option<u64>,
+    pub vtree_addres_space_in_kb: Option<u64>,
+    pub fgl_spares_in_kb: Option<u64>,
+    pub metadata_overhead_in_kb: Option<u64>,
+    pub net_fgl_spares_in_kb: Option<u64>,
+    pub net_metadata_overhead_in_kb: Option<u64>,
+    pub net_capacity_in_use_no_overhead_in_kb: Option<u64>,
+    pub net_user_data_capacity_in_kb: Option<u64>,
+    pub net_snapshot_capacity_in_kb: Option<u64>,
+    pub net_trimmed_user_data_capacity_in_kb: Option<u64>,
+    pub net_provisioned_addresses_in_kb: Option<u64>,
+    pub net_unused_capacity_in_kb: Option<u64>,
+    pub thin_and_snapshot_ratio: Option<u64>,
+    pub overall_usage_ratio: Option<f64>,
+    pub net_capacity_in_use_in_kb: Option<u64>,
+    pub aggregate_compression_level: Option<u64>,
+    pub fgl_user_data_capacity_in_kb: Option<u64>,
+    pub mg_user_ddata_ccapacity_in_kb: Option<u64>,
+    pub max_user_data_capacity_in_kb: Option<u64>,
+    pub capacity_in_use_no_overhead_in_kb: Option<u64>,
+    pub net_fgl_uncompressed_data_size_in_kb: Option<u64>,
+    pub net_fgl_compressed_data_size_in_kb: Option<u64>,
+    pub net_fgl_user_data_capacity_in_kb: Option<u64>,
+    pub compressed_data_compression_ratio: Option<u64>,
+    pub net_mg_user_data_capacity_in_kb: Option<u64>,
+    pub net_max_user_data_capacity_in_kb: Option<u64>,
+    pub net_user_data_capacity_no_trim_in_kb: Option<u64>,
+    pub num_volume_migrations_performed: Option<u64>,
+    pub num_snapshots_taken: Option<u64>,
+    pub num_dev_errors: Option<u64>,
+    pub num_sds_reconnections: Option<u64>,
+    pub num_sd_sdc_disconnections: Option<u64>,
+    pub num_oscillation_counters_passed_threshold: Option<u64>,
+    pub num_smart_attributes_passed_threshold: Option<u64>,
+    pub num_cmatrix_policy_changes: Option<u64>
+}
+
+impl IntoPoint for SystemStatistics{
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint>{
+        let mut points = Vec::new();
+        let mut p = TsPoint::new(name.unwrap_or_else(|| "scaleio_sys_stat"), is_time_series);
+        p.add_field("capacity_limit_in_kb", TsValue::Long(self.capacity_limit_in_kb));
+        p.add_field("max_capacity_in_kb", TsValue::Long(self.max_capacity_in_kb));
+        p.add_field("capacity_in_use_in_kb", TsValue::Long(self.capacity_in_use_in_kb));
+        p.add_field("thick capacity_in_use_in_kb", TsValue::Long(self.thick_capacity_in_use_in_kb));
+        p.add_field("thin_capacity_in_use_in_kb", TsValue::Long(self.thin_capacity_in_use_in_kb));
+        p.add_field("snap_capacity_in_use_in_kb", TsValue::Long(self.snap_capacity_in_use_in_kb));
+        p.add_field("unreachable_unused_capacity_in_kb", TsValue::Long(self.unreachable_unused_capacity_in_kb));
+        p.add_field("unused_capacity_in_kb", TsValue::Long(self.unused_capacity_in_kb));
+        p.add_field("snap_capacity_in_use_occupied_in_kb", TsValue::Long(self.snap_capacity_in_use_occupied_in_kb));
+        p.add_field("thin_capacity_allocated_in_kb", TsValue::Long(self.thin_capacity_allocated_in_kb));
+        p.add_field("spare_capacity_in_kb", TsValue::Long(self.spare_capacity_in_kb));
+        p.add_field("fixed_read_error_count", TsValue::Long(self.fixed_read_error_count));
+        p.add_field("num_of_unmapped_volumes", TsValue::Long(self.num_of_unmapped_volumes));
+        p.add_field("num_of_mapped_to_all_volumes", TsValue::Long(self.num_of_mapped_to_all_volumes));
+        p.add_field("num_of_thick_base_volumes", TsValue::Long(self.num_of_thick_base_volumes));
+        p.add_field("num_of_thin_base_volumes", TsValue::Long(self.num_of_thin_base_volumes));
+        p.add_field("num_of_snapshots", TsValue::Long(self.num_of_snapshots));
+        p.add_field("num_of_volumes_in_deletion", TsValue::Long(self.num_of_volumes_in_deletion));
+        p.add_field("num_of_devices", TsValue::Long(self.num_of_devices));
+        p.add_field("num_of_sds", TsValue::Long(self.num_of_sds));
+        p.add_field("num_of_storage_pools", TsValue::Long(self.num_of_storage_pools));
+        p.add_field("num_of_volumes", TsValue::Long(self.num_of_volumes));
+        p.add_field("num_of_sdc", TsValue::Long(self.num_of_sdc));
+        if let Some(compression_ratio) = self.compression_ratio {
+            p.add_field("compression_ratio", TsValue::Float(compression_ratio));
+        }
+        if let Some(user_data_capacity_in_kb) = self.user_data_capacity_in_kb {
+            p.add_field("user_data_capacity_in_kb", TsValue::Long(user_data_capacity_in_kb));
+        }
+        if let Some(snapshot_capacity_in_kb) = self.snapshot_capacity_in_kb{
+            p.add_field("snapshot_capacity_in_kb", TsValue::Long(snapshot_capacity_in_kb));
+        }
+        if let Some(overall_usage_ratio) = self.overall_usage_ratio {
+            p.add_field("overall_usage_ratio", TsValue::Float(overall_usage_ratio));
+        }
+        if let Some(num_sds_reconnections) = self.num_sds_reconnections {
+            p.add_field("num_sds_reconnections", TsValue::Long(num_sds_reconnections));
+        }
+        if let Some(num_sd_sdc_disconnections) = self.num_sd_sdc_disconnections {
+            p.add_field("num_sd_sdc_disconnections", TsValue::Long(num_sd_sdc_disconnections));
+        }
+        p.add_field("primary_read_bwc_total_weight_in_kb", TsValue::Long(self.primary_read_bwc.total_weight_in_kb));
+        p.add_field("primary_read_bwc_num_seconds", TsValue::Long(self.primary_read_bwc.num_seconds));
+        p.add_field("primary_read_bwc_num_occured", TsValue::Long(self.primary_read_bwc.num_occured));
+
+        p.add_field("primary_read_from_dev_bwc_total_weight_in_kb", TsValue::Long(self.primary_read_from_dev_bwc.total_weight_in_kb));
+        p.add_field("primary_read_from_dev_bwc_num_seconds", TsValue::Long(self.primary_read_from_dev_bwc.num_seconds));
+        p.add_field("primary_read_from_dev_bwc_num_occured", TsValue::Long(self.primary_read_from_dev_bwc.num_occured));
+
+        p.add_field("primary_write_bwc_total_weight_in_kb", TsValue::Long(self.primary_write_bwc.total_weight_in_kb));
+        p.add_field("primary_write_bwc_num_seconds", TsValue::Long(self.primary_write_bwc.num_seconds));
+        p.add_field("primary_write_bwc_num_occured", TsValue::Long(self.primary_write_bwc.num_occured));
+
+        p.add_field("secondary_read_bwc_total_weight_in_kb", TsValue::Long(self.secondary_read_bwc.total_weight_in_kb));
+        p.add_field("secondary_read_bwc_num_seconds", TsValue::Long(self.secondary_read_bwc.num_seconds));
+        p.add_field("secondary_read_bwc_num_occured", TsValue::Long(self.secondary_read_bwc.num_occured));
+
+        p.add_field("secondary_read_from_dev_bwc_total_weight_in_kb", TsValue::Long(self.secondary_read_from_dev_bwc.total_weight_in_kb));
+        p.add_field("secondary_read_from_dev_bwc_num_seconds", TsValue::Long(self.secondary_read_from_dev_bwc.num_seconds));
+        p.add_field("secondary_read_from_dev_bwc_num_occured", TsValue::Long(self.secondary_read_from_dev_bwc.num_occured));
+
+        p.add_field("fwd_rebuild_read_bwc_total_weight_in_kb", TsValue::Long(self.fwd_rebuild_read_bwc.total_weight_in_kb));
+        p.add_field("fwd_rebuild_read_bwc_num_seconds", TsValue::Long(self.fwd_rebuild_read_bwc.num_seconds));
+        p.add_field("fwd_rebuild_read_bwc_num_occured", TsValue::Long(self.fwd_rebuild_read_bwc.num_occured));
+
+        p.add_field("fwd_rebuild_write_bwc_total_weight_in_kb", TsValue::Long(self.fwd_rebuild_write_bwc.total_weight_in_kb));
+        p.add_field("fwd_rebuild_write_bwc_num_seconds", TsValue::Long(self.fwd_rebuild_write_bwc.num_seconds));
+        p.add_field("fwd_rebuild_write_bwc_num_occured", TsValue::Long(self.fwd_rebuild_write_bwc.num_occured));
+
+        p.add_field("bck_rebuild_read_bwc_total_weight_in_kb", TsValue::Long(self.bck_rebuild_read_bwc.total_weight_in_kb));
+        p.add_field("bck_rebuild_read_bwc_num_seconds", TsValue::Long(self.bck_rebuild_read_bwc.num_seconds));
+        p.add_field("bck_rebuild_read_bwc_num_occured", TsValue::Long(self.bck_rebuild_read_bwc.num_occured));
+
+        p.add_field("bck_rebuild_write_bwc_total_weight_in_kb", TsValue::Long(self.bck_rebuild_write_bwc.total_weight_in_kb));
+        p.add_field("bck_rebuild_write_bwc_num_seconds", TsValue::Long(self.bck_rebuild_write_bwc.num_seconds));
+        p.add_field("bck_rebuild_write_bwc_num_occured", TsValue::Long(self.bck_rebuild_write_bwc.num_occured));
+
+        p.add_field("rebalance_read_bwc_total_weight_in_kb", TsValue::Long(self.rebalance_read_bwc.total_weight_in_kb));
+        p.add_field("rebalance_read_bwc_num_seconds", TsValue::Long(self.rebalance_read_bwc.num_seconds));
+        p.add_field("rebalance_read_bwc_num_occured", TsValue::Long(self.rebalance_read_bwc.num_occured));
+
+        p.add_field("rebalance_write_bwc_total_weight_in_kb", TsValue::Long(self.rebalance_write_bwc.total_weight_in_kb));
+        p.add_field("rebalance_write_bwc_num_seconds", TsValue::Long(self.rebalance_write_bwc.num_seconds));
+        p.add_field("rebalance_write_bwc_num_occured", TsValue::Long(self.rebalance_write_bwc.num_occured));
+
+        p.add_field("total_read_bwc_total_weight_in_kb", TsValue::Long(self.total_read_bwc.total_weight_in_kb));
+        p.add_field("total_read_bwc_num_seconds", TsValue::Long(self.total_read_bwc.num_seconds));
+        p.add_field("total_read_bwc_num_occured", TsValue::Long(self.total_read_bwc.num_occured));
+
+        p.add_field("total_write_bwc_total_weight_in_kb", TsValue::Long(self.total_write_bwc.total_weight_in_kb));
+        p.add_field("total_write_bwc_num_seconds", TsValue::Long(self.total_write_bwc.num_seconds));
+        p.add_field("total_write_bwc_num_occured", TsValue::Long(self.total_write_bwc.num_occured));
+
+        p.add_field("primary_read_from_rmcache_bwc_total_weight_in_kb", TsValue::Long(self.primary_read_from_rmcache_bwc.total_weight_in_kb));
+        p.add_field("primary_read_from_rmcache_bwc_num_seconds", TsValue::Long(self.primary_read_from_rmcache_bwc.num_seconds));
+        p.add_field("primary_read_from_rmcache_bwc_num_occured", TsValue::Long(self.primary_read_from_rmcache_bwc.num_occured));
+
+        p.add_field("secondary_read_from_rmcache_bwc_total_weight_in_kb", TsValue::Long(self.secondary_read_from_rmcache_bwc.total_weight_in_kb));
+        p.add_field("secondary_read_from_rmcache_bwc_num_seconds", TsValue::Long(self.secondary_read_from_rmcache_bwc.num_seconds));
+        p.add_field("secondary_read_from_rmcache_bwc_num_seconds", TsValue::Long(self.secondary_read_from_rmcache_bwc.num_occured));
+
+        p.add_field("norm_rebuild_read_bwc_total_weight_in_kb", TsValue::Long(self.norm_rebuild_read_bwc.total_weight_in_kb));
+        p.add_field("norm_rebuild_read_bwc_num_seconds", TsValue::Long(self.norm_rebuild_read_bwc.num_seconds));
+        p.add_field("norm_rebuild_read_bwc_num_occured", TsValue::Long(self.norm_rebuild_read_bwc.num_occured));
+
+        p.add_field("norm_rebuild_write_bwc_total_weight_in_kb", TsValue::Long(self.norm_rebuild_write_bwc.total_weight_in_kb));
+        p.add_field("norm_rebuild_write_bwc_num_seconds", TsValue::Long(self.norm_rebuild_write_bwc.num_seconds));
+        p.add_field("norm_rebuild_write_bwc_num_occured", TsValue::Long(self.norm_rebuild_write_bwc.num_occured));
+
+        if let Some(vol_migration_read_bwc) = &self.vol_migration_read_bwc {
+            p.add_field("vol_migration_read_bwc_total_weight_in_kb", TsValue::Long(vol_migration_read_bwc.total_weight_in_kb));
+            p.add_field("vol_migration_read_bwc_num_seconds", TsValue::Long(vol_migration_read_bwc.num_seconds));
+            p.add_field("vol_migration_read_bwc_num_occured", TsValue::Long(vol_migration_read_bwc.num_occured));
+        }
+
+        if let Some(vol_migration_write_bwc) = &self.vol_migration_write_bwc {
+            p.add_field("vol_migration_write_bwc_total_weight_in_kb", TsValue::Long(vol_migration_write_bwc.total_weight_in_kb));
+            p.add_field("vol_migration_write_bwc_num_seconds", TsValue::Long(vol_migration_write_bwc.num_seconds));
+            p.add_field("vol_migration_write_bwc_num_occured", TsValue::Long(vol_migration_write_bwc.num_occured));
+        }
+
+        p.add_field("user_data_read_bwc_total_weight_in_kb", TsValue::Long(self.user_data_read_bwc.total_weight_in_kb));
+        p.add_field("user_data_read_bwc_num_seconds", TsValue::Long(self.user_data_read_bwc.num_seconds));
+        p.add_field("user_data_read_bwc_num_occured", TsValue::Long(self.user_data_read_bwc.num_occured));
+
+        p.add_field("user_data_write_bwc_total_weight_in_kb", TsValue::Long(self.user_data_write_bwc.total_weight_in_kb));
+        p.add_field("user_data_write_bwc_num_seconds", TsValue::Long(self.user_data_write_bwc.num_seconds));
+        p.add_field("user_data_write_bwc_num_occured", TsValue::Long(self.user_data_write_bwc.num_occured));
+        
+        if let Some(user_data_trim_bwc) = &self.user_data_trim_bwc {
+            p.add_field("user_data_trim_bwc_total_weight_in_kb", TsValue::Long(user_data_trim_bwc.total_weight_in_kb));
+            p.add_field("user_data_trim_bwc_num_seconds", TsValue::Long(user_data_trim_bwc.num_seconds));
+            p.add_field("user_data_trim_bwc_num_occured", TsValue::Long(user_data_trim_bwc.num_occured));
+        }
+
+        if let Some(user_data_sdc_read_latency) = &self.user_data_sdc_read_latency{
+            p.add_field("user_data_sdc_read_latency_total_weight_in_kb", TsValue::Long(user_data_sdc_read_latency.total_weight_in_kb));
+            p.add_field("user_data_sdc_read_latency_num_seconds", TsValue::Long(user_data_sdc_read_latency.num_seconds));
+            p.add_field("user_data_sdc_read_latency_num_occured", TsValue::Long(user_data_sdc_read_latency.num_occured));
+        }
+
+        if let Some(user_data_sdc_write_latency) = &self.user_data_sdc_write_latency{
+            p.add_field("user_data_sdc_write_latency_total_weight_in_kb", TsValue::Long(user_data_sdc_write_latency.total_weight_in_kb));
+            p.add_field("user_data_sdc_write_latency_num_seconds", TsValue::Long(user_data_sdc_write_latency.num_seconds));
+            p.add_field("user_data_sdc_write_latency_num_occured", TsValue::Long(user_data_sdc_write_latency.num_occured));
+        }
+
+        if let Some(user_data_sdc_trim_latency) = &self.user_data_sdc_trim_latency{
+            p.add_field("user_data_sdc_trim_latency_total_weight_in_kb", TsValue::Long(user_data_sdc_trim_latency.total_weight_in_kb));
+            p.add_field("user_data_sdc_trim_latency_num_seconds", TsValue::Long(user_data_sdc_trim_latency.num_seconds));
+            p.add_field("user_data_sdc_trim_latency_num_occured", TsValue::Long(user_data_sdc_trim_latency.num_occured));
+        }
+
+        points.push(p);
+        points
+    }
+}
+
+#[test]
+fn test_system_stats() {
+    use std::fs::File;
+    use std::io::Read;
+
+    let mut f = File::open("tests/scaleio/system_statistics.json").unwrap();
+    let mut buff = String::new();
+    f.read_to_string(&mut buff).unwrap();
+    println!("buff: {}", buff);
+
+    let i: SystemStatistics = serde_json::from_str(&buff).unwrap();
+    println!("result: {:#?}", i);
+
+    let points = i.into_point(None, true);
+}
+
+
+#[serde(rename_all = "camelCase")]
 #[derive(Clone, Deserialize, Debug)]
 pub struct TieBreaker {
     pub openssl_version: String,
@@ -1884,6 +2325,21 @@ impl Scaleio {
                 Ok(points)
             })?;
         Ok(sds_info)
+    }
+
+    pub fn get_system_stats(&self, system_id: &str, t: DateTime<Utc>)-> MetricsResult<Vec<TsPoint>> {
+        let systemstats = get::<SystemStatistics>(&self.client, &self.config, &format!("instances/System::{}/relationships/Statistics", system_id)).and_then(|system_stats|{
+            let points: Vec<TsPoint> = system_stats.into_point(Some("scaleio_sys_stats"), true)
+            .into_iter()
+            .map(|mut point| {
+                point.timestamp = Some(t);
+                point.add_tag("sys_id", TsValue::String(system_id.to_string()));
+                point
+            })
+            .collect();
+            Ok(points)
+        })?;
+        Ok(systemstats)
     }
 
     pub fn get_system(&self, system_id: &str) -> MetricsResult<System> {
