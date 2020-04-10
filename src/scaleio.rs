@@ -2327,6 +2327,21 @@ impl Scaleio {
         Ok(sds_info)
     }
 
+    pub fn get_system_stats(&self, system_id: &str, t: DateTime<Utc>)-> MetricsResult<Vec<TsPoint>> {
+        let systemstats = get::<SystemStatistics>(&self.client, &self.config, &format!("instances/System::{}/relationships/Statistics", system_id)).and_then(|system_stats|{
+            let points: Vec<TsPoint> = system_stats.into_point(Some("scaleio_sys_stats"), true)
+            .into_iter()
+            .map(|mut point| {
+                point.timestamp = Some(t);
+                point.add_tag("sys_id", TsValue::String(system_id.to_string()));
+                point
+            })
+            .collect();
+            Ok(points)
+        })?;
+        Ok(systemstats)
+    }
+
     pub fn get_system(&self, system_id: &str) -> MetricsResult<System> {
         let system = get::<System>(
             &self.client,
