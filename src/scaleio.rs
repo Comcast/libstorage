@@ -1585,6 +1585,7 @@ pub struct SystemStatistics {
     pub primary_write_bwc: BWC,
     pub secondary_read_bwc: BWC,
     pub secondary_read_from_dev_bwc: BWC,
+    pub secondary_write_bwc: BWC,
     pub fwd_rebuild_read_bwc: BWC,
     pub fwd_rebuild_write_bwc: BWC,
     pub bck_rebuild_read_bwc: BWC,
@@ -1829,6 +1830,10 @@ impl IntoPoint for SystemStatistics{
         p.add_field("secondary_read_from_dev_bwc_total_weight_in_kb", TsValue::Long(self.secondary_read_from_dev_bwc.total_weight_in_kb));
         p.add_field("secondary_read_from_dev_bwc_num_seconds", TsValue::Long(self.secondary_read_from_dev_bwc.num_seconds));
         p.add_field("secondary_read_from_dev_bwc_num_occured", TsValue::Long(self.secondary_read_from_dev_bwc.num_occured));
+
+        p.add_field("secondary_write_bwc_total_weight_in_kb", TsValue::Long(self.secondary_write_bwc.total_weight_in_kb));
+        p.add_field("secondary_write_bwc_num_seconds", TsValue::Long(self.secondary_write_bwc.num_seconds));
+        p.add_field("secondary_write_bwc_num_occured", TsValue::Long(self.secondary_write_bwc.num_occured));
 
         p.add_field("fwd_rebuild_read_bwc_total_weight_in_kb", TsValue::Long(self.fwd_rebuild_read_bwc.total_weight_in_kb));
         p.add_field("fwd_rebuild_read_bwc_num_seconds", TsValue::Long(self.fwd_rebuild_read_bwc.num_seconds));
