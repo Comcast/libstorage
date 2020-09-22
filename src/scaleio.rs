@@ -2070,13 +2070,13 @@ impl Scaleio {
                     let ids = instances
                         .iter()
                         .map(|instance| {
-                            (DriveId {
+                            DriveId {
                                 id: instance.id.clone(),
                                 sds_id: instance.sds_id.clone(),
                                 storage_pool_id: instance.storage_pool_id.clone(),
-                            })
+                            }
                         })
-                        .collect::<Vec<(DriveId)>>();
+                        .collect::<Vec<DriveId>>();
                     Ok(ids)
                 },
             )?;

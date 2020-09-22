@@ -108,6 +108,8 @@ fn parse_fc_fabrics() {
     use std::fs::File;
     use std::io::Read;
 
+    sleep_the_collections();
+
     let mut f = File::open("tests/brocade/fcfabrics.json").unwrap();
     let mut buff = String::new();
     f.read_to_string(&mut buff).unwrap();
@@ -519,6 +521,21 @@ pub fn login(client: &reqwest::Client, config: &BrocadeConfig) -> MetricsResult<
     }
 }
 
+// This is to delay the collections so the Brocade SAN switches do not
+// get their queue over-ran with requests until they can upgrade to newer version
+// which deals with that issue otherwise switch soft resets can occur
+// Added the 'use' statement here to be localized so this can all be removed later
+fn sleep_the_collections() {
+    use std::{thread, time};
+
+    let sleep_time = time::Duration::from_millis(5000);
+    let now = time::Instant::now();
+
+    thread::sleep(sleep_time);
+
+    assert!(now.elapsed() >= sleep_time);
+    }
+
 impl Brocade {
     // Deletes the client session
     pub fn logout(&self) -> MetricsResult<()> {
@@ -571,6 +588,7 @@ impl Brocade {
     }
 
     pub fn get_fc_fabrics(&self, t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
+        sleep_the_collections();
         let result =
             self.get_server_response::<FcFabrics>("resourcegroups/All/fcfabrics", &self.token)?;
         let mut points = result
@@ -590,6 +608,7 @@ impl Brocade {
         timeseries: TimeSeries,
     ) -> MetricsResult<()> {
         // TODO: Not sure if these performance metrics need to be enabled on the switches first
+        sleep_the_collections();
         let _url = format!(
             "resourcegroups/All/fcswitches/{}/{}?duration=360",
             switch_key,
@@ -607,6 +626,7 @@ impl Brocade {
         timeseries: &FabricTimeSeries,
     ) -> MetricsResult<()> {
         // TODO: Not sure if these performance metrics need to be enabled on the switches first
+        sleep_the_collections();
         let _url = format!(
             "resourcegroups/All/fcfabrics/{}/{}?duration=360",
             fabric_key,
@@ -617,6 +637,7 @@ impl Brocade {
     }
 
     pub fn get_fc_fabric_ids(&self) -> MetricsResult<Vec<String>> {
+        sleep_the_collections();
         let result = self
             .get_server_response::<FcFabrics>("resourcegroups/All/fcfabrics", &self.token)
             .and_then(|fabrics| {
@@ -631,6 +652,7 @@ impl Brocade {
     }
 
     pub fn get_fc_ports(&self, fabric_key: &str, t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
+        sleep_the_collections();
         let result = self.get_server_response::<FcPorts>(
             &format!("resourcegroups/All/fcswitches/{}/fcports", fabric_key),
             &self.token,
@@ -647,6 +669,7 @@ impl Brocade {
     }
 
     pub fn get_fc_switch_ids(&self) -> MetricsResult<Vec<String>> {
+        sleep_the_collections();
         let result = self
             .get_server_response::<FcSwitches>("resourcegroups/All/fcswitches", &self.token)
             .and_then(|switches| {
@@ -661,6 +684,7 @@ impl Brocade {
     }
 
     pub fn get_fc_switches(&self, t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
+        sleep_the_collections();
         let result =
             self.get_server_response::<FcSwitches>("resourcegroups/All/fcswitches", &self.token)?;
         let mut points = result
