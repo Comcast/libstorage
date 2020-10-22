@@ -295,6 +295,8 @@ impl ToString for AuthenticationError {
 
 #[derive(Clone, Deserialize, Debug)]
 pub enum DeviceState {
+    DeviceInit,
+    DeviceRecovery,
     InitialTest,
     InitialTestDone,
     Normal,
@@ -305,6 +307,8 @@ pub enum DeviceState {
 impl ToString for DeviceState {
     fn to_string(&self) -> String {
         match *self {
+            DeviceState::DeviceInit => "DeviceInit".into(),
+            DeviceState::DeviceRecovery => "DeviceRecovery".into(),
             DeviceState::InitialTest => "InitialTest".into(),
             DeviceState::InitialTestDone => "InitialTestDone".into(),
             DeviceState::Normal => "Normal".into(),
@@ -330,6 +334,7 @@ fn test_scaleio_drive_stats() {
 }
 
 #[derive(Debug, Clone)]
+// Not an API structure, this struct exists for mapping purposes
 pub struct DriveId {
     id: String,              //device id
     sds_id: String,          // sds id
@@ -339,97 +344,165 @@ pub struct DriveId {
 #[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Debug)]
 pub struct DeviceStatistics {
-    avg_write_size_in_bytes: u64,
-    active_moving_in_fwd_rebuild_jobs: u64,
-    active_moving_in_rebalance_jobs: u64,
-    active_moving_out_bck_rebuild_jobs: u64,
-    active_moving_out_fwd_rebuild_jobs: u64,
-    active_moving_rebalance_jobs: u64,
-    active_moving_in_norm_rebuild_jobs: u64,
-    active_moving_in_bck_rebuild_jobs: u64,
-    active_moving_out_norm_rebuild_jobs: u64,
-    avg_read_latency_in_microsec: u64,
-    avg_write_latency_in_microsec: u64,
-    avg_read_size_in_bytes: u64,
+    avg_write_size_in_bytes: u64, // in v3
+    active_moving_in_fwd_rebuild_jobs: u64, // in v3
+    active_moving_in_rebalance_jobs: u64, // in v3
+    active_moving_out_bck_rebuild_jobs: u64, // in v3
+    active_moving_out_fwd_rebuild_jobs: u64, // in v3
+    active_moving_rebalance_jobs: u64, // in v3
+    active_moving_in_norm_rebuild_jobs: u64, // in v3
+    active_moving_in_bck_rebuild_jobs: u64, // in v3
+    active_moving_out_norm_rebuild_jobs: u64, // in v3
+    avg_read_latency_in_microsec: u64, // in v3
+    avg_write_latency_in_microsec: u64, // in v3
+    avg_read_size_in_bytes: u64, // in v3
     #[serde(rename = "BackgroundScanCompareCount")]
-    background_scan_compare_count: u64,
+    background_scan_compare_count: u64, // in v3
     #[serde(rename = "BackgroundScannedInMB")]
-    background_scanned_in_mb: u64,
-    bck_rebuild_write_bwc: BWC,
-    bck_rebuild_read_bwc: BWC,
-    capacity_in_use_in_kb: u64,
-    degraded_healthy_vac_in_kb: u64,
-    degraded_failed_vac_in_kb: u64,
-    failed_vac_in_kb: u64,
-    fixed_read_error_count: u64,
-    fwd_rebuild_read_bwc: BWC,
-    fwd_rebuild_write_bwc: BWC,
-    in_maintenance_vac_in_kb: u64,
-    in_use_vac_in_kb: u64,
-    norm_rebuild_read_bwc: BWC,
-    norm_rebuild_write_bwc: BWC,
-    pending_moving_in_bck_rebuild_jobs: u64,
-    pending_moving_out_bck_rebuild_jobs: u64,
-    pending_moving_in_norm_rebuild_jobs: u64,
-    pending_moving_rebalance_jobs: u64,
-    pending_moving_out_normrebuild_jobs: u64,
-    pending_moving_in_rebalance_jobs: u64,
-    pending_moving_in_fwd_rebuild_jobs: u64,
-    pending_moving_out_fwd_rebuild_jobs: u64,
-    primary_read_from_rmcache_bwc: BWC,
-    primary_read_from_dev_bwc: BWC,
-    primary_read_bwc: BWC,
-    primary_vac_in_kb: u64,
-    protected_vac_in_kb: u64,
-    primary_write_bwc: BWC,
-    rebalance_read_bwc: BWC,
-    rebalance_write_bwc: BWC,
-    rfcache_avg_read_time: u64,
-    rfcache_io_errors: u64,
-    rfcache_reads_skipped_internal_error: u64,
-    rfcache_source_device_writes: u64,
-    rfcache_reads_skipped_low_resources: u64,
-    rfcache_reads_skipped_max_io_size: u64,
-    rfcache_reads_skipped_aligned_size_too_large: u64,
-    rfcache_writes_skipped_internal_error: u64,
-    rfcache_writes_skipped_stuck_io: u64,
-    rfcache_writes_skipped_cache_miss: u64,
-    rfcache_writes_skipped_heavy_load: u64,
-    rfcache_write_miss: u64,
-    rfcache_writes_skipped_low_resources: u64,
-    rfcache_reads_from_cache: u64,
-    rfcache_ios_outstanding: u64,
-    rfcache_skipped_unlined_write: u64,
-    rfcache_writes_received: u64,
-    rfcache_write_pending: u64,
-    rfcache_writes_skipped_max_io_size: u64,
-    rfcache_reads_skipped_stuck_io: u64,
-    rfcache_reads_skipped: u64,
-    rfcache_reads_received: u64,
-    rfcache_ios_skipped: u64,
-    rfcache_read_miss: u64,
-    rfcache_reads_skipped_lock_ios: u64,
-    rfache_read_hit: u64,
-    rfcache_avg_write_time: u64,
-    rfcache_source_device_reads: u64,
-    rfcache_reads_skipped_heavy_load: u64,
-    rfcache_reads_pending: u64,
-    rm_pending_allocated_in_kb: u64,
-    secondary_read_from_dev_bwc: BWC,
-    secondary_vac_in_kb: u64,
-    secondary_read_bwc: BWC,
-    secondary_read_from_rmcache_bwc: BWC,
-    secondary_write_bwc: BWC,
-    snap_capacity_in_use_occupied_in_kb: u64,
-    snap_capacity_in_use_in_kb: u64,
-    thick_capacity_in_use_in_kb: u64,
-    thin_capacity_in_use_in_kb: u64,
-    thin_capacity_allocated_in_km: u64,
-    total_read_bwc: BWC,
-    total_write_bwc: BWC,
+    background_scanned_in_mb: u64, // in v3
+    bck_rebuild_write_bwc: BWC, // in v3
+    bck_rebuild_read_bwc: BWC, // in v3
+    capacity_in_use_in_kb: u64, // in v3
+    capacity_in_use_no_overhead_in_kb: Option<u64>, // NEW V3
+    capacity_limit_in_kb: Option<u64>,  // NEW V3
+    changelog_destage_completion_percent: Option<u64>, // NEW V3
+    checksum_calculation_completion_percent: Option<u64>, // NEW V3
+    checksum_capacity_in_kb: Option<u64>, // NEW v3
+    checksum_migration_completion_percent: Option<u64>, // NEW V3
+    compressed_data_compression_ratio: Option<f64>, // NEW V3
+    compression_ratio: Option<f64>, // NEW V3
+    #[serde(rename = "currentChecksumMigrationSizeInKB")]
+    current_checksum_migration_size_in_kb: Option<u64>, // NEW V3
+    current_checksum_protected_combs_num: Option<u64>, // NEW V3
+    current_fgl_migration_size_in_kb: Option<u64>, // NEW V3
+    degraded_healthy_vac_in_kb: u64, // in v3
+    degraded_failed_vac_in_kb: u64, // in v3
+    failed_vac_in_kb: u64, // in v3
+    fgl_uncompressed_data_size_in_kb: Option<u64>, // NEW V3
+    fgl_compressed_data_size_in_kb: Option<u64>, // NEW V3
+    fgl_spares_in_kb: Option<u64>, // NEW V3
+    fgl_migration_completion_percent: Option<u64>, // NEW V3
+    fgl_user_data_capacity_in_kb: Option<u64>, // NEW V3
+    fixed_read_error_count: u64, //in v3
+    fwd_rebuild_read_bwc: BWC, // in v3
+    fwd_rebuild_write_bwc: BWC, // in v3
+    in_maintenance_vac_in_kb: u64, // in v3
+    in_use_vac_in_kb: u64, // in v3
+    log_written_blocks_in_kb: Option<u64>, // NEW v3
+    max_capacity_in_kb: Option<u64>,  // NEW v3
+    max_user_data_capacity_in_kb: Option<u64>, // NEW V3
+    metadata_overhead_in_kb: Option<u64>, // NEW V3
+    mg_user_ddata_ccapacity_in_kb: Option<u64>, // NEW V3
+    net_capacity_in_use_in_kb: Option<u64>, // NEW V3
+    net_capacity_in_use_no_overhead_in_kb: Option<u64>, // NEW V3
+    net_fgl_compressed_data_size_in_kb: Option<u64>, // NEW V3
+    net_fgl_spares_in_kb: Option<u64>, // NEW V3
+    net_fgl_uncompressed_data_size_in_kb: Option<u64>, // NEW V3
+    net_fgl_user_data_capacity_in_kb: Option<u64>, // NEW V3
+    net_max_user_data_capacity_in_kb: Option<u64>, // NEW V3
+    net_metadata_overhead_in_kb: Option<u64>, // NEW V3
+    net_mg_user_data_capacity_in_kb: Option<u64>, // NEW V3
+    net_provisioned_addresses_in_kb: Option<u64>, // NEW V3
+    net_snapshot_capacity_in_kb: Option<u64>, // NEW V3
+    net_trimmed_user_data_capacity_in_kb: Option<u64>, // NEW V3
+    net_unused_capacity_in_kb: Option<u64>, // NEW V3
+    net_user_data_capacity_in_kb: Option<u64>, // NEW V3
+    net_user_data_capacity_no_trim_in_kb: Option<u64>, // NEW V3
+    norm_rebuild_read_bwc: BWC, // in v3
+    norm_rebuild_write_bwc: BWC, // in v3
+    num_changelog_records_left_to_destage: Option<u64>, // NEW V3
+    pending_moving_in_bck_rebuild_jobs: u64, // in v3
+    pending_moving_out_bck_rebuild_jobs: u64, // in v3
+    pending_moving_in_norm_rebuild_jobs: u64, // in v3
+    pending_moving_rebalance_jobs: u64, // in v3
+    pending_moving_out_normrebuild_jobs: u64, // in v3
+    pending_moving_in_rebalance_jobs: u64, // in v3
+    pending_moving_in_fwd_rebuild_jobs: u64, // in v3
+    pending_moving_out_fwd_rebuild_jobs: u64, // in v3
+    primary_read_from_rmcache_bwc: BWC, // in v3
+    primary_read_from_dev_bwc: BWC, // in v3
+    primary_read_bwc: BWC, // in v3
+    primary_vac_in_kb: u64, // in v3
+    protected_vac_in_kb: u64, // in v3
+    primary_write_bwc: BWC, // in v3
+    rebalance_read_bwc: BWC, // in v3
+    rebalance_write_bwc: BWC, // in v3
+    rfcache_avg_read_time: u64, // in v3
+    rfcache_io_errors: u64, // in v3
+    rfcache_reads_skipped_internal_error: u64, // in v3
+    rfcache_source_device_writes: u64, // in v3
+    rfcache_reads_skipped_low_resources: u64, // in v3
+    rfcache_reads_skipped_max_io_size: u64, // in v3
+    rfcache_reads_skipped_aligned_size_too_large: u64, // in v3
+    rfcache_writes_skipped_internal_error: u64, // in v3
+    rfcache_writes_skipped_stuck_io: u64, // in v3
+    rfcache_writes_skipped_cache_miss: u64, // in v3
+    rfcache_writes_skipped_heavy_load: u64, // in v3
+    rfcache_write_miss: u64, // in v3
+    rfcache_writes_skipped_low_resources: u64, // in v3
+    rfcache_reads_from_cache: u64, // in v3
+    rfcache_ios_outstanding: u64, // in v3
+    rfcache_skipped_unlined_write: u64, // in v3
+    rfcache_writes_received: u64, // in v3
+    rfcache_write_pending: u64, // in v3
+    rfcache_writes_skipped_max_io_size: u64, // in v3
+    rfcache_reads_skipped_stuck_io: u64, // in v3
+    rfcache_reads_skipped: u64, // in v3
+    rfcache_reads_received: u64, // in v3
+    rfcache_ios_skipped: u64, // in v3
+    rfcache_read_miss: u64, // in v3
+    rfcache_reads_skipped_lock_ios: u64, // in v3
+    rfache_read_hit: u64, // in v3
+    rfcache_avg_write_time: u64, // in v3
+    rfcache_source_device_reads: u64, // in v3
+    rfcache_reads_skipped_heavy_load: u64, // in v3
+    rfcache_reads_pending: u64, // in v3
+    rfcache_fd_reads_recieved: Option<u64>, // NEW V3
+    rfcache_fd_writes_recieved: Option<u64>, // NEW V3
+    rfcache_fd_inlight_reads: Option<u64>, // NEW V3
+    rfcache_fd_inlight_writes: Option<u64>, // NEW V3
+    rfcache_fd_read_time_greater500_millis: Option<u64>, // NEW V3
+    rfcache_fd_read_time_greater1_sec: Option<u64>, // NEW V3
+    rfcache_fd_read_time_greater5_sec: Option<u64>, // NEW V3
+    rfcache_fd_read_time_greater1_min: Option<u64>, // NEW V3
+    rfcache_fd_write_time_greater500_millis: Option<u64>, // NEW V3
+    rfcache_fd_write_time_greater1_sec: Option<u64>, // NEW V3
+    rfcache_fd_write_time_greater5_sec: Option<u64>, // NEW V3
+    rfcache_fd_write_time_greater1_min: Option<u64>, // NEW V3
+    rfcache_fd_avg_read_time: Option<u64>, // NEW V3
+    rfcache_fd_avg_write_time: Option<u64>, // NEW V3
+    rfcache_fd_io_errors: Option<u64>, // NEW V3
+    rfcache_fd_cache_overloaded: Option<u64>, // NEW V3
+    rfcache_fd_monitor_error_stuck_io: Option<u64>, // NEW V3
+    rm_pending_allocated_in_kb: u64, // in v3
+    rm_pending_thick_in_kb: Option<u64>, // NEW v3
+    secondary_read_from_dev_bwc: BWC, // in v3
+    secondary_vac_in_kb: u64, // in v3
+    secondary_read_bwc: BWC, // in v3
+    secondary_read_from_rmcache_bwc: BWC, // in v3
+    secondary_write_bwc: BWC, // in v3
+    semi_protected_vac_in_kb: u64, // in v3
+    snap_capacity_in_use_occupied_in_kb: u64, // in v3
+    snap_capacity_in_use_in_kb: u64, //in v3
+    snapshot_capacity_in_kb: Option<u64>, // NEW V3
+    temp_capacity_vac_in_kb: Option<u64>, // NEW v3
+    thick_capacity_in_use_in_kb: u64, // in v3
+    thin_capacity_in_use_in_kb: u64, // in v3
+    thin_capacity_allocated_in_km: u64, // in v3
+    total_changelog_records_to_destage: Option<u64>, // NEW V3
+    #[serde(rename = "totalChecksumMigrationSizeInKB")]
+    total_checksum_migration_size_in_kb: Option<u64>, // NEW V3
+    total_checksum_protected_combs_num: Option<u64>, // NEW V3
+    total_fgl_migration_size_in_kb: Option<u64>, // NEW V3
+    total_read_bwc: BWC, // in v3
+    total_write_bwc: BWC, // in v3
+    trimmed_user_data_capacity_in_kb: Option<u64>, // NEW V3
     unused_capacity_in_kb: u64,
-    unreachable_unused_capacity_in_kb: u64,
-    semi_protected_vac_in_kb: u64,
+    unreachable_unused_capacity_in_kb: u64, // in v3
+    user_data_capacity_in_kb: Option<u64>, // NEW V3
+    user_data_capacity_no_trim_in_kb: Option<u64>, // NEW V3
+    vol_migration_read_bwc: Option<BWC>, // NEW V3
+    vol_migration_write_bwc: Option<BWC>, // NEW V3
 }
 
 impl IntoPoint for DeviceStatistics {
@@ -659,6 +732,7 @@ impl ToString for MdmConnectionState {
 }
 
 #[derive(Deserialize, Debug)]
+// This is the RmcacheMemoryAllocationState in V3
 pub enum MemoryAllocationState {
     RmcacheMemoryAllocationStateInvalid,
     AllocationPending,
@@ -683,6 +757,7 @@ impl ToString for MemoryAllocationState {
 
 #[derive(Deserialize, Debug)]
 pub enum PerfProfile {
+    Compact, // new to V3
     Custom,
     Default,
     HighPerformance,
@@ -691,6 +766,7 @@ pub enum PerfProfile {
 impl ToString for PerfProfile {
     fn to_string(&self) -> String {
         match *self {
+            PerfProfile::Compact => "Compact".into(),
             PerfProfile::Custom => "Custom".into(),
             PerfProfile::Default => "Default".into(),
             PerfProfile::HighPerformance => "HighPerformance".into(),
@@ -801,6 +877,10 @@ impl IntoPoint for SdcSelectedStatisticsResponse {
 pub struct SdcStatsInfo {
     pub user_data_read_bwc: BWC,
     pub user_data_write_bwc: BWC,
+    pub user_data_trim_bwc: Option<BWC>, // in v2 and v3
+    pub user_data_sdc_read_latency: Option<BWC>, // NEW V3
+    pub user_data_sdc_write_latency: Option<BWC>, // NEW V3
+    pub user_data_sdc_trim_latency: Option<BWC>, // NEW V3
     pub volume_ids: Vec<String>,
     pub num_of_mapped_volumes: u64,
 }
@@ -822,20 +902,28 @@ pub struct Instance {
     pub id: String,
     pub links: Vec<Link>,
     pub update_configuration: Option<bool>,
+    pub vendor_name: Option<String>, // NEW V3
+    pub firmware_version: Option<String>, //NEW V3
+    pub raid_controller_serial_number: Option<String>, // NEW V3
+    // SDS object....
+
 }
 
 #[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize)]
 pub struct MdmCluster {
-    pub master: TieBreaker,
-    pub slaves: Vec<TieBreaker>,
-    pub cluster_mode: String,
-    pub tie_breakers: Vec<TieBreaker>,
-    pub good_nodes_num: u16,
-    pub good_replicas_num: u16,
-    pub cluster_state: String,
-    pub name: String,
-    pub id: String,
+    pub master: TieBreaker,//
+    pub slaves: Vec<TieBreaker>,//
+    pub cluster_mode: String, //
+    pub tie_breakers: Vec<TieBreaker>,//
+    #[serde(rename = "standbyMDMs")]
+    pub standby_mdms: Option<Vec<TieBreaker>>, // NEW V3
+    pub good_nodes_num: u16,//
+    pub good_replicas_num: u16,//
+    pub cluster_state: String,//
+    pub name: String, //
+    pub id: String, //
+    pub virtual_ip: Option<Vec<String>>, // NEW V3
 }
 
 #[serde(rename_all = "camelCase")]
@@ -933,7 +1021,7 @@ impl IntoPoint for SdcMappingInfo {
 
 #[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize)]
-pub struct SdsVolume {
+pub struct SdsVolume { // Volume Object
     pub id: String,
     pub name: Option<String>,
     pub size_in_kb: u64,
@@ -1469,37 +1557,37 @@ fn test_system_response() {
 #[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize, IntoPoint)]
 pub struct System {
-    pub system_version_name: String,
-    pub capacity_alert_high_threshold_percent: u16,
-    pub capacity_alert_critical_threshold_percent: u16,
-    pub remote_read_only_limit_state: bool,
-    pub upgrade_state: String,
-    pub mdm_management_port: u16,
-    pub sdc_mdm_network_disconnections_counter_parameters: FailureCounter,
-    pub sdc_sds_network_disconnections_counter_parameters: FailureCounter,
-    pub sdc_memory_allocation_failures_counter_parameters: FailureCounter,
-    pub sdc_socket_allocation_failures_counter_parameters: FailureCounter,
-    pub sdc_long_operations_counter_parameters: FailureCounter,
-    pub cli_password_allowed: bool,
-    pub management_client_secure_communication_enabled: bool,
-    pub tls_version: String,
-    pub show_guid: bool,
-    pub authentication_method: String,
-    pub mdm_to_sds_policy: String,
-    pub mdm_cluster: MdmCluster,
-    pub perf_profile: PerfProfile,
-    pub install_id: String,
-    pub days_installed: u64,
+    pub system_version_name: String, // in v3
+    pub capacity_alert_high_threshold_percent: u16, // in V3
+    pub capacity_alert_critical_threshold_percent: u16, // in v3
+    pub remote_read_only_limit_state: bool, // in v3
+    pub upgrade_state: String, // in v3
+    pub mdm_management_port: u16, // in v3
+    pub sdc_mdm_network_disconnections_counter_parameters: FailureCounter, // in v3
+    pub sdc_sds_network_disconnections_counter_parameters: FailureCounter, // in v3
+    pub sdc_memory_allocation_failures_counter_parameters: FailureCounter, // in v3
+    pub sdc_socket_allocation_failures_counter_parameters: FailureCounter, // in v3
+    pub sdc_long_operations_counter_parameters: FailureCounter, // in v3
+    pub cli_password_allowed: bool, // in v3
+    pub management_client_secure_communication_enabled: bool, // in v3
+    pub tls_version: String, // in v3
+    pub show_guid: bool, // in v3
+    pub authentication_method: String, // in v3
+    pub mdm_to_sds_policy: String, // in v3
+    pub mdm_cluster: MdmCluster, // in v3
+    pub perf_profile: PerfProfile, // in v3
+    pub install_id: String, // in v3
+    pub days_installed: u64, // in V3
     #[serde(deserialize_with = "deserialize_string_or_int")]
-    pub max_capacity_in_gb: i64,
-    pub capacity_time_left_in_days: String,
-    pub enterprise_features_enabled: bool,
-    pub is_initial_license: bool,
-    pub default_is_volume_obfuscated: bool,
-    pub restricted_sdc_mode_enabled: bool,
-    pub swid: String,
-    pub name: String,
-    pub id: String,
+    pub max_capacity_in_gb: i64, // in v3
+    pub capacity_time_left_in_days: String, // in v3
+    pub enterprise_features_enabled: bool, // in v3
+    pub is_initial_license: bool, // in v3
+    pub default_is_volume_obfuscated: Option<bool>, // not in V3
+    pub restricted_sdc_mode_enabled: bool, // in v3
+    pub swid: String, // in v3
+    pub name: String, // in V3
+    pub id: String, // in V3
     pub links: Vec<HashMap<String, String>>,
 }
 
