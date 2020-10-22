@@ -732,6 +732,7 @@ impl ToString for MdmConnectionState {
 }
 
 #[derive(Deserialize, Debug)]
+// This is the RmcacheMemoryAllocationState in V3
 pub enum MemoryAllocationState {
     RmcacheMemoryAllocationStateInvalid,
     AllocationPending,
@@ -756,6 +757,7 @@ impl ToString for MemoryAllocationState {
 
 #[derive(Deserialize, Debug)]
 pub enum PerfProfile {
+    Compact, // new to V3
     Custom,
     Default,
     HighPerformance,
@@ -764,6 +766,7 @@ pub enum PerfProfile {
 impl ToString for PerfProfile {
     fn to_string(&self) -> String {
         match *self {
+            PerfProfile::Compact => "Compact".into(),
             PerfProfile::Custom => "Custom".into(),
             PerfProfile::Default => "Default".into(),
             PerfProfile::HighPerformance => "HighPerformance".into(),
@@ -874,6 +877,10 @@ impl IntoPoint for SdcSelectedStatisticsResponse {
 pub struct SdcStatsInfo {
     pub user_data_read_bwc: BWC,
     pub user_data_write_bwc: BWC,
+    pub user_data_trim_bwc: Option<BWC>, // in v2 and v3
+    pub user_data_sdc_read_latency: Option<BWC>, // NEW V3
+    pub user_data_sdc_write_latency: Option<BWC>, // NEW V3
+    pub user_data_sdc_trim_latency: Option<BWC>, // NEW V3
     pub volume_ids: Vec<String>,
     pub num_of_mapped_volumes: u64,
 }
@@ -895,20 +902,28 @@ pub struct Instance {
     pub id: String,
     pub links: Vec<Link>,
     pub update_configuration: Option<bool>,
+    pub vendor_name: Option<String>, // NEW V3
+    pub firmware_version: Option<String>, //NEW V3
+    pub raid_controller_serial_number: Option<String>, // NEW V3
+    // SDS object....
+
 }
 
 #[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize)]
 pub struct MdmCluster {
-    pub master: TieBreaker,
-    pub slaves: Vec<TieBreaker>,
-    pub cluster_mode: String,
-    pub tie_breakers: Vec<TieBreaker>,
-    pub good_nodes_num: u16,
-    pub good_replicas_num: u16,
-    pub cluster_state: String,
-    pub name: String,
-    pub id: String,
+    pub master: TieBreaker,//
+    pub slaves: Vec<TieBreaker>,//
+    pub cluster_mode: String, //
+    pub tie_breakers: Vec<TieBreaker>,//
+    #[serde(rename = "standbyMDMs")]
+    pub standby_mdms: Option<Vec<TieBreaker>>, // NEW V3
+    pub good_nodes_num: u16,//
+    pub good_replicas_num: u16,//
+    pub cluster_state: String,//
+    pub name: String, //
+    pub id: String, //
+    pub virtual_ip: Option<Vec<String>>, // NEW V3
 }
 
 #[serde(rename_all = "camelCase")]
@@ -1006,7 +1021,7 @@ impl IntoPoint for SdcMappingInfo {
 
 #[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize)]
-pub struct SdsVolume {
+pub struct SdsVolume { // Volume Object
     pub id: String,
     pub name: Option<String>,
     pub size_in_kb: u64,
