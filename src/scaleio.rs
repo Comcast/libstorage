@@ -1557,37 +1557,37 @@ fn test_system_response() {
 #[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize, IntoPoint)]
 pub struct System {
-    pub system_version_name: String,
-    pub capacity_alert_high_threshold_percent: u16,
-    pub capacity_alert_critical_threshold_percent: u16,
-    pub remote_read_only_limit_state: bool,
-    pub upgrade_state: String,
-    pub mdm_management_port: u16,
-    pub sdc_mdm_network_disconnections_counter_parameters: FailureCounter,
-    pub sdc_sds_network_disconnections_counter_parameters: FailureCounter,
-    pub sdc_memory_allocation_failures_counter_parameters: FailureCounter,
-    pub sdc_socket_allocation_failures_counter_parameters: FailureCounter,
-    pub sdc_long_operations_counter_parameters: FailureCounter,
-    pub cli_password_allowed: bool,
-    pub management_client_secure_communication_enabled: bool,
-    pub tls_version: String,
-    pub show_guid: bool,
-    pub authentication_method: String,
-    pub mdm_to_sds_policy: String,
-    pub mdm_cluster: MdmCluster,
-    pub perf_profile: PerfProfile,
-    pub install_id: String,
-    pub days_installed: u64,
+    pub system_version_name: String, // in v3
+    pub capacity_alert_high_threshold_percent: u16, // in V3
+    pub capacity_alert_critical_threshold_percent: u16, // in v3
+    pub remote_read_only_limit_state: bool, // in v3
+    pub upgrade_state: String, // in v3
+    pub mdm_management_port: u16, // in v3
+    pub sdc_mdm_network_disconnections_counter_parameters: FailureCounter, // in v3
+    pub sdc_sds_network_disconnections_counter_parameters: FailureCounter, // in v3
+    pub sdc_memory_allocation_failures_counter_parameters: FailureCounter, // in v3
+    pub sdc_socket_allocation_failures_counter_parameters: FailureCounter, // in v3
+    pub sdc_long_operations_counter_parameters: FailureCounter, // in v3
+    pub cli_password_allowed: bool, // in v3
+    pub management_client_secure_communication_enabled: bool, // in v3
+    pub tls_version: String, // in v3
+    pub show_guid: bool, // in v3
+    pub authentication_method: String, // in v3
+    pub mdm_to_sds_policy: String, // in v3
+    pub mdm_cluster: MdmCluster, // in v3
+    pub perf_profile: PerfProfile, // in v3
+    pub install_id: String, // in v3
+    pub days_installed: u64, // in V3
     #[serde(deserialize_with = "deserialize_string_or_int")]
-    pub max_capacity_in_gb: i64,
-    pub capacity_time_left_in_days: String,
-    pub enterprise_features_enabled: bool,
-    pub is_initial_license: bool,
-    pub default_is_volume_obfuscated: bool,
-    pub restricted_sdc_mode_enabled: bool,
-    pub swid: String,
-    pub name: String,
-    pub id: String,
+    pub max_capacity_in_gb: i64, // in v3
+    pub capacity_time_left_in_days: String, // in v3
+    pub enterprise_features_enabled: bool, // in v3
+    pub is_initial_license: bool, // in v3
+    pub default_is_volume_obfuscated: Option<bool>, // not in V3
+    pub restricted_sdc_mode_enabled: bool, // in v3
+    pub swid: String, // in v3
+    pub name: String, // in V3
+    pub id: String, // in V3
     pub links: Vec<HashMap<String, String>>,
 }
 
