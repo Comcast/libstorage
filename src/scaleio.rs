@@ -117,8 +117,7 @@ impl BWC {
     }
     // Calculate IO Size or Latency: totalWeightIn* / numOccured
     fn iosize_or_latency(self) -> u64 {
-        let iosize = self.total_weight_in_kb.checked_div(self.num_occured).unwrap_or(0);
-        iosize
+        self.total_weight_in_kb.checked_div(self.num_occured).unwrap_or(0)
     }
     // Calculate the average kb/s from the fields
     fn average(&self) -> u64 {
@@ -242,7 +241,7 @@ pub struct OscillatingCounterWindow {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Clone, Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)] 
 pub struct FailureCounter {
     pub short_window: Window,
     pub medium_window: Option<Window>,
@@ -250,7 +249,7 @@ pub struct FailureCounter {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Clone, Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)] // v3 look for OscillatingCounter
 pub struct Successfulio {
     pub short_window: Option<OscillatingCounterWindow>,
     pub medium_window: Option<OscillatingCounterWindow>,
@@ -833,7 +832,7 @@ pub struct ClusterSelectedStatisticsResponse {
 
 #[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Debug, IntoPoint)]
-pub struct StoragePoolInfo {
+pub struct StoragePoolInfo { // StoragePoolStatistics (selected ones)
     pub num_of_devices: u64,
     pub num_of_volumes: u64,
     pub primary_read_bwc: BWC,
@@ -887,19 +886,19 @@ pub struct SdcStatsInfo {
 
 #[serde(rename_all = "camelCase")]
 #[derive(Clone, Deserialize, Debug, IntoPoint)]
-pub struct Instance {
-    pub device_current_path_name: String,
-    pub device_original_path_name: String,
+pub struct Instance { // Device Object
+    pub device_current_path_name: String, // in v3
+    pub device_original_path_name: String, // in v3
     pub rfcache_error_device_does_not_exist: bool,
     pub sds_id: String,
-    pub device_state: DeviceState,
-    pub capacity_limit_in_kb: Option<u64>,
-    pub max_capacity_in_kb: u64,
-    pub storage_pool_id: String,
+    pub device_state: DeviceState, // in v3
+    pub capacity_limit_in_kb: Option<u64>, // in v3
+    pub max_capacity_in_kb: u64, // in v3
+    pub storage_pool_id: String, // in v3 ** required
     pub long_successful_ios: Option<Successfulio>,
-    pub error_state: String,
-    pub name: Option<String>,
-    pub id: String,
+    pub error_state: String, // in v3 (note this could be an enum)
+    pub name: Option<String>, // in v3
+    pub id: String, // in v3
     pub links: Vec<Link>,
     pub update_configuration: Option<bool>,
     pub vendor_name: Option<String>, // NEW V3
@@ -1857,7 +1856,7 @@ pub struct SystemStatistics {
 impl IntoPoint for SystemStatistics{
     fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint>{
         let mut points = Vec::new();
-        let mut p = TsPoint::new(name.unwrap_or_else(|| "scaleio_sys_stat"), is_time_series);
+        let mut p = TsPoint::new(name.unwrap_or("scaleio_sys_stat"), is_time_series);
         p.add_field("capacity_limit_in_kb", TsValue::Long(self.capacity_limit_in_kb));
         p.add_field("max_capacity_in_kb", TsValue::Long(self.max_capacity_in_kb));
         p.add_field("capacity_in_use_in_kb", TsValue::Long(self.capacity_in_use_in_kb));
@@ -2053,7 +2052,7 @@ pub struct TieBreaker {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Clone, Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)] 
 pub struct Window {
     threshold: u64,
     window_size_in_sec: u64,
@@ -2119,7 +2118,7 @@ named!(
 
 impl Scaleio {
     pub fn new(client: &reqwest::Client, mut config: ScaleioConfig) -> MetricsResult<Self> {
-        let token = get_api_token(&client, &config)?;
+        let token = get_api_token(client, &config)?;
         config.password = token;
         Ok(Scaleio {
             client: client.clone(),
@@ -2137,7 +2136,7 @@ impl Scaleio {
     // more useful information
     pub fn get_drive_instances(&self, t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
         let instances = get::<Vec<Instance>>(&self.client, &self.config, "types/Device/instances")
-            .and_then(|instance| {
+            .map(|instance| {
                 let points: Vec<TsPoint> = instance
                     .iter()
                     .flat_map(|instance| instance.into_point(Some("scaleio_drive"), true))
@@ -2146,14 +2145,14 @@ impl Scaleio {
                         point
                     })
                     .collect();
-                Ok(points)
+                points
             })?;
         Ok(instances)
     }
 
     pub fn get_drive_ids(&self) -> MetricsResult<Vec<DriveId>> {
         let instance_ids =
-            get::<Vec<Instance>>(&self.client, &self.config, "types/Device/instances").and_then(
+            get::<Vec<Instance>>(&self.client, &self.config, "types/Device/instances").map(
                 |instances| {
                     let ids = instances
                         .iter()
@@ -2165,7 +2164,7 @@ impl Scaleio {
                             }
                         })
                         .collect::<Vec<DriveId>>();
-                    Ok(ids)
+                    ids
                 },
             )?;
         Ok(instance_ids)
@@ -2173,12 +2172,12 @@ impl Scaleio {
 
     pub fn get_sds_ids(&self) -> MetricsResult<Vec<String>> {
         let sds_ids = get::<Vec<SdsObject>>(&self.client, &self.config, "types/Sds/instances")
-            .and_then(|sds_objects| {
+            .map(|sds_objects| {
                 let ids = sds_objects
                     .iter()
                     .map(|sds| sds.id.clone())
                     .collect::<Vec<String>>();
-                Ok(ids)
+                ids
             })?;
 
         Ok(sds_ids)
@@ -2194,7 +2193,7 @@ impl Scaleio {
             &self.config,
             &format!("instances/Sds::{}/relationships/Statistics", sds_id),
         )
-        .and_then(|instance| {
+        .map(|instance| {
             let points: Vec<TsPoint> = instance
                 .into_point(Some("scaleio_sds_stat"), true)
                 .iter_mut()
@@ -2204,7 +2203,7 @@ impl Scaleio {
                     point.clone()
                 })
                 .collect();
-            Ok(points)
+            points
         })?;
 
         Ok(instance_statistics)
@@ -2221,7 +2220,7 @@ impl Scaleio {
             &self.config,
             &format!("instances/Device::{}/relationships/Statistics", ids.id),
         )
-        .and_then(|instance| {
+        .map(|instance| {
             let points: Vec<TsPoint> = instance
                 .into_point(Some("scaleio_drive_stat"), true)
                 .into_iter()
@@ -2236,7 +2235,7 @@ impl Scaleio {
                     point
                 })
                 .collect();
-            Ok(points)
+            points
         })?;
 
         Ok(instance_statistics)
@@ -2379,7 +2378,7 @@ impl Scaleio {
             &self.config,
             &format!("instances/System::{}/relationships/Sdc", system_id),
         )
-        .and_then(|sdc_objects| {
+        .map(|sdc_objects| {
             let points: Vec<TsPoint> = sdc_objects
                 .iter()
                 .flat_map(|sdc| sdc.into_point(Some("scaleio_sdc"), true))
@@ -2388,7 +2387,7 @@ impl Scaleio {
                     point
                 })
                 .collect();
-            Ok(points)
+            points
         })?;
         Ok(sdc_info)
     }
@@ -2406,7 +2405,7 @@ impl Scaleio {
 
     pub fn get_sds_objects(&self, t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
         let sds_info = get::<Vec<SdsObject>>(&self.client, &self.config, "types/Sds/instances")
-            .and_then(|sds_objects| {
+            .map(|sds_objects| {
                 let points: Vec<TsPoint> = sds_objects
                     .iter()
                     .flat_map(|sds| sds.into_point(Some("scaleio_sds"), true))
@@ -2415,13 +2414,13 @@ impl Scaleio {
                         point
                     })
                     .collect();
-                Ok(points)
+                points
             })?;
         Ok(sds_info)
     }
 
     pub fn get_system_stats(&self, system_id: &str, t: DateTime<Utc>)-> MetricsResult<Vec<TsPoint>> {
-        let systemstats = get::<SystemStatistics>(&self.client, &self.config, &format!("instances/System::{}/relationships/Statistics", system_id)).and_then(|system_stats|{
+        let systemstats = get::<SystemStatistics>(&self.client, &self.config, &format!("instances/System::{}/relationships/Statistics", system_id)).map(|system_stats|{
             let points: Vec<TsPoint> = system_stats.into_point(Some("scaleio_sys_stats"), true)
             .into_iter()
             .map(|mut point| {
@@ -2430,7 +2429,7 @@ impl Scaleio {
                 point
             })
             .collect();
-            Ok(points)
+            points
         })?;
         Ok(systemstats)
     }
@@ -2462,7 +2461,7 @@ impl Scaleio {
 
     pub fn get_volumes(&self, t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
         let sds_vols = get::<Vec<SdsVolume>>(&self.client, &self.config, "types/Volume/instances")
-            .and_then(|sds_vols| {
+            .map(|sds_vols| {
                 let points: Vec<TsPoint> = sds_vols
                     .iter()
                     .flat_map(|vol| vol.into_point(Some("scaleio_volume"), true))
@@ -2471,7 +2470,7 @@ impl Scaleio {
                         point
                     })
                     .collect();
-                Ok(points)
+                points
             })?;
         Ok(sds_vols)
     }
@@ -2564,7 +2563,7 @@ impl Scaleio {
 
         debug!("Retrieving SDC ID for {}", sdc_name);
         let sdc_info = get::<Vec<Sdc>>(&self.client, &self.config, "api/types/Sdc/instances")
-            .and_then(|sdc_objects| {
+            .map(|sdc_objects| {
                 let ids: Vec<String> = sdc_objects
                     .iter()
                     .filter(|sdc| match sdc.name {
@@ -2573,7 +2572,7 @@ impl Scaleio {
                     })
                     .map(|sdc| sdc.id.clone())
                     .collect::<Vec<String>>();
-                Ok(ids)
+            ids
             })?;
 
         if !sdc_info.is_empty() {
@@ -2692,7 +2691,7 @@ fn identify_ideal_pools(
         let mut ids: Vec<String> = Vec::new();
 
         // Retain only those pools which pass the cutoff
-        storage_pools.retain(|ref each| each.spare_percentage > spare_cutoff);
+        storage_pools.retain(|each| each.spare_percentage > spare_cutoff);
         if storage_pools.is_empty() {
             // None have enough spare space
             return Err(StorageError::new(format!(
