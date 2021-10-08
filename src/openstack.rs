@@ -204,7 +204,7 @@ impl IntoPoint for Server {
             );
         }
         if let Some(progress) = &self.progress {
-            p.add_field("progress", TsValue::Long(progress.clone()));
+            p.add_field("progress", TsValue::Long(*progress));
         }
         p.add_tag("status", TsValue::String(self.status.clone()));
         p.add_tag("tenant_id", TsValue::String(self.tenant_id.clone()));
