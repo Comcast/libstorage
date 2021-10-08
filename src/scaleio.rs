@@ -107,13 +107,11 @@ pub struct BWC {
 impl BWC {
     // Calculate IOPS 
     fn iops(self) -> u64 {
-        let iops = self.num_occured.checked_div(self.num_occured).unwrap_or(0);
-        iops
+        self.num_occured.checked_div(self.num_occured).unwrap_or(0)
     }
     // Calculate Bandwidth
     fn bandwidth(self) -> u64 {
-        let bandwidth = self.total_weight_in_kb.checked_div(self.num_seconds).unwrap_or(0);
-        bandwidth
+        self.total_weight_in_kb.checked_div(self.num_seconds).unwrap_or(0)
     }
     // Calculate IO Size or Latency: totalWeightIn* / numOccured
     fn iosize_or_latency(self) -> u64 {
