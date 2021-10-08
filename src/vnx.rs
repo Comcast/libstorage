@@ -209,7 +209,7 @@ impl IntoPoint for NfsMountedShares {
 impl NfsMountedShares {
     fn from_str(data: &str) -> MetricsResult<Self> {
         let mut nfs_mounted_shares: Vec<NfsMountedShare> = Vec::new();
-        let lines: Vec<&str> = data.split("\n").collect();
+        let lines: Vec<&str> = data.split('\n').collect();
         let mut skip = 0;
         for (i, line) in lines.iter().enumerate() {
             if i == skip && skip != 0 {
@@ -220,7 +220,7 @@ impl NfsMountedShares {
                 continue;
             }
             let path = share[0].to_string();
-            let access: Vec<String> = share[1].split(",").map(|s| s.to_string()).collect();
+            let access: Vec<String> = share[1].split(',').map(|s| s.to_string()).collect();
             let p = Path::new(&path);
 
             //check if next share is actually just the alternate name
@@ -232,7 +232,7 @@ impl NfsMountedShares {
             if next_share.len() == 2 {
                 let next_path = next_share[0].to_string();
                 let next_access: Vec<String> =
-                    next_share[1].split(",").map(|s| s.to_string()).collect();
+                    next_share[1].split(',').map(|s| s.to_string()).collect();
                 if next_access == access || path.contains(&next_path) {
                     alternate_name = next_path;
                     skip = i + 1;
@@ -503,7 +503,7 @@ impl FromXml for FileSystemCapacities {
                                         .split_whitespace()
                                         .collect::<Vec<&str>>()
                                         .iter()
-                                        .map(|v| u64::from_str(&v))
+                                        .map(|v| u64::from_str(v))
                                         .filter(|num| num.is_ok())
                                         .map(|num| num.unwrap())
                                         .collect::<Vec<u64>>();
@@ -515,7 +515,7 @@ impl FromXml for FileSystemCapacities {
                                         .split_whitespace()
                                         .collect::<Vec<&str>>()
                                         .iter()
-                                        .map(|v| u64::from_str(&v))
+                                        .map(|v| u64::from_str(v))
                                         .filter(|num| num.is_ok())
                                         .map(|num| num.unwrap())
                                         .collect::<Vec<u64>>();
@@ -2247,7 +2247,7 @@ pub struct StoragePools {
     pub storage_pools: Vec<StoragePool>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct StoragePool {
     pub movers: Vec<String>,
     pub member_volumes: Vec<String>,
@@ -2306,26 +2306,6 @@ impl IntoPoint for StoragePools {
     }
 }
 
-impl Default for StoragePool {
-    fn default() -> Self {
-        StoragePool {
-            movers: Vec::new(),
-            member_volumes: Vec::new(),
-            name: String::new(),
-            description: String::new(),
-            size: 0,
-            used_size: 0,
-            auto_size: 0,
-            stripe_count: 0,
-            stripe_size: 0,
-            pool: String::new(),
-            template_pool: String::new(),
-            data_service_policies: HashMap::new(),
-            is_homogeneous: false,
-            virtual_provisioning: false,
-        }
-    }
-}
 
 impl FromXml for StoragePools {
     fn from_xml(data: &str) -> MetricsResult<Self> {
@@ -2491,7 +2471,7 @@ impl Drop for Vnx {
 impl Vnx {
     pub fn new(client: &reqwest::Client, config: VnxConfig) -> MetricsResult<Self> {
         let mut cookie_jar = CookieJar::new();
-        login_request(&client, &config, &mut cookie_jar)?;
+        login_request(client, &config, &mut cookie_jar)?;
         Ok(Vnx {
             client: client.clone(),
             config,
@@ -2876,21 +2856,23 @@ fn start_element<W: Write>(
     name: Option<&str>,
     element_type: Option<&str>,
 ) -> MetricsResult<()> {
-    if name.is_some() && element_type.is_some() {
-        let e = XmlEvent::start_element(element_name)
-            .attr("name", name.unwrap())
-            .attr("type", element_type.unwrap());
-        w.write(e)?;
-    } else if name.is_some() && element_type.is_none() {
-        let e = XmlEvent::start_element(element_name).attr("name", name.unwrap());
-        w.write(e)?;
-    } else if name.is_none() && element_type.is_some() {
-        let e = XmlEvent::start_element(element_name).attr("type", element_type.unwrap());
-        w.write(e)?;
-    } else {
-        let e = XmlEvent::start_element(element_name);
-        w.write(e)?;
-    }
+    let e = match (name, element_type) {
+        (Some(n), Some(e_type)) => {
+            XmlEvent::start_element(element_name)
+            .attr("name", n)
+            .attr("type", e_type)
+        },
+        (Some(n), None) => {
+            XmlEvent::start_element(element_name).attr("name", n)
+        }
+        (None, Some(e_type)) => {
+            XmlEvent::start_element(element_name).attr("type", e_type)
+        }
+        _ => {
+            XmlEvent::start_element(element_name)
+        }
+    };
+    w.write(e)?;
     Ok(())
 }
 
