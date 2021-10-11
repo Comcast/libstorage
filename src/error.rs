@@ -141,8 +141,6 @@ impl StorageError {
     pub fn new(err: String) -> StorageError {
         StorageError::Error(err)
     }
-
-    
 }
 
 impl From<CookieParseError> for StorageError {

@@ -534,7 +534,7 @@ fn sleep_the_collections() {
     thread::sleep(sleep_time);
 
     assert!(now.elapsed() >= sleep_time);
-    }
+}
 
 impl Brocade {
     // Deletes the client session

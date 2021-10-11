@@ -262,10 +262,7 @@ impl FromXml for HaPerformanceStats {
                 rdma_read: get_key::<u64>(perf_child, "rdma-read")?,
                 rdma_read_waitdone_time: get_key::<u64>(perf_child, "rdma-read-waitdone-time")?,
                 remote_nv_transfers: get_key::<u64>(perf_child, "remote-nv-transfers")?,
-                total_receive_queue_waits: get_key::<u64>(
-                    perf_child,
-                    "total-receive-queue-waits",
-                )?,
+                total_receive_queue_waits: get_key::<u64>(perf_child, "total-receive-queue-waits")?,
                 total_transfers: get_key::<u64>(perf_child, "total-transfers")?,
                 wafl_data_io: get_key::<u64>(perf_child, "wafl-data-io")?,
                 wafl_metadata_io: get_key::<u64>(perf_child, "wafl-metadata-io")?,
@@ -528,8 +525,7 @@ impl FromXml for NetappVolumes {
                     .unwrap_or_else(|| "".to_string()),
                 owning_vserver_uuid: get_key::<Uuid>(id_attributes, "owning-vserver-uuid")?,
                 provenance_uuid: get_key::<Uuid>(id_attributes, "provenance-uuid")?,
-                volume_style: get_str_key(id_attributes, "style")
-                    .unwrap_or_else(|| "".to_string()), // example: flex
+                volume_style: get_str_key(id_attributes, "style").unwrap_or_else(|| "".to_string()), // example: flex
                 volume_type: get_key(id_attributes, "type")?, // example: rw
                 volume_uuid: get_key::<Uuid>(id_attributes, "uuid")?,
 
@@ -548,10 +544,7 @@ impl FromXml for NetappVolumes {
                 )?,
                 inofile_version: get_key::<u64>(inode_attributes, "inofile-version")?,
 
-                compression_space_saved: get_key::<u64>(
-                    sis_attributes,
-                    "compression-space-saved",
-                )?,
+                compression_space_saved: get_key::<u64>(sis_attributes, "compression-space-saved")?,
                 deduplication_space_saved: get_key::<u64>(
                     sis_attributes,
                     "deduplication-space-saved",
@@ -617,10 +610,7 @@ impl FromXml for NetappVolumes {
                 )?,
                 size_total: get_key::<u64>(space_attributes, "size-total")?,
                 size_used: get_key::<u64>(space_attributes, "size-used")?,
-                size_used_by_snapshots: get_key::<u64>(
-                    space_attributes,
-                    "size-used-by-snapshots",
-                )?,
+                size_used_by_snapshots: get_key::<u64>(space_attributes, "size-used-by-snapshots")?,
                 snapshot_reserve_size: get_key::<u64>(space_attributes, "snapshot-reserve-size")?,
                 space_full_threshold_percent: get_key::<u8>(
                     space_attributes,
