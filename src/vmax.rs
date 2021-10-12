@@ -258,16 +258,16 @@ fn test_get_slo_array_storagegroups() {
 
 //START Section for Collecting VMAX Front-End Port list and Front-End Port Metrics
 //For Collecting the VMAX Array Front-end Directors
-#[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize, IntoPoint)]
+#[serde(rename_all = "camelCase")]
 pub struct FeDirector {
     pub director_id: String,
     pub first_available_date: u64,
     pub last_available_date: u64,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct FedArray {
     pub fe_director_info: Vec<FeDirector>,
 }
@@ -283,8 +283,8 @@ impl IntoPoint for FedArray {
 }
 
 //For Collecting the VMAX Array Front-end Directors Metrics
-#[serde(rename_all = "PascalCase")]
 #[derive(Debug, Deserialize, IntoPoint)]
+#[serde(rename_all = "PascalCase")]
 pub struct FeDirectorMetrics {
     #[serde(rename = "AvgWPDiscTime")]
     pub avg_wpdisc_time: f64,
@@ -333,8 +333,8 @@ pub struct FeDirectorMetrics {
 }
 
 //Since the returned value are an Object--> Object-Array of values, resultlist-result
-#[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct FedArrayMetrics {
     pub result_list: FedResult,
 }
@@ -357,8 +357,8 @@ impl IntoPoint for FedResult {
 }
 
 //Since the returned value are Object-Object-Array of values, result-array of objects
-#[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct FedResult {
     pub result: Vec<FeDirectorMetrics>,
 }
@@ -370,16 +370,16 @@ pub struct FedResult {
   "symmetrixId" : "000196702346"
 }
 */
-#[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize, IntoPoint)]
+#[serde(rename_all = "camelCase")]
 pub struct PortGroup {
     pub port_group_id: String,
     pub first_available_date: u64,
     pub last_available_date: u64,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct PortGroupArray {
     pub port_group_info: Vec<PortGroup>,
 }
@@ -395,8 +395,8 @@ impl IntoPoint for PortGroupArray {
 }
 
 //For Collecting the VMAX Array PortGroup Metrics
-#[serde(rename_all = "PascalCase")]
 #[derive(Debug, Deserialize, IntoPoint)]
+#[serde(rename_all = "PascalCase")]
 pub struct PortGroupMetrics {
     pub reads: f64,
     pub writes: f64,
@@ -416,8 +416,8 @@ pub struct PortGroupMetrics {
 }
 
 //Since the returned value are an Object--> Object-Array of values, resultlist-result
-#[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct PortGroupArrayMetrics {
     pub result_list: PgResult,
 }
@@ -440,8 +440,8 @@ impl IntoPoint for PgResult {
 }
 
 //Since the returned value are Object-Object-Array of values, result-array of objects
-#[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct PgResult {
     pub result: Vec<PortGroupMetrics>,
 }
@@ -453,16 +453,16 @@ pub struct PgResult {
   "symmetrixId" : "000196702346"
 }
 */
-#[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize, IntoPoint)]
+#[serde(rename_all = "camelCase")]
 pub struct StorageGroupsInfo {
     pub storage_group_id: String,
     pub first_available_date: u64,
     pub last_available_date: u64,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct StorageGroupArray {
     pub storage_group_info: Vec<StorageGroupsInfo>,
 }
@@ -478,8 +478,8 @@ impl IntoPoint for StorageGroupArray {
 }
 
 //For Collecting the VMAX Array StorageGroup Metrics
-#[serde(rename_all = "PascalCase")]
 #[derive(Debug, Deserialize, IntoPoint)]
+#[serde(rename_all = "PascalCase")]
 pub struct StorageGroupMetrics {
     #[serde(rename = "HostIOs")]
     pub host_ios: f64,
@@ -526,8 +526,8 @@ pub struct StorageGroupMetrics {
 }
 
 //Since the returned value are an Object--> Object-Array of values, resultlist-result
-#[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct StorageGroupArrayMetrics {
     pub result_list: SgResult,
 }
@@ -550,8 +550,8 @@ impl IntoPoint for SgResult {
 }
 
 //Since the returned value are Object-Object-Array of values, result-array of objects
-#[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SgResult {
     pub result: Vec<StorageGroupMetrics>,
 }
