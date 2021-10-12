@@ -71,7 +71,38 @@ pub enum StorageError {
 
 impl fmt::Display for StorageError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str(self.description())
+        let err = match *self {
+            StorageError::CookieError(ref e) => e.to_string(),
+            StorageError::CsvError(ref e) => e.to_string(),
+            StorageError::Error(ref e) => e.to_string(),
+            StorageError::FromUtf8Error(ref e) => e.to_string(),
+            StorageError::HttpError(ref e) => e.to_string(),
+            StorageError::InfluxError(ref e) => match *e {
+                InfluxError::SyntaxError(ref s) => s.to_string(),
+                InfluxError::InvalidCredentials(ref s) => s.to_string(),
+                InfluxError::DataBaseDoesNotExist(ref s) => s.to_string(),
+                InfluxError::RetentionPolicyDoesNotExist(ref s) => s.to_string(),
+                InfluxError::Communication(ref s) => s.to_string(),
+                InfluxError::Unknow(ref s) => s.to_string(),
+            },
+            StorageError::InvalidHeaderName(ref e) => e.to_string(),
+            StorageError::InvalidHeaderValue(ref e) => e.to_string(),
+            StorageError::IoError(ref e) => e.to_string(),
+            #[cfg(feature = "isilon-library")]
+            StorageError::IsilonError(ref e) => e.to_string(),
+            StorageError::JsonError(ref e) => e.to_string(),
+            StorageError::NativeTlsError(ref e) => e.to_string(),
+            StorageError::ParseBoolError(ref e) => e.to_string(),
+            StorageError::ParseError(ref e) => e.to_string(),
+            StorageError::ParseFloatError(ref e) => e.to_string(),
+            StorageError::ParseIntError(ref e) => e.to_string(),
+            StorageError::PostgresError(ref e) => e.to_string(),
+            StorageError::ThreadPoolBuildError(ref e) => e.to_string(),
+            StorageError::TreeXmlError(ref e) => e.to_string(),
+            StorageError::ToStrError(ref e) => e.to_string(),
+            StorageError::XmlEmitterError(ref e) => e.to_string(),
+        };
+        f.write_str(&err)
     }
 }
 
@@ -141,6 +172,7 @@ impl StorageError {
     pub fn new(err: String) -> StorageError {
         StorageError::Error(err)
     }
+
 }
 
 impl From<CookieParseError> for StorageError {
