@@ -243,7 +243,7 @@ pub struct OscillatingCounterWindow {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Clone, Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)] 
 pub struct FailureCounter {
     pub short_window: Window,
     pub medium_window: Option<Window>,
@@ -2442,7 +2442,7 @@ pub struct TieBreaker {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Clone, Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)] 
 pub struct Window {
     threshold: u64,
     window_size_in_sec: u64,
