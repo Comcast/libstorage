@@ -200,7 +200,7 @@ impl FromXml for HaPerformanceStats {
         let results = root
             .find_child(|tag| tag.name == "results")
             .ok_or_else(|| StorageError::new(format!("results tag not found in {:?}", root)))?;
-        check_failure(&results)?;
+        check_failure(results)?;
 
         let attribute_list = results
             .find_child(|tag| tag.name == "attributes-list")
@@ -209,66 +209,63 @@ impl FromXml for HaPerformanceStats {
         for perf_child in &attribute_list.children {
             perf_stats.push(PerformanceStat {
                 average_bytes_per_transfer: get_key::<u64>(
-                    &perf_child,
+                    perf_child,
                     "average-bytes-per-transfer",
                 )?,
                 average_megabytes_per_second: get_key::<f64>(
-                    &perf_child,
+                    perf_child,
                     "average-megabytes-per-second",
                 )?,
                 average_remote_nv_msgs_time: get_key::<u64>(
-                    &perf_child,
+                    perf_child,
                     "average-remote-nv-msgs-time",
                 )?,
                 average_remote_nv_transfer_size: get_key::<u64>(
-                    &perf_child,
+                    perf_child,
                     "average-remote-nv-transfer-size",
                 )?,
                 average_remote_nv_transfer_time: get_key::<u64>(
-                    &perf_child,
+                    perf_child,
                     "average-remote-nv-transfer-time",
                 )?,
-                avg_misc_queue_length: get_key::<u64>(&perf_child, "avg-misc-queue-length")?,
-                avg_nvlog_sync_time: get_key::<u64>(&perf_child, "avg-nvlog-sync-time")?,
-                avg_raid_queue_length: get_key::<u64>(&perf_child, "avg-raid-queue-length")?,
-                avg_wafl_queue_length: get_key::<u64>(&perf_child, "avg-wafl-queue-length")?,
-                elapsed_time: get_key::<u64>(&perf_child, "elapsed-time")?,
-                ic_16k_writes: get_key::<u64>(&perf_child, "ic-16k-writes")?,
-                ic_4k_writes: get_key::<u64>(&perf_child, "ic-4k-writes")?,
-                ic_8k_writes: get_key::<u64>(&perf_child, "ic-8k-writes")?,
-                ic_data_aligned: get_key::<u64>(&perf_child, "ic-data-aligned")?,
-                ic_data_misaligned: get_key::<u64>(&perf_child, "ic-data-misaligned")?,
-                ic_discontiguous_writes: get_key::<u64>(&perf_child, "ic-discontiguous-writes")?,
-                ic_isdone: get_key::<u64>(&perf_child, "ic-isdone")?,
-                ic_isdone_fail: get_key::<u64>(&perf_child, "ic-isdone-fail")?,
-                ic_isdone_pass: get_key::<u64>(&perf_child, "ic-isdone-pass")?,
-                ic_metadata_aligned: get_key::<u64>(&perf_child, "ic-metadata-aligned")?,
-                ic_metadata_misaligned: get_key::<u64>(&perf_child, "ic-metadata-misaligned")?,
-                ic_small_writes: get_key::<u64>(&perf_child, "ic-small-writes")?,
-                ic_waitdone_time: get_key::<u64>(&perf_child, "ic-waitdone-time")?,
-                ic_waits: get_key::<u64>(&perf_child, "ic-waits")?,
-                ic_xorder_reads: get_key::<u64>(&perf_child, "ic-xorder-reads")?,
-                ic_xorder_writes: get_key::<u64>(&perf_child, "ic-xorder-writes")?,
-                max_nvlog_sync_time: get_key::<u64>(&perf_child, "max-nvlog-sync-time")?,
-                max_sgl_length: get_key::<u64>(&perf_child, "max-sgl-length")?,
-                misc_data_io: get_key::<u64>(&perf_child, "misc-data-io")?,
-                misc_metadata_io: get_key::<u64>(&perf_child, "misc-metadata-io")?,
-                node_name: get_str_key(&perf_child, "node-name").unwrap_or_else(|| "".to_string()),
-                nv_conn_failover_time: get_key::<u64>(&perf_child, "nv-conn-failover-time")?,
-                queue_max_wait_count: get_key::<u64>(&perf_child, "queue-max-wait-count")?,
-                queue_max_wait_time: get_key::<u64>(&perf_child, "queue-max-wait-time")?,
-                raid_data_io: get_key::<u64>(&perf_child, "raid-data-io")?,
-                raid_metadata_io: get_key::<u64>(&perf_child, "raid-metadata-io")?,
-                rdma_read: get_key::<u64>(&perf_child, "rdma-read")?,
-                rdma_read_waitdone_time: get_key::<u64>(&perf_child, "rdma-read-waitdone-time")?,
-                remote_nv_transfers: get_key::<u64>(&perf_child, "remote-nv-transfers")?,
-                total_receive_queue_waits: get_key::<u64>(
-                    &perf_child,
-                    "total-receive-queue-waits",
-                )?,
-                total_transfers: get_key::<u64>(&perf_child, "total-transfers")?,
-                wafl_data_io: get_key::<u64>(&perf_child, "wafl-data-io")?,
-                wafl_metadata_io: get_key::<u64>(&perf_child, "wafl-metadata-io")?,
+                avg_misc_queue_length: get_key::<u64>(perf_child, "avg-misc-queue-length")?,
+                avg_nvlog_sync_time: get_key::<u64>(perf_child, "avg-nvlog-sync-time")?,
+                avg_raid_queue_length: get_key::<u64>(perf_child, "avg-raid-queue-length")?,
+                avg_wafl_queue_length: get_key::<u64>(perf_child, "avg-wafl-queue-length")?,
+                elapsed_time: get_key::<u64>(perf_child, "elapsed-time")?,
+                ic_16k_writes: get_key::<u64>(perf_child, "ic-16k-writes")?,
+                ic_4k_writes: get_key::<u64>(perf_child, "ic-4k-writes")?,
+                ic_8k_writes: get_key::<u64>(perf_child, "ic-8k-writes")?,
+                ic_data_aligned: get_key::<u64>(perf_child, "ic-data-aligned")?,
+                ic_data_misaligned: get_key::<u64>(perf_child, "ic-data-misaligned")?,
+                ic_discontiguous_writes: get_key::<u64>(perf_child, "ic-discontiguous-writes")?,
+                ic_isdone: get_key::<u64>(perf_child, "ic-isdone")?,
+                ic_isdone_fail: get_key::<u64>(perf_child, "ic-isdone-fail")?,
+                ic_isdone_pass: get_key::<u64>(perf_child, "ic-isdone-pass")?,
+                ic_metadata_aligned: get_key::<u64>(perf_child, "ic-metadata-aligned")?,
+                ic_metadata_misaligned: get_key::<u64>(perf_child, "ic-metadata-misaligned")?,
+                ic_small_writes: get_key::<u64>(perf_child, "ic-small-writes")?,
+                ic_waitdone_time: get_key::<u64>(perf_child, "ic-waitdone-time")?,
+                ic_waits: get_key::<u64>(perf_child, "ic-waits")?,
+                ic_xorder_reads: get_key::<u64>(perf_child, "ic-xorder-reads")?,
+                ic_xorder_writes: get_key::<u64>(perf_child, "ic-xorder-writes")?,
+                max_nvlog_sync_time: get_key::<u64>(perf_child, "max-nvlog-sync-time")?,
+                max_sgl_length: get_key::<u64>(perf_child, "max-sgl-length")?,
+                misc_data_io: get_key::<u64>(perf_child, "misc-data-io")?,
+                misc_metadata_io: get_key::<u64>(perf_child, "misc-metadata-io")?,
+                node_name: get_str_key(perf_child, "node-name").unwrap_or_else(|| "".to_string()),
+                nv_conn_failover_time: get_key::<u64>(perf_child, "nv-conn-failover-time")?,
+                queue_max_wait_count: get_key::<u64>(perf_child, "queue-max-wait-count")?,
+                queue_max_wait_time: get_key::<u64>(perf_child, "queue-max-wait-time")?,
+                raid_data_io: get_key::<u64>(perf_child, "raid-data-io")?,
+                raid_metadata_io: get_key::<u64>(perf_child, "raid-metadata-io")?,
+                rdma_read: get_key::<u64>(perf_child, "rdma-read")?,
+                rdma_read_waitdone_time: get_key::<u64>(perf_child, "rdma-read-waitdone-time")?,
+                remote_nv_transfers: get_key::<u64>(perf_child, "remote-nv-transfers")?,
+                total_receive_queue_waits: get_key::<u64>(perf_child, "total-receive-queue-waits")?,
+                total_transfers: get_key::<u64>(perf_child, "total-transfers")?,
+                wafl_data_io: get_key::<u64>(perf_child, "wafl-data-io")?,
+                wafl_metadata_io: get_key::<u64>(perf_child, "wafl-metadata-io")?,
             })
         }
 
@@ -404,7 +401,7 @@ impl FromXml for NetappVolumes {
         let results = root
             .find_child(|tag| tag.name == "results")
             .ok_or_else(|| StorageError::new(format!("results tag not found in {:?}", root)))?;
-        check_failure(&results)?;
+        check_failure(results)?;
 
         let vols = results
             .find_child(|tag| tag.name == "attributes-list")
@@ -470,9 +467,7 @@ impl FromXml for NetappVolumes {
                             // grab their text
                             .map(|elem| elem.text.clone())
                             // filter out any that are not Some
-                            .filter(|elem| elem.is_some())
-                            // unwrap
-                            .map(|elem| elem.unwrap())
+                            .flatten()
                             .collect();
                         Some(child_aggrs)
                     }
@@ -490,178 +485,169 @@ impl FromXml for NetappVolumes {
                             // grab their text
                             .map(|elem| elem.text.clone())
                             // filter out any that are not Some
-                            .filter(|elem| elem.is_some())
-                            // unwrap
-                            .map(|elem| elem.unwrap())
+                            .flatten()
                             .collect();
                         Some(child_nodes)
                     }
                     None => None,
                 };
             volumes.push(NetappVolume {
-                encrypted: get_key::<bool>(&vol_child, "encrypt")?,
+                encrypted: get_key::<bool>(vol_child, "encrypt")?,
                 grow_threshold_percent: get_key::<u8>(
-                    &autosize_attributes,
+                    autosize_attributes,
                     "grow-threshold-percent",
                 )?,
-                autosize_is_enabled: get_key::<bool>(&autosize_attributes, "is-enabled")?,
-                autosize_maximum_size: get_key::<u64>(&autosize_attributes, "maximum-size")?,
-                autosize_minimum_size: get_key::<u64>(&autosize_attributes, "minimum-size")?,
-                autosize_mode: get_str_key(&autosize_attributes, "mode")
+                autosize_is_enabled: get_key::<bool>(autosize_attributes, "is-enabled")?,
+                autosize_maximum_size: get_key::<u64>(autosize_attributes, "maximum-size")?,
+                autosize_minimum_size: get_key::<u64>(autosize_attributes, "minimum-size")?,
+                autosize_mode: get_str_key(autosize_attributes, "mode")
                     .unwrap_or_else(|| "".to_string()),
                 autosize_shrink_threshold_percent: get_key::<u8>(
-                    &autosize_attributes,
+                    autosize_attributes,
                     "shrink-threshold-percent",
                 )?,
-                volume_id_aggr_list: aggr_list.unwrap_or_else(|| vec![]),
-                containing_aggregate_name: get_str_key(&id_attributes, "containing-aggregate-name")
+                volume_id_aggr_list: aggr_list.unwrap_or_else(Vec::new),
+                containing_aggregate_name: get_str_key(id_attributes, "containing-aggregate-name")
                     .unwrap_or_else(|| "".to_string()),
                 containing_aggregate_uuid: get_key::<Uuid>(
-                    &id_attributes,
+                    id_attributes,
                     "containing-aggregate-uuid",
                 )?,
-                creation_time: get_key::<u64>(&id_attributes, "creation-time")?,
-                fsid: get_key::<u64>(&id_attributes, "fsid")?,
-                instance_uuid: get_key::<Uuid>(&id_attributes, "instance-uuid")?,
-                name: get_str_key(&id_attributes, "name").unwrap_or_else(|| "".to_string()),
-                name_ordinal: get_str_key(&id_attributes, "name-ordinal")
+                creation_time: get_key::<u64>(id_attributes, "creation-time")?,
+                fsid: get_key::<u64>(id_attributes, "fsid")?,
+                instance_uuid: get_key::<Uuid>(id_attributes, "instance-uuid")?,
+                name: get_str_key(id_attributes, "name").unwrap_or_else(|| "".to_string()),
+                name_ordinal: get_str_key(id_attributes, "name-ordinal")
                     .unwrap_or_else(|| "".to_string()),
-                node: get_str_key(&id_attributes, "node").unwrap_or_else(|| "".to_string()),
-                node_list: node_list.unwrap_or_else(|| vec![]),
-                owning_vserver_name: get_str_key(&id_attributes, "owning-vserver-name")
+                node: get_str_key(id_attributes, "node").unwrap_or_else(|| "".to_string()),
+                node_list: node_list.unwrap_or_else(Vec::new),
+                owning_vserver_name: get_str_key(id_attributes, "owning-vserver-name")
                     .unwrap_or_else(|| "".to_string()),
-                owning_vserver_uuid: get_key::<Uuid>(&id_attributes, "owning-vserver-uuid")?,
-                provenance_uuid: get_key::<Uuid>(&id_attributes, "provenance-uuid")?,
-                volume_style: get_str_key(&id_attributes, "style")
-                    .unwrap_or_else(|| "".to_string()), // example: flex
-                volume_type: get_key(&id_attributes, "type")?, // example: rw
-                volume_uuid: get_key::<Uuid>(&id_attributes, "uuid")?,
+                owning_vserver_uuid: get_key::<Uuid>(id_attributes, "owning-vserver-uuid")?,
+                provenance_uuid: get_key::<Uuid>(id_attributes, "provenance-uuid")?,
+                volume_style: get_str_key(id_attributes, "style").unwrap_or_else(|| "".to_string()), // example: flex
+                volume_type: get_key(id_attributes, "type")?, // example: rw
+                volume_uuid: get_key::<Uuid>(id_attributes, "uuid")?,
 
-                inode_block_type: get_str_key(&inode_attributes, "block-type")
+                inode_block_type: get_str_key(inode_attributes, "block-type")
                     .unwrap_or_else(|| "".to_string()),
-                inode_files_private_used: get_key::<u64>(&inode_attributes, "files-private-used")?,
-                inode_files_total: get_key::<u64>(&inode_attributes, "files-total")?,
-                inode_files_used: get_key::<u64>(&inode_attributes, "files-used")?,
+                inode_files_private_used: get_key::<u64>(inode_attributes, "files-private-used")?,
+                inode_files_total: get_key::<u64>(inode_attributes, "files-total")?,
+                inode_files_used: get_key::<u64>(inode_attributes, "files-used")?,
                 inodefile_private_capacity: get_key::<u64>(
-                    &inode_attributes,
+                    inode_attributes,
                     "inodefile-private-capacity",
                 )?,
                 inodefile_public_capacity: get_key::<u64>(
-                    &inode_attributes,
+                    inode_attributes,
                     "inodefile-public-capacity",
                 )?,
-                inofile_version: get_key::<u64>(&inode_attributes, "inofile-version")?,
+                inofile_version: get_key::<u64>(inode_attributes, "inofile-version")?,
 
-                compression_space_saved: get_key::<u64>(
-                    &sis_attributes,
-                    "compression-space-saved",
-                )?,
+                compression_space_saved: get_key::<u64>(sis_attributes, "compression-space-saved")?,
                 deduplication_space_saved: get_key::<u64>(
-                    &sis_attributes,
+                    sis_attributes,
                     "deduplication-space-saved",
                 )?,
                 deduplication_space_shared: get_key::<u64>(
-                    &sis_attributes,
+                    sis_attributes,
                     "deduplication-space-shared",
                 )?,
-                is_sis_logging_enabled: get_key::<bool>(&sis_attributes, "is-sis-logging-enabled")?,
-                is_sis_state_enabled: get_key::<bool>(&sis_attributes, "is-sis-state-enabled")?,
-                is_sis_volume: get_key::<bool>(&sis_attributes, "is-sis-volume")?,
+                is_sis_logging_enabled: get_key::<bool>(sis_attributes, "is-sis-logging-enabled")?,
+                is_sis_state_enabled: get_key::<bool>(sis_attributes, "is-sis-state-enabled")?,
+                is_sis_volume: get_key::<bool>(sis_attributes, "is-sis-volume")?,
                 percentage_compression_space_saved: get_key::<u8>(
-                    &sis_attributes,
+                    sis_attributes,
                     "percentage-compression-space-saved",
                 )?,
                 percentage_deduplication_space_saved: get_key::<u8>(
-                    &sis_attributes,
+                    sis_attributes,
                     "percentage-deduplication-space-saved",
                 )?,
                 percentage_total_space_saved: get_key::<u8>(
-                    &sis_attributes,
+                    sis_attributes,
                     "percentage-total-space-saved",
                 )?,
-                total_space_saved: get_key::<u64>(&sis_attributes, "total-space-saved")?,
+                total_space_saved: get_key::<u64>(sis_attributes, "total-space-saved")?,
 
-                filesystem_size: get_key::<u64>(&space_attributes, "filesystem-size")?,
-                is_filesys_size_fixed: get_key::<bool>(&space_attributes, "is-filesys-size-fixed")?,
+                filesystem_size: get_key::<u64>(space_attributes, "filesystem-size")?,
+                is_filesys_size_fixed: get_key::<bool>(space_attributes, "is-filesys-size-fixed")?,
                 is_space_guarantee_enabled: get_key::<bool>(
-                    &space_attributes,
+                    space_attributes,
                     "is-space-guarantee-enabled",
                 )?,
-                is_space_slo_enabled: get_key::<bool>(&space_attributes, "is-space-slo-enabled")?,
-                overwrite_reserve: get_key::<u64>(&space_attributes, "overwrite-reserve")?,
+                is_space_slo_enabled: get_key::<bool>(space_attributes, "is-space-slo-enabled")?,
+                overwrite_reserve: get_key::<u64>(space_attributes, "overwrite-reserve")?,
                 overwrite_reserve_required: get_key::<u64>(
-                    &space_attributes,
+                    space_attributes,
                     "overwrite-reserve-required",
                 )?,
-                overwrite_reserve_used: get_key::<u8>(&space_attributes, "overwrite-reserve-used")?,
+                overwrite_reserve_used: get_key::<u8>(space_attributes, "overwrite-reserve-used")?,
                 overwrite_reserve_used_actual: get_key::<u8>(
-                    &space_attributes,
+                    space_attributes,
                     "overwrite-reserve-used-actual",
                 )?,
                 percentage_fractional_reserve: get_key::<u8>(
-                    &space_attributes,
+                    space_attributes,
                     "percentage-fractional-reserve",
                 )?,
-                percentage_size_used: get_key::<u8>(&space_attributes, "percentage-size-used")?,
+                percentage_size_used: get_key::<u8>(space_attributes, "percentage-size-used")?,
                 percentage_snapshot_reserve: get_key::<u8>(
-                    &space_attributes,
+                    space_attributes,
                     "percentage-snapshot-reserve",
                 )?,
                 percentage_snapshot_reserve_used: get_key::<u8>(
-                    &space_attributes,
+                    space_attributes,
                     "percentage-snapshot-reserve-used",
                 )?,
-                physical_used: get_key::<u64>(&space_attributes, "physical-used")?,
-                physical_used_percent: get_key::<u8>(&space_attributes, "physical-used-percent")?,
-                size: get_key::<u64>(&space_attributes, "size")?,
-                size_available: get_key::<u64>(&space_attributes, "size-available")?,
+                physical_used: get_key::<u64>(space_attributes, "physical-used")?,
+                physical_used_percent: get_key::<u8>(space_attributes, "physical-used-percent")?,
+                size: get_key::<u64>(space_attributes, "size")?,
+                size_available: get_key::<u64>(space_attributes, "size-available")?,
                 size_available_for_snapshots: get_key::<u64>(
-                    &space_attributes,
+                    space_attributes,
                     "size-available-for-snapshots",
                 )?,
-                size_total: get_key::<u64>(&space_attributes, "size-total")?,
-                size_used: get_key::<u64>(&space_attributes, "size-used")?,
-                size_used_by_snapshots: get_key::<u64>(
-                    &space_attributes,
-                    "size-used-by-snapshots",
-                )?,
-                snapshot_reserve_size: get_key::<u64>(&space_attributes, "snapshot-reserve-size")?,
+                size_total: get_key::<u64>(space_attributes, "size-total")?,
+                size_used: get_key::<u64>(space_attributes, "size-used")?,
+                size_used_by_snapshots: get_key::<u64>(space_attributes, "size-used-by-snapshots")?,
+                snapshot_reserve_size: get_key::<u64>(space_attributes, "snapshot-reserve-size")?,
                 space_full_threshold_percent: get_key::<u8>(
-                    &space_attributes,
+                    space_attributes,
                     "space-full-threshold-percent",
                 )?,
-                space_guarantee: get_str_key(&space_attributes, "space-guarantee")
+                space_guarantee: get_str_key(space_attributes, "space-guarantee")
                     .unwrap_or_else(|| "".to_string()),
                 space_mgmt_option_try_first: get_str_key(
-                    &space_attributes,
+                    space_attributes,
                     "space-mgmt-option-try-first",
                 )
                 .unwrap_or_else(|| "".to_string()),
                 space_nearly_full_threshold_percent: get_key::<u8>(
-                    &space_attributes,
+                    space_attributes,
                     "space-nearly-full-threshold-percent",
                 )?,
-                space_slo: get_str_key(&space_attributes, "space-slo")
+                space_slo: get_str_key(space_attributes, "space-slo")
                     .unwrap_or_else(|| "".to_string()),
 
                 become_node_root_after_reboot: get_key::<bool>(
-                    &state_attributes,
+                    state_attributes,
                     "become-node-root-after-reboot",
                 )?,
-                force_nvfail_on_dr: get_key::<bool>(&state_attributes, "force-nvfail-on-dr")?,
-                ignore_inconsistent: get_key::<bool>(&state_attributes, "ignore-inconsistent")?,
-                in_nvfailed_state: get_key::<bool>(&state_attributes, "in-nvfailed-state")?,
-                is_cluster_volume: get_key::<bool>(&state_attributes, "is-cluster-volume")?,
-                is_constituent: get_key::<bool>(&state_attributes, "is-constituent")?,
-                is_flexgroup: get_key::<bool>(&state_attributes, "is-flexgroup")?,
-                is_inconsistent: get_key::<bool>(&state_attributes, "is-inconsistent")?,
-                is_invalid: get_key::<bool>(&state_attributes, "is-invalid")?,
-                is_node_root: get_key::<bool>(&state_attributes, "is-node-root")?,
-                is_nvfail_enabled: get_key::<bool>(&state_attributes, "is-nvfail-enabled")?,
-                is_quiesced_in_memory: get_key::<bool>(&state_attributes, "is-quiesced-in-memory")?,
-                is_quiesced_on_disk: get_key::<bool>(&state_attributes, "is-quiesced-on-disk")?,
-                is_unrecoverable: get_key::<bool>(&state_attributes, "is-unrecoverable")?,
-                state: get_str_key(&state_attributes, "state").unwrap_or_else(|| "".to_string()),
+                force_nvfail_on_dr: get_key::<bool>(state_attributes, "force-nvfail-on-dr")?,
+                ignore_inconsistent: get_key::<bool>(state_attributes, "ignore-inconsistent")?,
+                in_nvfailed_state: get_key::<bool>(state_attributes, "in-nvfailed-state")?,
+                is_cluster_volume: get_key::<bool>(state_attributes, "is-cluster-volume")?,
+                is_constituent: get_key::<bool>(state_attributes, "is-constituent")?,
+                is_flexgroup: get_key::<bool>(state_attributes, "is-flexgroup")?,
+                is_inconsistent: get_key::<bool>(state_attributes, "is-inconsistent")?,
+                is_invalid: get_key::<bool>(state_attributes, "is-invalid")?,
+                is_node_root: get_key::<bool>(state_attributes, "is-node-root")?,
+                is_nvfail_enabled: get_key::<bool>(state_attributes, "is-nvfail-enabled")?,
+                is_quiesced_in_memory: get_key::<bool>(state_attributes, "is-quiesced-in-memory")?,
+                is_quiesced_on_disk: get_key::<bool>(state_attributes, "is-quiesced-on-disk")?,
+                is_unrecoverable: get_key::<bool>(state_attributes, "is-unrecoverable")?,
+                state: get_str_key(state_attributes, "state").unwrap_or_else(|| "".to_string()),
             });
         }
 
@@ -690,7 +676,7 @@ impl FromXml for OnTapVersion {
         let results = root
             .find_child(|tag| tag.name == "results")
             .ok_or_else(|| StorageError::new(format!("results tag not found in {:?}", root)))?;
-        check_failure(&results)?;
+        check_failure(results)?;
 
         let is_clustered = get_str_key(&root, "is-clustered");
         let build_timestamp = get_str_key(&root, "build-timestamp");

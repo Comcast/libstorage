@@ -70,7 +70,7 @@ pub struct LdevPort {
 
 impl IntoPoint for LdevPort {
     fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
-        let mut p = TsPoint::new(name.unwrap_or_else(|| "hitachi_ldev_port"), is_time_series);
+        let mut p = TsPoint::new(name.unwrap_or("hitachi_ldev_port"), is_time_series);
         p.add_tag("port_id", TsValue::String(self.port_id.clone()));
         p.add_field("host_group_number", TsValue::Long(self.host_group_number));
         p.add_tag(
@@ -120,7 +120,7 @@ pub struct StorageLdev {
 impl IntoPoint for StorageLdev {
     fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points: Vec<TsPoint> = Vec::new();
-        let mut p = TsPoint::new(name.unwrap_or_else(|| "hitachi_ldev"), is_time_series);
+        let mut p = TsPoint::new(name.unwrap_or("hitachi_ldev"), is_time_series);
 
         p.add_field("ldev_id", TsValue::String(convert_to_base16(self.ldev_id)));
         p.add_field("clpr_id", TsValue::Long(self.clpr_id));
@@ -143,10 +143,7 @@ impl IntoPoint for StorageLdev {
                 .into_iter()
                 // Tag each port with ldev_id
                 .map(|mut point| {
-                    point.add_tag(
-                        "ldev_id",
-                        TsValue::String(convert_to_base16(self.ldev_id.clone())),
-                    );
+                    point.add_tag("ldev_id", TsValue::String(convert_to_base16(self.ldev_id)));
                     point
                 })
                 .collect();

@@ -51,7 +51,7 @@ pub struct Brocade {
 impl Brocade {
     /// Initialize and connect to a Brocade switch.
     pub fn new(client: &reqwest::Client, config: BrocadeConfig) -> MetricsResult<Self> {
-        let token = login(&client, &config)?;
+        let token = login(client, &config)?;
         Ok(Brocade {
             client: client.clone(),
             config,
@@ -534,7 +534,7 @@ fn sleep_the_collections() {
     thread::sleep(sleep_time);
 
     assert!(now.elapsed() >= sleep_time);
-    }
+}
 
 impl Brocade {
     // Deletes the client session
@@ -577,7 +577,7 @@ impl Brocade {
                 ACCEPT,
                 "application/vnd.brocade.networkadvisor+json;version=v1",
             )
-            .header("WStoken", HeaderValue::from_str(&ws_token)?)
+            .header("WStoken", HeaderValue::from_str(ws_token)?)
             .send()?
             .error_for_status()?
             .text()?;
@@ -640,13 +640,13 @@ impl Brocade {
         sleep_the_collections();
         let result = self
             .get_server_response::<FcFabrics>("resourcegroups/All/fcfabrics", &self.token)
-            .and_then(|fabrics| {
+            .map(|fabrics| {
                 let fabrics: Vec<String> = fabrics
                     .fc_fabrics
                     .iter()
                     .map(|fabric| fabric.key.clone())
                     .collect::<Vec<String>>();
-                Ok(fabrics)
+                fabrics
             })?;
         Ok(result)
     }
@@ -672,13 +672,13 @@ impl Brocade {
         sleep_the_collections();
         let result = self
             .get_server_response::<FcSwitches>("resourcegroups/All/fcswitches", &self.token)
-            .and_then(|switches| {
+            .map(|switches| {
                 let switches: Vec<String> = switches
                     .fc_switches
                     .iter()
                     .map(|switch| switch.key.clone())
                     .collect::<Vec<String>>();
-                Ok(switches)
+                switches
             })?;
         Ok(result)
     }

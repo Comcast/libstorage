@@ -105,20 +105,21 @@ pub struct BWC {
 }
 
 impl BWC {
-    // Calculate IOPS 
+    // Calculate IOPS
     fn iops(self) -> u64 {
-        let iops = self.num_occured.checked_div(self.num_occured).unwrap_or(0);
-        iops
+        self.num_occured.checked_div(self.num_occured).unwrap_or(0)
     }
     // Calculate Bandwidth
     fn bandwidth(self) -> u64 {
-        let bandwidth = self.total_weight_in_kb.checked_div(self.num_seconds).unwrap_or(0);
-        bandwidth
+        self.total_weight_in_kb
+            .checked_div(self.num_seconds)
+            .unwrap_or(0)
     }
     // Calculate IO Size or Latency: totalWeightIn* / numOccured
     fn iosize_or_latency(self) -> u64 {
-        let iosize = self.total_weight_in_kb.checked_div(self.num_occured).unwrap_or(0);
-        iosize
+        self.total_weight_in_kb
+            .checked_div(self.num_occured)
+            .unwrap_or(0)
     }
     // Calculate the average kb/s from the fields
     fn average(&self) -> u64 {
@@ -250,7 +251,7 @@ pub struct FailureCounter {
 }
 
 #[serde(rename_all = "camelCase")]
-#[derive(Clone, Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)] // v3 look for OscillatingCounter
 pub struct Successfulio {
     pub short_window: Option<OscillatingCounterWindow>,
     pub medium_window: Option<OscillatingCounterWindow>,
@@ -344,59 +345,59 @@ pub struct DriveId {
 #[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Debug)]
 pub struct DeviceStatistics {
-    avg_write_size_in_bytes: u64, // in v3
-    active_moving_in_fwd_rebuild_jobs: u64, // in v3
-    active_moving_in_rebalance_jobs: u64, // in v3
-    active_moving_out_bck_rebuild_jobs: u64, // in v3
-    active_moving_out_fwd_rebuild_jobs: u64, // in v3
-    active_moving_rebalance_jobs: u64, // in v3
-    active_moving_in_norm_rebuild_jobs: u64, // in v3
-    active_moving_in_bck_rebuild_jobs: u64, // in v3
+    avg_write_size_in_bytes: u64,             // in v3
+    active_moving_in_fwd_rebuild_jobs: u64,   // in v3
+    active_moving_in_rebalance_jobs: u64,     // in v3
+    active_moving_out_bck_rebuild_jobs: u64,  // in v3
+    active_moving_out_fwd_rebuild_jobs: u64,  // in v3
+    active_moving_rebalance_jobs: u64,        // in v3
+    active_moving_in_norm_rebuild_jobs: u64,  // in v3
+    active_moving_in_bck_rebuild_jobs: u64,   // in v3
     active_moving_out_norm_rebuild_jobs: u64, // in v3
-    avg_read_latency_in_microsec: u64, // in v3
-    avg_write_latency_in_microsec: u64, // in v3
-    avg_read_size_in_bytes: u64, // in v3
+    avg_read_latency_in_microsec: u64,        // in v3
+    avg_write_latency_in_microsec: u64,       // in v3
+    avg_read_size_in_bytes: u64,              // in v3
     #[serde(rename = "BackgroundScanCompareCount")]
     background_scan_compare_count: u64, // in v3
     #[serde(rename = "BackgroundScannedInMB")]
     background_scanned_in_mb: u64, // in v3
-    bck_rebuild_write_bwc: BWC, // in v3
-    bck_rebuild_read_bwc: BWC, // in v3
-    capacity_in_use_in_kb: u64, // in v3
+    bck_rebuild_write_bwc: BWC,               // in v3
+    bck_rebuild_read_bwc: BWC,                // in v3
+    capacity_in_use_in_kb: u64,               // in v3
     capacity_in_use_no_overhead_in_kb: Option<u64>, // NEW V3
-    capacity_limit_in_kb: Option<u64>,  // NEW V3
+    capacity_limit_in_kb: Option<u64>,        // NEW V3
     changelog_destage_completion_percent: Option<u64>, // NEW V3
     checksum_calculation_completion_percent: Option<u64>, // NEW V3
-    checksum_capacity_in_kb: Option<u64>, // NEW v3
+    checksum_capacity_in_kb: Option<u64>,     // NEW v3
     checksum_migration_completion_percent: Option<u64>, // NEW V3
     compressed_data_compression_ratio: Option<f64>, // NEW V3
-    compression_ratio: Option<f64>, // NEW V3
+    compression_ratio: Option<f64>,           // NEW V3
     #[serde(rename = "currentChecksumMigrationSizeInKB")]
     current_checksum_migration_size_in_kb: Option<u64>, // NEW V3
     current_checksum_protected_combs_num: Option<u64>, // NEW V3
     current_fgl_migration_size_in_kb: Option<u64>, // NEW V3
-    degraded_healthy_vac_in_kb: u64, // in v3
-    degraded_failed_vac_in_kb: u64, // in v3
-    failed_vac_in_kb: u64, // in v3
+    degraded_healthy_vac_in_kb: u64,          // in v3
+    degraded_failed_vac_in_kb: u64,           // in v3
+    failed_vac_in_kb: u64,                    // in v3
     fgl_uncompressed_data_size_in_kb: Option<u64>, // NEW V3
     fgl_compressed_data_size_in_kb: Option<u64>, // NEW V3
-    fgl_spares_in_kb: Option<u64>, // NEW V3
+    fgl_spares_in_kb: Option<u64>,            // NEW V3
     fgl_migration_completion_percent: Option<u64>, // NEW V3
     fgl_user_data_capacity_in_kb: Option<u64>, // NEW V3
-    fixed_read_error_count: u64, //in v3
-    fwd_rebuild_read_bwc: BWC, // in v3
-    fwd_rebuild_write_bwc: BWC, // in v3
-    in_maintenance_vac_in_kb: u64, // in v3
-    in_use_vac_in_kb: u64, // in v3
-    log_written_blocks_in_kb: Option<u64>, // NEW v3
-    max_capacity_in_kb: Option<u64>,  // NEW v3
+    fixed_read_error_count: u64,              //in v3
+    fwd_rebuild_read_bwc: BWC,                // in v3
+    fwd_rebuild_write_bwc: BWC,               // in v3
+    in_maintenance_vac_in_kb: u64,            // in v3
+    in_use_vac_in_kb: u64,                    // in v3
+    log_written_blocks_in_kb: Option<u64>,    // NEW v3
+    max_capacity_in_kb: Option<u64>,          // NEW v3
     max_user_data_capacity_in_kb: Option<u64>, // NEW V3
-    metadata_overhead_in_kb: Option<u64>, // NEW V3
+    metadata_overhead_in_kb: Option<u64>,     // NEW V3
     mg_user_ddata_ccapacity_in_kb: Option<u64>, // NEW V3
-    net_capacity_in_use_in_kb: Option<u64>, // NEW V3
+    net_capacity_in_use_in_kb: Option<u64>,   // NEW V3
     net_capacity_in_use_no_overhead_in_kb: Option<u64>, // NEW V3
     net_fgl_compressed_data_size_in_kb: Option<u64>, // NEW V3
-    net_fgl_spares_in_kb: Option<u64>, // NEW V3
+    net_fgl_spares_in_kb: Option<u64>,        // NEW V3
     net_fgl_uncompressed_data_size_in_kb: Option<u64>, // NEW V3
     net_fgl_user_data_capacity_in_kb: Option<u64>, // NEW V3
     net_max_user_data_capacity_in_kb: Option<u64>, // NEW V3
@@ -405,62 +406,62 @@ pub struct DeviceStatistics {
     net_provisioned_addresses_in_kb: Option<u64>, // NEW V3
     net_snapshot_capacity_in_kb: Option<u64>, // NEW V3
     net_trimmed_user_data_capacity_in_kb: Option<u64>, // NEW V3
-    net_unused_capacity_in_kb: Option<u64>, // NEW V3
+    net_unused_capacity_in_kb: Option<u64>,   // NEW V3
     net_user_data_capacity_in_kb: Option<u64>, // NEW V3
     net_user_data_capacity_no_trim_in_kb: Option<u64>, // NEW V3
-    norm_rebuild_read_bwc: BWC, // in v3
-    norm_rebuild_write_bwc: BWC, // in v3
+    norm_rebuild_read_bwc: BWC,               // in v3
+    norm_rebuild_write_bwc: BWC,              // in v3
     num_changelog_records_left_to_destage: Option<u64>, // NEW V3
-    pending_moving_in_bck_rebuild_jobs: u64, // in v3
+    pending_moving_in_bck_rebuild_jobs: u64,  // in v3
     pending_moving_out_bck_rebuild_jobs: u64, // in v3
     pending_moving_in_norm_rebuild_jobs: u64, // in v3
-    pending_moving_rebalance_jobs: u64, // in v3
+    pending_moving_rebalance_jobs: u64,       // in v3
     pending_moving_out_normrebuild_jobs: u64, // in v3
-    pending_moving_in_rebalance_jobs: u64, // in v3
-    pending_moving_in_fwd_rebuild_jobs: u64, // in v3
+    pending_moving_in_rebalance_jobs: u64,    // in v3
+    pending_moving_in_fwd_rebuild_jobs: u64,  // in v3
     pending_moving_out_fwd_rebuild_jobs: u64, // in v3
-    primary_read_from_rmcache_bwc: BWC, // in v3
-    primary_read_from_dev_bwc: BWC, // in v3
-    primary_read_bwc: BWC, // in v3
-    primary_vac_in_kb: u64, // in v3
-    protected_vac_in_kb: u64, // in v3
-    primary_write_bwc: BWC, // in v3
-    rebalance_read_bwc: BWC, // in v3
-    rebalance_write_bwc: BWC, // in v3
-    rfcache_avg_read_time: u64, // in v3
-    rfcache_io_errors: u64, // in v3
+    primary_read_from_rmcache_bwc: BWC,       // in v3
+    primary_read_from_dev_bwc: BWC,           // in v3
+    primary_read_bwc: BWC,                    // in v3
+    primary_vac_in_kb: u64,                   // in v3
+    protected_vac_in_kb: u64,                 // in v3
+    primary_write_bwc: BWC,                   // in v3
+    rebalance_read_bwc: BWC,                  // in v3
+    rebalance_write_bwc: BWC,                 // in v3
+    rfcache_avg_read_time: u64,               // in v3
+    rfcache_io_errors: u64,                   // in v3
     rfcache_reads_skipped_internal_error: u64, // in v3
-    rfcache_source_device_writes: u64, // in v3
+    rfcache_source_device_writes: u64,        // in v3
     rfcache_reads_skipped_low_resources: u64, // in v3
-    rfcache_reads_skipped_max_io_size: u64, // in v3
+    rfcache_reads_skipped_max_io_size: u64,   // in v3
     rfcache_reads_skipped_aligned_size_too_large: u64, // in v3
     rfcache_writes_skipped_internal_error: u64, // in v3
-    rfcache_writes_skipped_stuck_io: u64, // in v3
-    rfcache_writes_skipped_cache_miss: u64, // in v3
-    rfcache_writes_skipped_heavy_load: u64, // in v3
-    rfcache_write_miss: u64, // in v3
+    rfcache_writes_skipped_stuck_io: u64,     // in v3
+    rfcache_writes_skipped_cache_miss: u64,   // in v3
+    rfcache_writes_skipped_heavy_load: u64,   // in v3
+    rfcache_write_miss: u64,                  // in v3
     rfcache_writes_skipped_low_resources: u64, // in v3
-    rfcache_reads_from_cache: u64, // in v3
-    rfcache_ios_outstanding: u64, // in v3
-    rfcache_skipped_unlined_write: u64, // in v3
-    rfcache_writes_received: u64, // in v3
-    rfcache_write_pending: u64, // in v3
-    rfcache_writes_skipped_max_io_size: u64, // in v3
-    rfcache_reads_skipped_stuck_io: u64, // in v3
-    rfcache_reads_skipped: u64, // in v3
-    rfcache_reads_received: u64, // in v3
-    rfcache_ios_skipped: u64, // in v3
-    rfcache_read_miss: u64, // in v3
-    rfcache_reads_skipped_lock_ios: u64, // in v3
-    rfache_read_hit: u64, // in v3
-    rfcache_avg_write_time: u64, // in v3
-    rfcache_source_device_reads: u64, // in v3
-    rfcache_reads_skipped_heavy_load: u64, // in v3
-    rfcache_reads_pending: u64, // in v3
-    rfcache_fd_reads_recieved: Option<u64>, // NEW V3
-    rfcache_fd_writes_recieved: Option<u64>, // NEW V3
-    rfcache_fd_inlight_reads: Option<u64>, // NEW V3
-    rfcache_fd_inlight_writes: Option<u64>, // NEW V3
+    rfcache_reads_from_cache: u64,            // in v3
+    rfcache_ios_outstanding: u64,             // in v3
+    rfcache_skipped_unlined_write: u64,       // in v3
+    rfcache_writes_received: u64,             // in v3
+    rfcache_write_pending: u64,               // in v3
+    rfcache_writes_skipped_max_io_size: u64,  // in v3
+    rfcache_reads_skipped_stuck_io: u64,      // in v3
+    rfcache_reads_skipped: u64,               // in v3
+    rfcache_reads_received: u64,              // in v3
+    rfcache_ios_skipped: u64,                 // in v3
+    rfcache_read_miss: u64,                   // in v3
+    rfcache_reads_skipped_lock_ios: u64,      // in v3
+    rfache_read_hit: u64,                     // in v3
+    rfcache_avg_write_time: u64,              // in v3
+    rfcache_source_device_reads: u64,         // in v3
+    rfcache_reads_skipped_heavy_load: u64,    // in v3
+    rfcache_reads_pending: u64,               // in v3
+    rfcache_fd_reads_recieved: Option<u64>,   // NEW V3
+    rfcache_fd_writes_recieved: Option<u64>,  // NEW V3
+    rfcache_fd_inlight_reads: Option<u64>,    // NEW V3
+    rfcache_fd_inlight_writes: Option<u64>,   // NEW V3
     rfcache_fd_read_time_greater500_millis: Option<u64>, // NEW V3
     rfcache_fd_read_time_greater1_sec: Option<u64>, // NEW V3
     rfcache_fd_read_time_greater5_sec: Option<u64>, // NEW V3
@@ -469,40 +470,40 @@ pub struct DeviceStatistics {
     rfcache_fd_write_time_greater1_sec: Option<u64>, // NEW V3
     rfcache_fd_write_time_greater5_sec: Option<u64>, // NEW V3
     rfcache_fd_write_time_greater1_min: Option<u64>, // NEW V3
-    rfcache_fd_avg_read_time: Option<u64>, // NEW V3
-    rfcache_fd_avg_write_time: Option<u64>, // NEW V3
-    rfcache_fd_io_errors: Option<u64>, // NEW V3
+    rfcache_fd_avg_read_time: Option<u64>,    // NEW V3
+    rfcache_fd_avg_write_time: Option<u64>,   // NEW V3
+    rfcache_fd_io_errors: Option<u64>,        // NEW V3
     rfcache_fd_cache_overloaded: Option<u64>, // NEW V3
     rfcache_fd_monitor_error_stuck_io: Option<u64>, // NEW V3
-    rm_pending_allocated_in_kb: u64, // in v3
-    rm_pending_thick_in_kb: Option<u64>, // NEW v3
-    secondary_read_from_dev_bwc: BWC, // in v3
-    secondary_vac_in_kb: u64, // in v3
-    secondary_read_bwc: BWC, // in v3
-    secondary_read_from_rmcache_bwc: BWC, // in v3
-    secondary_write_bwc: BWC, // in v3
-    semi_protected_vac_in_kb: u64, // in v3
+    rm_pending_allocated_in_kb: u64,          // in v3
+    rm_pending_thick_in_kb: Option<u64>,      // NEW v3
+    secondary_read_from_dev_bwc: BWC,         // in v3
+    secondary_vac_in_kb: u64,                 // in v3
+    secondary_read_bwc: BWC,                  // in v3
+    secondary_read_from_rmcache_bwc: BWC,     // in v3
+    secondary_write_bwc: BWC,                 // in v3
+    semi_protected_vac_in_kb: u64,            // in v3
     snap_capacity_in_use_occupied_in_kb: u64, // in v3
-    snap_capacity_in_use_in_kb: u64, //in v3
-    snapshot_capacity_in_kb: Option<u64>, // NEW V3
-    temp_capacity_vac_in_kb: Option<u64>, // NEW v3
-    thick_capacity_in_use_in_kb: u64, // in v3
-    thin_capacity_in_use_in_kb: u64, // in v3
-    thin_capacity_allocated_in_km: u64, // in v3
+    snap_capacity_in_use_in_kb: u64,          //in v3
+    snapshot_capacity_in_kb: Option<u64>,     // NEW V3
+    temp_capacity_vac_in_kb: Option<u64>,     // NEW v3
+    thick_capacity_in_use_in_kb: u64,         // in v3
+    thin_capacity_in_use_in_kb: u64,          // in v3
+    thin_capacity_allocated_in_km: u64,       // in v3
     total_changelog_records_to_destage: Option<u64>, // NEW V3
     #[serde(rename = "totalChecksumMigrationSizeInKB")]
     total_checksum_migration_size_in_kb: Option<u64>, // NEW V3
     total_checksum_protected_combs_num: Option<u64>, // NEW V3
     total_fgl_migration_size_in_kb: Option<u64>, // NEW V3
-    total_read_bwc: BWC, // in v3
-    total_write_bwc: BWC, // in v3
+    total_read_bwc: BWC,                      // in v3
+    total_write_bwc: BWC,                     // in v3
     trimmed_user_data_capacity_in_kb: Option<u64>, // NEW V3
     unused_capacity_in_kb: u64,
-    unreachable_unused_capacity_in_kb: u64, // in v3
-    user_data_capacity_in_kb: Option<u64>, // NEW V3
+    unreachable_unused_capacity_in_kb: u64,        // in v3
+    user_data_capacity_in_kb: Option<u64>,         // NEW V3
     user_data_capacity_no_trim_in_kb: Option<u64>, // NEW V3
-    vol_migration_read_bwc: Option<BWC>, // NEW V3
-    vol_migration_write_bwc: Option<BWC>, // NEW V3
+    vol_migration_read_bwc: Option<BWC>,           // NEW V3
+    vol_migration_write_bwc: Option<BWC>,          // NEW V3
 }
 
 impl IntoPoint for DeviceStatistics {
@@ -541,9 +542,18 @@ impl IntoPoint for DeviceStatistics {
             "primary_read_bwc",
             TsValue::Long(self.primary_read_bwc.total_weight_in_kb),
         );
-        p.add_field("primary_read_bwc_total_weight_in_kb", TsValue::Long(self.primary_read_bwc.total_weight_in_kb));
-        p.add_field("primary_read_bwc_num_seconds", TsValue::Long(self.primary_read_bwc.num_seconds));
-        p.add_field("primary_read_bwc_num_occured", TsValue::Long(self.primary_read_bwc.num_occured));
+        p.add_field(
+            "primary_read_bwc_total_weight_in_kb",
+            TsValue::Long(self.primary_read_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "primary_read_bwc_num_seconds",
+            TsValue::Long(self.primary_read_bwc.num_seconds),
+        );
+        p.add_field(
+            "primary_read_bwc_num_occured",
+            TsValue::Long(self.primary_read_bwc.num_occured),
+        );
         p.add_field("primary_vac_in_kb", TsValue::Long(self.primary_vac_in_kb));
         p.add_field(
             "protected_vac_in_kb",
@@ -554,10 +564,19 @@ impl IntoPoint for DeviceStatistics {
             "primary_write_bwc",
             TsValue::Long(self.primary_write_bwc.total_weight_in_kb),
         );
-        p.add_field("primary_write_bwc_total_weight_in_kb", TsValue::Long(self.primary_write_bwc.total_weight_in_kb));
-        p.add_field("primary_write_bwc_num_seconds", TsValue::Long(self.primary_write_bwc.num_seconds));
-        p.add_field("primary_write_bwc_num_occured", TsValue::Long(self.primary_write_bwc.num_occured));
-        
+        p.add_field(
+            "primary_write_bwc_total_weight_in_kb",
+            TsValue::Long(self.primary_write_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "primary_write_bwc_num_seconds",
+            TsValue::Long(self.primary_write_bwc.num_seconds),
+        );
+        p.add_field(
+            "primary_write_bwc_num_occured",
+            TsValue::Long(self.primary_write_bwc.num_occured),
+        );
+
         p.add_field(
             "thick_capacity_in_use_in_kb",
             TsValue::Long(self.thick_capacity_in_use_in_kb),
@@ -574,18 +593,36 @@ impl IntoPoint for DeviceStatistics {
             "total_read_bwc",
             TsValue::Long(self.total_read_bwc.total_weight_in_kb),
         );
-        p.add_field("total_read_bwc_total_weight_in_kb", TsValue::Long(self.total_read_bwc.total_weight_in_kb));
-        p.add_field("total_read_bwc_num_seconds", TsValue::Long(self.total_read_bwc.num_seconds));
-        p.add_field("total_read_bwc_num_occured", TsValue::Long(self.total_read_bwc.num_occured));
+        p.add_field(
+            "total_read_bwc_total_weight_in_kb",
+            TsValue::Long(self.total_read_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "total_read_bwc_num_seconds",
+            TsValue::Long(self.total_read_bwc.num_seconds),
+        );
+        p.add_field(
+            "total_read_bwc_num_occured",
+            TsValue::Long(self.total_read_bwc.num_occured),
+        );
 
         //not used
         p.add_field(
             "total_write_bwc",
             TsValue::Long(self.total_write_bwc.total_weight_in_kb),
         );
-        p.add_field("total_write_bwc_total_weight_in_kb", TsValue::Long(self.total_write_bwc.total_weight_in_kb));
-        p.add_field("total_write_bwc_num_seconds", TsValue::Long(self.total_write_bwc.num_seconds));
-        p.add_field("total_write_bwc_num_occured", TsValue::Long(self.total_write_bwc.num_occured));
+        p.add_field(
+            "total_write_bwc_total_weight_in_kb",
+            TsValue::Long(self.total_write_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "total_write_bwc_num_seconds",
+            TsValue::Long(self.total_write_bwc.num_seconds),
+        );
+        p.add_field(
+            "total_write_bwc_num_occured",
+            TsValue::Long(self.total_write_bwc.num_occured),
+        );
 
         p.add_field(
             "unused_capacity_in_kb",
@@ -600,26 +637,53 @@ impl IntoPoint for DeviceStatistics {
             "rebalance_read_bwc",
             TsValue::Long(self.rebalance_read_bwc.total_weight_in_kb),
         );
-        p.add_field("rebalance_read_bwc_total_weight_in_kb", TsValue::Long(self.rebalance_read_bwc.total_weight_in_kb));
-        p.add_field("rebalance_read_bwc_num_seconds", TsValue::Long(self.rebalance_read_bwc.num_seconds));
-        p.add_field("rebalance_read_bwc_num_occured", TsValue::Long(self.rebalance_read_bwc.num_occured));
+        p.add_field(
+            "rebalance_read_bwc_total_weight_in_kb",
+            TsValue::Long(self.rebalance_read_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "rebalance_read_bwc_num_seconds",
+            TsValue::Long(self.rebalance_read_bwc.num_seconds),
+        );
+        p.add_field(
+            "rebalance_read_bwc_num_occured",
+            TsValue::Long(self.rebalance_read_bwc.num_occured),
+        );
         // not used
         p.add_field(
             "rebalance_write_bwc",
             TsValue::Long(self.rebalance_write_bwc.total_weight_in_kb),
         );
-        p.add_field("rebalance_write_bwc_total_weight_in_kb", TsValue::Long(self.rebalance_write_bwc.total_weight_in_kb));
-        p.add_field("rebalance_write_bwc_num_seconds", TsValue::Long(self.rebalance_write_bwc.num_seconds));
-        p.add_field("rebalance_write_bwc_num_occured", TsValue::Long(self.rebalance_write_bwc.num_occured));
+        p.add_field(
+            "rebalance_write_bwc_total_weight_in_kb",
+            TsValue::Long(self.rebalance_write_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "rebalance_write_bwc_num_seconds",
+            TsValue::Long(self.rebalance_write_bwc.num_seconds),
+        );
+        p.add_field(
+            "rebalance_write_bwc_num_occured",
+            TsValue::Long(self.rebalance_write_bwc.num_occured),
+        );
 
         // not used
         p.add_field(
             "secondary_read_from_dev_bwc",
             TsValue::Long(self.secondary_read_from_dev_bwc.total_weight_in_kb),
         );
-        p.add_field("secondary_read_from_dev_bwc_total_weight_in_kb", TsValue::Long(self.secondary_read_from_dev_bwc.total_weight_in_kb));
-        p.add_field("secondary_read_from_dev_bwc_num_seconds", TsValue::Long(self.secondary_read_from_dev_bwc.num_seconds));
-        p.add_field("secondary_read_from_dev_bwc_num_occured", TsValue::Long(self.secondary_read_from_dev_bwc.num_occured));
+        p.add_field(
+            "secondary_read_from_dev_bwc_total_weight_in_kb",
+            TsValue::Long(self.secondary_read_from_dev_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "secondary_read_from_dev_bwc_num_seconds",
+            TsValue::Long(self.secondary_read_from_dev_bwc.num_seconds),
+        );
+        p.add_field(
+            "secondary_read_from_dev_bwc_num_occured",
+            TsValue::Long(self.secondary_read_from_dev_bwc.num_occured),
+        );
 
         p.add_field(
             "secondary_vac_in_kb",
@@ -630,26 +694,53 @@ impl IntoPoint for DeviceStatistics {
             "secondary_read_bwc",
             TsValue::Long(self.secondary_read_bwc.total_weight_in_kb),
         );
-        p.add_field("secondary_read_bwc_total_weight_in_kb", TsValue::Long(self.secondary_read_bwc.total_weight_in_kb));
-        p.add_field("secondary_read_bwc_num_seconds", TsValue::Long(self.secondary_read_bwc.num_seconds));
-        p.add_field("secondary_read_bwc_num_occured", TsValue::Long(self.secondary_read_bwc.num_occured));
+        p.add_field(
+            "secondary_read_bwc_total_weight_in_kb",
+            TsValue::Long(self.secondary_read_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "secondary_read_bwc_num_seconds",
+            TsValue::Long(self.secondary_read_bwc.num_seconds),
+        );
+        p.add_field(
+            "secondary_read_bwc_num_occured",
+            TsValue::Long(self.secondary_read_bwc.num_occured),
+        );
 
         //not used
         p.add_field(
             "secondary_read_from_rmcache_bwc",
             TsValue::Long(self.secondary_read_from_rmcache_bwc.total_weight_in_kb),
         );
-        p.add_field("secondary_read_from_rmcache_bwc_total_weight_in_kb", TsValue::Long(self.secondary_read_from_rmcache_bwc.total_weight_in_kb));
-        p.add_field("secondary_read_from_rmcache_bwc_num_seconds", TsValue::Long(self.secondary_read_from_rmcache_bwc.num_seconds));
-        p.add_field("secondary_read_from_rmcache_bwc_num_occured", TsValue::Long(self.secondary_read_from_rmcache_bwc.num_occured));
+        p.add_field(
+            "secondary_read_from_rmcache_bwc_total_weight_in_kb",
+            TsValue::Long(self.secondary_read_from_rmcache_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "secondary_read_from_rmcache_bwc_num_seconds",
+            TsValue::Long(self.secondary_read_from_rmcache_bwc.num_seconds),
+        );
+        p.add_field(
+            "secondary_read_from_rmcache_bwc_num_occured",
+            TsValue::Long(self.secondary_read_from_rmcache_bwc.num_occured),
+        );
         //not used
         p.add_field(
             "secondary_write_bwc",
             TsValue::Long(self.secondary_write_bwc.total_weight_in_kb),
         );
-        p.add_field("secondary_write_bwc_total_weight_in_kb", TsValue::Long(self.secondary_write_bwc.total_weight_in_kb));
-        p.add_field("secondary_write_bwc_num_seconds", TsValue::Long(self.secondary_write_bwc.num_seconds));
-        p.add_field("secondary_write_bwc_num_occured", TsValue::Long(self.secondary_write_bwc.num_occured));
+        p.add_field(
+            "secondary_write_bwc_total_weight_in_kb",
+            TsValue::Long(self.secondary_write_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "secondary_write_bwc_num_seconds",
+            TsValue::Long(self.secondary_write_bwc.num_seconds),
+        );
+        p.add_field(
+            "secondary_write_bwc_num_occured",
+            TsValue::Long(self.secondary_write_bwc.num_occured),
+        );
 
         vec![p]
     }
@@ -834,6 +925,7 @@ pub struct ClusterSelectedStatisticsResponse {
 #[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Debug, IntoPoint)]
 pub struct StoragePoolInfo {
+    // StoragePoolStatistics (selected ones)
     pub num_of_devices: u64,
     pub num_of_volumes: u64,
     pub primary_read_bwc: BWC,
@@ -877,10 +969,10 @@ impl IntoPoint for SdcSelectedStatisticsResponse {
 pub struct SdcStatsInfo {
     pub user_data_read_bwc: BWC,
     pub user_data_write_bwc: BWC,
-    pub user_data_trim_bwc: Option<BWC>, // in v2 and v3
-    pub user_data_sdc_read_latency: Option<BWC>, // NEW V3
+    pub user_data_trim_bwc: Option<BWC>,          // in v2 and v3
+    pub user_data_sdc_read_latency: Option<BWC>,  // NEW V3
     pub user_data_sdc_write_latency: Option<BWC>, // NEW V3
-    pub user_data_sdc_trim_latency: Option<BWC>, // NEW V3
+    pub user_data_sdc_trim_latency: Option<BWC>,  // NEW V3
     pub volume_ids: Vec<String>,
     pub num_of_mapped_volumes: u64,
 }
@@ -888,41 +980,41 @@ pub struct SdcStatsInfo {
 #[serde(rename_all = "camelCase")]
 #[derive(Clone, Deserialize, Debug, IntoPoint)]
 pub struct Instance {
-    pub device_current_path_name: String,
-    pub device_original_path_name: String,
+    // Device Object
+    pub device_current_path_name: String,  // in v3
+    pub device_original_path_name: String, // in v3
     pub rfcache_error_device_does_not_exist: bool,
     pub sds_id: String,
-    pub device_state: DeviceState,
-    pub capacity_limit_in_kb: Option<u64>,
-    pub max_capacity_in_kb: u64,
-    pub storage_pool_id: String,
+    pub device_state: DeviceState,         // in v3
+    pub capacity_limit_in_kb: Option<u64>, // in v3
+    pub max_capacity_in_kb: u64,           // in v3
+    pub storage_pool_id: String,           // in v3 ** required
     pub long_successful_ios: Option<Successfulio>,
-    pub error_state: String,
-    pub name: Option<String>,
-    pub id: String,
+    pub error_state: String,  // in v3 (note this could be an enum)
+    pub name: Option<String>, // in v3
+    pub id: String,           // in v3
     pub links: Vec<Link>,
     pub update_configuration: Option<bool>,
-    pub vendor_name: Option<String>, // NEW V3
+    pub vendor_name: Option<String>,      // NEW V3
     pub firmware_version: Option<String>, //NEW V3
     pub raid_controller_serial_number: Option<String>, // NEW V3
-    // SDS object....
-
+                                          // SDS object....
 }
 
 #[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize)]
 pub struct MdmCluster {
-    pub master: TieBreaker,//
-    pub slaves: Vec<TieBreaker>,//
-    pub cluster_mode: String, //
-    pub tie_breakers: Vec<TieBreaker>,//
+    pub master: TieBreaker,            //
+    pub slaves: Vec<TieBreaker>,       //
+    pub cluster_mode: String,          //
+    pub tie_breakers: Vec<TieBreaker>, //
     #[serde(rename = "standbyMDMs")]
     pub standby_mdms: Option<Vec<TieBreaker>>, // NEW V3
-    pub good_nodes_num: u16,//
-    pub good_replicas_num: u16,//
-    pub cluster_state: String,//
-    pub name: String, //
-    pub id: String, //
+    pub good_nodes_num: u16,           //
+    pub good_replicas_num: u16,        //
+    pub cluster_state: String,         //
+    pub name: String,                  //
+    pub id: String,                    //
     pub virtual_ip: Option<Vec<String>>, // NEW V3
 }
 
@@ -1021,7 +1113,8 @@ impl IntoPoint for SdcMappingInfo {
 
 #[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize)]
-pub struct SdsVolume { // Volume Object
+pub struct SdsVolume {
+    // Volume Object
     pub id: String,
     pub name: Option<String>,
     pub size_in_kb: u64,
@@ -1557,37 +1650,37 @@ fn test_system_response() {
 #[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize, IntoPoint)]
 pub struct System {
-    pub system_version_name: String, // in v3
-    pub capacity_alert_high_threshold_percent: u16, // in V3
+    pub system_version_name: String,                    // in v3
+    pub capacity_alert_high_threshold_percent: u16,     // in V3
     pub capacity_alert_critical_threshold_percent: u16, // in v3
-    pub remote_read_only_limit_state: bool, // in v3
-    pub upgrade_state: String, // in v3
-    pub mdm_management_port: u16, // in v3
+    pub remote_read_only_limit_state: bool,             // in v3
+    pub upgrade_state: String,                          // in v3
+    pub mdm_management_port: u16,                       // in v3
     pub sdc_mdm_network_disconnections_counter_parameters: FailureCounter, // in v3
     pub sdc_sds_network_disconnections_counter_parameters: FailureCounter, // in v3
     pub sdc_memory_allocation_failures_counter_parameters: FailureCounter, // in v3
     pub sdc_socket_allocation_failures_counter_parameters: FailureCounter, // in v3
     pub sdc_long_operations_counter_parameters: FailureCounter, // in v3
-    pub cli_password_allowed: bool, // in v3
+    pub cli_password_allowed: bool,                     // in v3
     pub management_client_secure_communication_enabled: bool, // in v3
-    pub tls_version: String, // in v3
-    pub show_guid: bool, // in v3
-    pub authentication_method: String, // in v3
-    pub mdm_to_sds_policy: String, // in v3
-    pub mdm_cluster: MdmCluster, // in v3
-    pub perf_profile: PerfProfile, // in v3
-    pub install_id: String, // in v3
-    pub days_installed: u64, // in V3
+    pub tls_version: String,                            // in v3
+    pub show_guid: bool,                                // in v3
+    pub authentication_method: String,                  // in v3
+    pub mdm_to_sds_policy: String,                      // in v3
+    pub mdm_cluster: MdmCluster,                        // in v3
+    pub perf_profile: PerfProfile,                      // in v3
+    pub install_id: String,                             // in v3
+    pub days_installed: u64,                            // in V3
     #[serde(deserialize_with = "deserialize_string_or_int")]
     pub max_capacity_in_gb: i64, // in v3
-    pub capacity_time_left_in_days: String, // in v3
-    pub enterprise_features_enabled: bool, // in v3
-    pub is_initial_license: bool, // in v3
-    pub default_is_volume_obfuscated: Option<bool>, // not in V3
-    pub restricted_sdc_mode_enabled: bool, // in v3
-    pub swid: String, // in v3
-    pub name: String, // in V3
-    pub id: String, // in V3
+    pub capacity_time_left_in_days: String,             // in v3
+    pub enterprise_features_enabled: bool,              // in v3
+    pub is_initial_license: bool,                       // in v3
+    pub default_is_volume_obfuscated: Option<bool>,     // not in V3
+    pub restricted_sdc_mode_enabled: bool,              // in v3
+    pub swid: String,                                   // in v3
+    pub name: String,                                   // in V3
+    pub id: String,                                     // in V3
     pub links: Vec<HashMap<String, String>>,
 }
 
@@ -1632,7 +1725,7 @@ pub struct SystemStatistics {
     pub pending_fwd_rebuild_capacity_in_kb: u64,
     pub bck_rebuild_capacity_in_kb: u64,
     pub active_bck_rebuild_capacity_in_kb: u64,
-    pub pending_bck_rebuild_capacity_in_kb:u64,
+    pub pending_bck_rebuild_capacity_in_kb: u64,
     pub rebalance_capacity_in_kb: u64,
     pub active_rebalance_capacity_in_kb: u64,
     pub pending_rebalance_capacity_in_kb: u64,
@@ -1666,7 +1759,7 @@ pub struct SystemStatistics {
     pub fixed_read_error_count: u64,
     #[serde(rename = "BackgroundScanCompareCount")]
     pub background_scan_compare_count: u64,
-    #[serde( rename = "BackgroundScannedInMB")]
+    #[serde(rename = "BackgroundScannedInMB")]
     pub background_scanned_in_mb: u64,
     pub primary_read_bwc: BWC,
     pub primary_read_from_dev_bwc: BWC,
@@ -1851,168 +1944,465 @@ pub struct SystemStatistics {
     pub num_sd_sdc_disconnections: Option<u64>,
     pub num_oscillation_counters_passed_threshold: Option<u64>,
     pub num_smart_attributes_passed_threshold: Option<u64>,
-    pub num_cmatrix_policy_changes: Option<u64>
+    pub num_cmatrix_policy_changes: Option<u64>,
 }
 
-impl IntoPoint for SystemStatistics{
-    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint>{
+impl IntoPoint for SystemStatistics {
+    fn into_point(&self, name: Option<&str>, is_time_series: bool) -> Vec<TsPoint> {
         let mut points = Vec::new();
-        let mut p = TsPoint::new(name.unwrap_or_else(|| "scaleio_sys_stat"), is_time_series);
-        p.add_field("capacity_limit_in_kb", TsValue::Long(self.capacity_limit_in_kb));
+        let mut p = TsPoint::new(name.unwrap_or("scaleio_sys_stat"), is_time_series);
+        p.add_field(
+            "capacity_limit_in_kb",
+            TsValue::Long(self.capacity_limit_in_kb),
+        );
         p.add_field("max_capacity_in_kb", TsValue::Long(self.max_capacity_in_kb));
-        p.add_field("capacity_in_use_in_kb", TsValue::Long(self.capacity_in_use_in_kb));
-        p.add_field("thick capacity_in_use_in_kb", TsValue::Long(self.thick_capacity_in_use_in_kb));
-        p.add_field("thin_capacity_in_use_in_kb", TsValue::Long(self.thin_capacity_in_use_in_kb));
-        p.add_field("snap_capacity_in_use_in_kb", TsValue::Long(self.snap_capacity_in_use_in_kb));
-        p.add_field("unreachable_unused_capacity_in_kb", TsValue::Long(self.unreachable_unused_capacity_in_kb));
-        p.add_field("unused_capacity_in_kb", TsValue::Long(self.unused_capacity_in_kb));
-        p.add_field("snap_capacity_in_use_occupied_in_kb", TsValue::Long(self.snap_capacity_in_use_occupied_in_kb));
-        p.add_field("thin_capacity_allocated_in_kb", TsValue::Long(self.thin_capacity_allocated_in_kb));
-        p.add_field("spare_capacity_in_kb", TsValue::Long(self.spare_capacity_in_kb));
-        p.add_field("fixed_read_error_count", TsValue::Long(self.fixed_read_error_count));
-        p.add_field("num_of_unmapped_volumes", TsValue::Long(self.num_of_unmapped_volumes));
-        p.add_field("num_of_mapped_to_all_volumes", TsValue::Long(self.num_of_mapped_to_all_volumes));
-        p.add_field("num_of_thick_base_volumes", TsValue::Long(self.num_of_thick_base_volumes));
-        p.add_field("num_of_thin_base_volumes", TsValue::Long(self.num_of_thin_base_volumes));
+        p.add_field(
+            "capacity_in_use_in_kb",
+            TsValue::Long(self.capacity_in_use_in_kb),
+        );
+        p.add_field(
+            "thick capacity_in_use_in_kb",
+            TsValue::Long(self.thick_capacity_in_use_in_kb),
+        );
+        p.add_field(
+            "thin_capacity_in_use_in_kb",
+            TsValue::Long(self.thin_capacity_in_use_in_kb),
+        );
+        p.add_field(
+            "snap_capacity_in_use_in_kb",
+            TsValue::Long(self.snap_capacity_in_use_in_kb),
+        );
+        p.add_field(
+            "unreachable_unused_capacity_in_kb",
+            TsValue::Long(self.unreachable_unused_capacity_in_kb),
+        );
+        p.add_field(
+            "unused_capacity_in_kb",
+            TsValue::Long(self.unused_capacity_in_kb),
+        );
+        p.add_field(
+            "snap_capacity_in_use_occupied_in_kb",
+            TsValue::Long(self.snap_capacity_in_use_occupied_in_kb),
+        );
+        p.add_field(
+            "thin_capacity_allocated_in_kb",
+            TsValue::Long(self.thin_capacity_allocated_in_kb),
+        );
+        p.add_field(
+            "spare_capacity_in_kb",
+            TsValue::Long(self.spare_capacity_in_kb),
+        );
+        p.add_field(
+            "fixed_read_error_count",
+            TsValue::Long(self.fixed_read_error_count),
+        );
+        p.add_field(
+            "num_of_unmapped_volumes",
+            TsValue::Long(self.num_of_unmapped_volumes),
+        );
+        p.add_field(
+            "num_of_mapped_to_all_volumes",
+            TsValue::Long(self.num_of_mapped_to_all_volumes),
+        );
+        p.add_field(
+            "num_of_thick_base_volumes",
+            TsValue::Long(self.num_of_thick_base_volumes),
+        );
+        p.add_field(
+            "num_of_thin_base_volumes",
+            TsValue::Long(self.num_of_thin_base_volumes),
+        );
         p.add_field("num_of_snapshots", TsValue::Long(self.num_of_snapshots));
-        p.add_field("num_of_volumes_in_deletion", TsValue::Long(self.num_of_volumes_in_deletion));
+        p.add_field(
+            "num_of_volumes_in_deletion",
+            TsValue::Long(self.num_of_volumes_in_deletion),
+        );
         p.add_field("num_of_devices", TsValue::Long(self.num_of_devices));
         p.add_field("num_of_sds", TsValue::Long(self.num_of_sds));
-        p.add_field("num_of_storage_pools", TsValue::Long(self.num_of_storage_pools));
+        p.add_field(
+            "num_of_storage_pools",
+            TsValue::Long(self.num_of_storage_pools),
+        );
         p.add_field("num_of_volumes", TsValue::Long(self.num_of_volumes));
         p.add_field("num_of_sdc", TsValue::Long(self.num_of_sdc));
         if let Some(compression_ratio) = self.compression_ratio {
             p.add_field("compression_ratio", TsValue::Float(compression_ratio));
         }
         if let Some(user_data_capacity_in_kb) = self.user_data_capacity_in_kb {
-            p.add_field("user_data_capacity_in_kb", TsValue::Long(user_data_capacity_in_kb));
+            p.add_field(
+                "user_data_capacity_in_kb",
+                TsValue::Long(user_data_capacity_in_kb),
+            );
         }
-        if let Some(snapshot_capacity_in_kb) = self.snapshot_capacity_in_kb{
-            p.add_field("snapshot_capacity_in_kb", TsValue::Long(snapshot_capacity_in_kb));
+        if let Some(snapshot_capacity_in_kb) = self.snapshot_capacity_in_kb {
+            p.add_field(
+                "snapshot_capacity_in_kb",
+                TsValue::Long(snapshot_capacity_in_kb),
+            );
         }
         if let Some(overall_usage_ratio) = self.overall_usage_ratio {
             p.add_field("overall_usage_ratio", TsValue::Float(overall_usage_ratio));
         }
         if let Some(num_sds_reconnections) = self.num_sds_reconnections {
-            p.add_field("num_sds_reconnections", TsValue::Long(num_sds_reconnections));
+            p.add_field(
+                "num_sds_reconnections",
+                TsValue::Long(num_sds_reconnections),
+            );
         }
         if let Some(num_sd_sdc_disconnections) = self.num_sd_sdc_disconnections {
-            p.add_field("num_sd_sdc_disconnections", TsValue::Long(num_sd_sdc_disconnections));
+            p.add_field(
+                "num_sd_sdc_disconnections",
+                TsValue::Long(num_sd_sdc_disconnections),
+            );
         }
-        p.add_field("primary_read_bwc_total_weight_in_kb", TsValue::Long(self.primary_read_bwc.total_weight_in_kb));
-        p.add_field("primary_read_bwc_num_seconds", TsValue::Long(self.primary_read_bwc.num_seconds));
-        p.add_field("primary_read_bwc_num_occured", TsValue::Long(self.primary_read_bwc.num_occured));
+        p.add_field(
+            "primary_read_bwc_total_weight_in_kb",
+            TsValue::Long(self.primary_read_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "primary_read_bwc_num_seconds",
+            TsValue::Long(self.primary_read_bwc.num_seconds),
+        );
+        p.add_field(
+            "primary_read_bwc_num_occured",
+            TsValue::Long(self.primary_read_bwc.num_occured),
+        );
 
-        p.add_field("primary_read_from_dev_bwc_total_weight_in_kb", TsValue::Long(self.primary_read_from_dev_bwc.total_weight_in_kb));
-        p.add_field("primary_read_from_dev_bwc_num_seconds", TsValue::Long(self.primary_read_from_dev_bwc.num_seconds));
-        p.add_field("primary_read_from_dev_bwc_num_occured", TsValue::Long(self.primary_read_from_dev_bwc.num_occured));
+        p.add_field(
+            "primary_read_from_dev_bwc_total_weight_in_kb",
+            TsValue::Long(self.primary_read_from_dev_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "primary_read_from_dev_bwc_num_seconds",
+            TsValue::Long(self.primary_read_from_dev_bwc.num_seconds),
+        );
+        p.add_field(
+            "primary_read_from_dev_bwc_num_occured",
+            TsValue::Long(self.primary_read_from_dev_bwc.num_occured),
+        );
 
-        p.add_field("primary_write_bwc_total_weight_in_kb", TsValue::Long(self.primary_write_bwc.total_weight_in_kb));
-        p.add_field("primary_write_bwc_num_seconds", TsValue::Long(self.primary_write_bwc.num_seconds));
-        p.add_field("primary_write_bwc_num_occured", TsValue::Long(self.primary_write_bwc.num_occured));
+        p.add_field(
+            "primary_write_bwc_total_weight_in_kb",
+            TsValue::Long(self.primary_write_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "primary_write_bwc_num_seconds",
+            TsValue::Long(self.primary_write_bwc.num_seconds),
+        );
+        p.add_field(
+            "primary_write_bwc_num_occured",
+            TsValue::Long(self.primary_write_bwc.num_occured),
+        );
 
-        p.add_field("secondary_read_bwc_total_weight_in_kb", TsValue::Long(self.secondary_read_bwc.total_weight_in_kb));
-        p.add_field("secondary_read_bwc_num_seconds", TsValue::Long(self.secondary_read_bwc.num_seconds));
-        p.add_field("secondary_read_bwc_num_occured", TsValue::Long(self.secondary_read_bwc.num_occured));
+        p.add_field(
+            "secondary_read_bwc_total_weight_in_kb",
+            TsValue::Long(self.secondary_read_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "secondary_read_bwc_num_seconds",
+            TsValue::Long(self.secondary_read_bwc.num_seconds),
+        );
+        p.add_field(
+            "secondary_read_bwc_num_occured",
+            TsValue::Long(self.secondary_read_bwc.num_occured),
+        );
 
-        p.add_field("secondary_read_from_dev_bwc_total_weight_in_kb", TsValue::Long(self.secondary_read_from_dev_bwc.total_weight_in_kb));
-        p.add_field("secondary_read_from_dev_bwc_num_seconds", TsValue::Long(self.secondary_read_from_dev_bwc.num_seconds));
-        p.add_field("secondary_read_from_dev_bwc_num_occured", TsValue::Long(self.secondary_read_from_dev_bwc.num_occured));
+        p.add_field(
+            "secondary_read_from_dev_bwc_total_weight_in_kb",
+            TsValue::Long(self.secondary_read_from_dev_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "secondary_read_from_dev_bwc_num_seconds",
+            TsValue::Long(self.secondary_read_from_dev_bwc.num_seconds),
+        );
+        p.add_field(
+            "secondary_read_from_dev_bwc_num_occured",
+            TsValue::Long(self.secondary_read_from_dev_bwc.num_occured),
+        );
 
-        p.add_field("secondary_write_bwc_total_weight_in_kb", TsValue::Long(self.secondary_write_bwc.total_weight_in_kb));
-        p.add_field("secondary_write_bwc_num_seconds", TsValue::Long(self.secondary_write_bwc.num_seconds));
-        p.add_field("secondary_write_bwc_num_occured", TsValue::Long(self.secondary_write_bwc.num_occured));
+        p.add_field(
+            "secondary_write_bwc_total_weight_in_kb",
+            TsValue::Long(self.secondary_write_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "secondary_write_bwc_num_seconds",
+            TsValue::Long(self.secondary_write_bwc.num_seconds),
+        );
+        p.add_field(
+            "secondary_write_bwc_num_occured",
+            TsValue::Long(self.secondary_write_bwc.num_occured),
+        );
 
-        p.add_field("fwd_rebuild_read_bwc_total_weight_in_kb", TsValue::Long(self.fwd_rebuild_read_bwc.total_weight_in_kb));
-        p.add_field("fwd_rebuild_read_bwc_num_seconds", TsValue::Long(self.fwd_rebuild_read_bwc.num_seconds));
-        p.add_field("fwd_rebuild_read_bwc_num_occured", TsValue::Long(self.fwd_rebuild_read_bwc.num_occured));
+        p.add_field(
+            "fwd_rebuild_read_bwc_total_weight_in_kb",
+            TsValue::Long(self.fwd_rebuild_read_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "fwd_rebuild_read_bwc_num_seconds",
+            TsValue::Long(self.fwd_rebuild_read_bwc.num_seconds),
+        );
+        p.add_field(
+            "fwd_rebuild_read_bwc_num_occured",
+            TsValue::Long(self.fwd_rebuild_read_bwc.num_occured),
+        );
 
-        p.add_field("fwd_rebuild_write_bwc_total_weight_in_kb", TsValue::Long(self.fwd_rebuild_write_bwc.total_weight_in_kb));
-        p.add_field("fwd_rebuild_write_bwc_num_seconds", TsValue::Long(self.fwd_rebuild_write_bwc.num_seconds));
-        p.add_field("fwd_rebuild_write_bwc_num_occured", TsValue::Long(self.fwd_rebuild_write_bwc.num_occured));
+        p.add_field(
+            "fwd_rebuild_write_bwc_total_weight_in_kb",
+            TsValue::Long(self.fwd_rebuild_write_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "fwd_rebuild_write_bwc_num_seconds",
+            TsValue::Long(self.fwd_rebuild_write_bwc.num_seconds),
+        );
+        p.add_field(
+            "fwd_rebuild_write_bwc_num_occured",
+            TsValue::Long(self.fwd_rebuild_write_bwc.num_occured),
+        );
 
-        p.add_field("bck_rebuild_read_bwc_total_weight_in_kb", TsValue::Long(self.bck_rebuild_read_bwc.total_weight_in_kb));
-        p.add_field("bck_rebuild_read_bwc_num_seconds", TsValue::Long(self.bck_rebuild_read_bwc.num_seconds));
-        p.add_field("bck_rebuild_read_bwc_num_occured", TsValue::Long(self.bck_rebuild_read_bwc.num_occured));
+        p.add_field(
+            "bck_rebuild_read_bwc_total_weight_in_kb",
+            TsValue::Long(self.bck_rebuild_read_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "bck_rebuild_read_bwc_num_seconds",
+            TsValue::Long(self.bck_rebuild_read_bwc.num_seconds),
+        );
+        p.add_field(
+            "bck_rebuild_read_bwc_num_occured",
+            TsValue::Long(self.bck_rebuild_read_bwc.num_occured),
+        );
 
-        p.add_field("bck_rebuild_write_bwc_total_weight_in_kb", TsValue::Long(self.bck_rebuild_write_bwc.total_weight_in_kb));
-        p.add_field("bck_rebuild_write_bwc_num_seconds", TsValue::Long(self.bck_rebuild_write_bwc.num_seconds));
-        p.add_field("bck_rebuild_write_bwc_num_occured", TsValue::Long(self.bck_rebuild_write_bwc.num_occured));
+        p.add_field(
+            "bck_rebuild_write_bwc_total_weight_in_kb",
+            TsValue::Long(self.bck_rebuild_write_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "bck_rebuild_write_bwc_num_seconds",
+            TsValue::Long(self.bck_rebuild_write_bwc.num_seconds),
+        );
+        p.add_field(
+            "bck_rebuild_write_bwc_num_occured",
+            TsValue::Long(self.bck_rebuild_write_bwc.num_occured),
+        );
 
-        p.add_field("rebalance_read_bwc_total_weight_in_kb", TsValue::Long(self.rebalance_read_bwc.total_weight_in_kb));
-        p.add_field("rebalance_read_bwc_num_seconds", TsValue::Long(self.rebalance_read_bwc.num_seconds));
-        p.add_field("rebalance_read_bwc_num_occured", TsValue::Long(self.rebalance_read_bwc.num_occured));
+        p.add_field(
+            "rebalance_read_bwc_total_weight_in_kb",
+            TsValue::Long(self.rebalance_read_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "rebalance_read_bwc_num_seconds",
+            TsValue::Long(self.rebalance_read_bwc.num_seconds),
+        );
+        p.add_field(
+            "rebalance_read_bwc_num_occured",
+            TsValue::Long(self.rebalance_read_bwc.num_occured),
+        );
 
-        p.add_field("rebalance_write_bwc_total_weight_in_kb", TsValue::Long(self.rebalance_write_bwc.total_weight_in_kb));
-        p.add_field("rebalance_write_bwc_num_seconds", TsValue::Long(self.rebalance_write_bwc.num_seconds));
-        p.add_field("rebalance_write_bwc_num_occured", TsValue::Long(self.rebalance_write_bwc.num_occured));
+        p.add_field(
+            "rebalance_write_bwc_total_weight_in_kb",
+            TsValue::Long(self.rebalance_write_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "rebalance_write_bwc_num_seconds",
+            TsValue::Long(self.rebalance_write_bwc.num_seconds),
+        );
+        p.add_field(
+            "rebalance_write_bwc_num_occured",
+            TsValue::Long(self.rebalance_write_bwc.num_occured),
+        );
 
-        p.add_field("total_read_bwc_total_weight_in_kb", TsValue::Long(self.total_read_bwc.total_weight_in_kb));
-        p.add_field("total_read_bwc_num_seconds", TsValue::Long(self.total_read_bwc.num_seconds));
-        p.add_field("total_read_bwc_num_occured", TsValue::Long(self.total_read_bwc.num_occured));
+        p.add_field(
+            "total_read_bwc_total_weight_in_kb",
+            TsValue::Long(self.total_read_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "total_read_bwc_num_seconds",
+            TsValue::Long(self.total_read_bwc.num_seconds),
+        );
+        p.add_field(
+            "total_read_bwc_num_occured",
+            TsValue::Long(self.total_read_bwc.num_occured),
+        );
 
-        p.add_field("total_write_bwc_total_weight_in_kb", TsValue::Long(self.total_write_bwc.total_weight_in_kb));
-        p.add_field("total_write_bwc_num_seconds", TsValue::Long(self.total_write_bwc.num_seconds));
-        p.add_field("total_write_bwc_num_occured", TsValue::Long(self.total_write_bwc.num_occured));
+        p.add_field(
+            "total_write_bwc_total_weight_in_kb",
+            TsValue::Long(self.total_write_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "total_write_bwc_num_seconds",
+            TsValue::Long(self.total_write_bwc.num_seconds),
+        );
+        p.add_field(
+            "total_write_bwc_num_occured",
+            TsValue::Long(self.total_write_bwc.num_occured),
+        );
 
-        p.add_field("primary_read_from_rmcache_bwc_total_weight_in_kb", TsValue::Long(self.primary_read_from_rmcache_bwc.total_weight_in_kb));
-        p.add_field("primary_read_from_rmcache_bwc_num_seconds", TsValue::Long(self.primary_read_from_rmcache_bwc.num_seconds));
-        p.add_field("primary_read_from_rmcache_bwc_num_occured", TsValue::Long(self.primary_read_from_rmcache_bwc.num_occured));
+        p.add_field(
+            "primary_read_from_rmcache_bwc_total_weight_in_kb",
+            TsValue::Long(self.primary_read_from_rmcache_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "primary_read_from_rmcache_bwc_num_seconds",
+            TsValue::Long(self.primary_read_from_rmcache_bwc.num_seconds),
+        );
+        p.add_field(
+            "primary_read_from_rmcache_bwc_num_occured",
+            TsValue::Long(self.primary_read_from_rmcache_bwc.num_occured),
+        );
 
-        p.add_field("secondary_read_from_rmcache_bwc_total_weight_in_kb", TsValue::Long(self.secondary_read_from_rmcache_bwc.total_weight_in_kb));
-        p.add_field("secondary_read_from_rmcache_bwc_num_seconds", TsValue::Long(self.secondary_read_from_rmcache_bwc.num_seconds));
-        p.add_field("secondary_read_from_rmcache_bwc_num_seconds", TsValue::Long(self.secondary_read_from_rmcache_bwc.num_occured));
+        p.add_field(
+            "secondary_read_from_rmcache_bwc_total_weight_in_kb",
+            TsValue::Long(self.secondary_read_from_rmcache_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "secondary_read_from_rmcache_bwc_num_seconds",
+            TsValue::Long(self.secondary_read_from_rmcache_bwc.num_seconds),
+        );
+        p.add_field(
+            "secondary_read_from_rmcache_bwc_num_seconds",
+            TsValue::Long(self.secondary_read_from_rmcache_bwc.num_occured),
+        );
 
-        p.add_field("norm_rebuild_read_bwc_total_weight_in_kb", TsValue::Long(self.norm_rebuild_read_bwc.total_weight_in_kb));
-        p.add_field("norm_rebuild_read_bwc_num_seconds", TsValue::Long(self.norm_rebuild_read_bwc.num_seconds));
-        p.add_field("norm_rebuild_read_bwc_num_occured", TsValue::Long(self.norm_rebuild_read_bwc.num_occured));
+        p.add_field(
+            "norm_rebuild_read_bwc_total_weight_in_kb",
+            TsValue::Long(self.norm_rebuild_read_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "norm_rebuild_read_bwc_num_seconds",
+            TsValue::Long(self.norm_rebuild_read_bwc.num_seconds),
+        );
+        p.add_field(
+            "norm_rebuild_read_bwc_num_occured",
+            TsValue::Long(self.norm_rebuild_read_bwc.num_occured),
+        );
 
-        p.add_field("norm_rebuild_write_bwc_total_weight_in_kb", TsValue::Long(self.norm_rebuild_write_bwc.total_weight_in_kb));
-        p.add_field("norm_rebuild_write_bwc_num_seconds", TsValue::Long(self.norm_rebuild_write_bwc.num_seconds));
-        p.add_field("norm_rebuild_write_bwc_num_occured", TsValue::Long(self.norm_rebuild_write_bwc.num_occured));
+        p.add_field(
+            "norm_rebuild_write_bwc_total_weight_in_kb",
+            TsValue::Long(self.norm_rebuild_write_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "norm_rebuild_write_bwc_num_seconds",
+            TsValue::Long(self.norm_rebuild_write_bwc.num_seconds),
+        );
+        p.add_field(
+            "norm_rebuild_write_bwc_num_occured",
+            TsValue::Long(self.norm_rebuild_write_bwc.num_occured),
+        );
 
         if let Some(vol_migration_read_bwc) = &self.vol_migration_read_bwc {
-            p.add_field("vol_migration_read_bwc_total_weight_in_kb", TsValue::Long(vol_migration_read_bwc.total_weight_in_kb));
-            p.add_field("vol_migration_read_bwc_num_seconds", TsValue::Long(vol_migration_read_bwc.num_seconds));
-            p.add_field("vol_migration_read_bwc_num_occured", TsValue::Long(vol_migration_read_bwc.num_occured));
+            p.add_field(
+                "vol_migration_read_bwc_total_weight_in_kb",
+                TsValue::Long(vol_migration_read_bwc.total_weight_in_kb),
+            );
+            p.add_field(
+                "vol_migration_read_bwc_num_seconds",
+                TsValue::Long(vol_migration_read_bwc.num_seconds),
+            );
+            p.add_field(
+                "vol_migration_read_bwc_num_occured",
+                TsValue::Long(vol_migration_read_bwc.num_occured),
+            );
         }
 
         if let Some(vol_migration_write_bwc) = &self.vol_migration_write_bwc {
-            p.add_field("vol_migration_write_bwc_total_weight_in_kb", TsValue::Long(vol_migration_write_bwc.total_weight_in_kb));
-            p.add_field("vol_migration_write_bwc_num_seconds", TsValue::Long(vol_migration_write_bwc.num_seconds));
-            p.add_field("vol_migration_write_bwc_num_occured", TsValue::Long(vol_migration_write_bwc.num_occured));
+            p.add_field(
+                "vol_migration_write_bwc_total_weight_in_kb",
+                TsValue::Long(vol_migration_write_bwc.total_weight_in_kb),
+            );
+            p.add_field(
+                "vol_migration_write_bwc_num_seconds",
+                TsValue::Long(vol_migration_write_bwc.num_seconds),
+            );
+            p.add_field(
+                "vol_migration_write_bwc_num_occured",
+                TsValue::Long(vol_migration_write_bwc.num_occured),
+            );
         }
 
-        p.add_field("user_data_read_bwc_total_weight_in_kb", TsValue::Long(self.user_data_read_bwc.total_weight_in_kb));
-        p.add_field("user_data_read_bwc_num_seconds", TsValue::Long(self.user_data_read_bwc.num_seconds));
-        p.add_field("user_data_read_bwc_num_occured", TsValue::Long(self.user_data_read_bwc.num_occured));
+        p.add_field(
+            "user_data_read_bwc_total_weight_in_kb",
+            TsValue::Long(self.user_data_read_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "user_data_read_bwc_num_seconds",
+            TsValue::Long(self.user_data_read_bwc.num_seconds),
+        );
+        p.add_field(
+            "user_data_read_bwc_num_occured",
+            TsValue::Long(self.user_data_read_bwc.num_occured),
+        );
 
-        p.add_field("user_data_write_bwc_total_weight_in_kb", TsValue::Long(self.user_data_write_bwc.total_weight_in_kb));
-        p.add_field("user_data_write_bwc_num_seconds", TsValue::Long(self.user_data_write_bwc.num_seconds));
-        p.add_field("user_data_write_bwc_num_occured", TsValue::Long(self.user_data_write_bwc.num_occured));
-        
+        p.add_field(
+            "user_data_write_bwc_total_weight_in_kb",
+            TsValue::Long(self.user_data_write_bwc.total_weight_in_kb),
+        );
+        p.add_field(
+            "user_data_write_bwc_num_seconds",
+            TsValue::Long(self.user_data_write_bwc.num_seconds),
+        );
+        p.add_field(
+            "user_data_write_bwc_num_occured",
+            TsValue::Long(self.user_data_write_bwc.num_occured),
+        );
+
         if let Some(user_data_trim_bwc) = &self.user_data_trim_bwc {
-            p.add_field("user_data_trim_bwc_total_weight_in_kb", TsValue::Long(user_data_trim_bwc.total_weight_in_kb));
-            p.add_field("user_data_trim_bwc_num_seconds", TsValue::Long(user_data_trim_bwc.num_seconds));
-            p.add_field("user_data_trim_bwc_num_occured", TsValue::Long(user_data_trim_bwc.num_occured));
+            p.add_field(
+                "user_data_trim_bwc_total_weight_in_kb",
+                TsValue::Long(user_data_trim_bwc.total_weight_in_kb),
+            );
+            p.add_field(
+                "user_data_trim_bwc_num_seconds",
+                TsValue::Long(user_data_trim_bwc.num_seconds),
+            );
+            p.add_field(
+                "user_data_trim_bwc_num_occured",
+                TsValue::Long(user_data_trim_bwc.num_occured),
+            );
         }
 
-        if let Some(user_data_sdc_read_latency) = &self.user_data_sdc_read_latency{
-            p.add_field("user_data_sdc_read_latency_total_weight_in_kb", TsValue::Long(user_data_sdc_read_latency.total_weight_in_kb));
-            p.add_field("user_data_sdc_read_latency_num_seconds", TsValue::Long(user_data_sdc_read_latency.num_seconds));
-            p.add_field("user_data_sdc_read_latency_num_occured", TsValue::Long(user_data_sdc_read_latency.num_occured));
+        if let Some(user_data_sdc_read_latency) = &self.user_data_sdc_read_latency {
+            p.add_field(
+                "user_data_sdc_read_latency_total_weight_in_kb",
+                TsValue::Long(user_data_sdc_read_latency.total_weight_in_kb),
+            );
+            p.add_field(
+                "user_data_sdc_read_latency_num_seconds",
+                TsValue::Long(user_data_sdc_read_latency.num_seconds),
+            );
+            p.add_field(
+                "user_data_sdc_read_latency_num_occured",
+                TsValue::Long(user_data_sdc_read_latency.num_occured),
+            );
         }
 
-        if let Some(user_data_sdc_write_latency) = &self.user_data_sdc_write_latency{
-            p.add_field("user_data_sdc_write_latency_total_weight_in_kb", TsValue::Long(user_data_sdc_write_latency.total_weight_in_kb));
-            p.add_field("user_data_sdc_write_latency_num_seconds", TsValue::Long(user_data_sdc_write_latency.num_seconds));
-            p.add_field("user_data_sdc_write_latency_num_occured", TsValue::Long(user_data_sdc_write_latency.num_occured));
+        if let Some(user_data_sdc_write_latency) = &self.user_data_sdc_write_latency {
+            p.add_field(
+                "user_data_sdc_write_latency_total_weight_in_kb",
+                TsValue::Long(user_data_sdc_write_latency.total_weight_in_kb),
+            );
+            p.add_field(
+                "user_data_sdc_write_latency_num_seconds",
+                TsValue::Long(user_data_sdc_write_latency.num_seconds),
+            );
+            p.add_field(
+                "user_data_sdc_write_latency_num_occured",
+                TsValue::Long(user_data_sdc_write_latency.num_occured),
+            );
         }
 
-        if let Some(user_data_sdc_trim_latency) = &self.user_data_sdc_trim_latency{
-            p.add_field("user_data_sdc_trim_latency_total_weight_in_kb", TsValue::Long(user_data_sdc_trim_latency.total_weight_in_kb));
-            p.add_field("user_data_sdc_trim_latency_num_seconds", TsValue::Long(user_data_sdc_trim_latency.num_seconds));
-            p.add_field("user_data_sdc_trim_latency_num_occured", TsValue::Long(user_data_sdc_trim_latency.num_occured));
+        if let Some(user_data_sdc_trim_latency) = &self.user_data_sdc_trim_latency {
+            p.add_field(
+                "user_data_sdc_trim_latency_total_weight_in_kb",
+                TsValue::Long(user_data_sdc_trim_latency.total_weight_in_kb),
+            );
+            p.add_field(
+                "user_data_sdc_trim_latency_num_seconds",
+                TsValue::Long(user_data_sdc_trim_latency.num_seconds),
+            );
+            p.add_field(
+                "user_data_sdc_trim_latency_num_occured",
+                TsValue::Long(user_data_sdc_trim_latency.num_occured),
+            );
         }
 
         points.push(p);
@@ -2035,7 +2425,6 @@ fn test_system_stats() {
 
     let points = i.into_point(None, true);
 }
-
 
 #[serde(rename_all = "camelCase")]
 #[derive(Clone, Deserialize, Debug)]
@@ -2119,7 +2508,7 @@ named!(
 
 impl Scaleio {
     pub fn new(client: &reqwest::Client, mut config: ScaleioConfig) -> MetricsResult<Self> {
-        let token = get_api_token(&client, &config)?;
+        let token = get_api_token(client, &config)?;
         config.password = token;
         Ok(Scaleio {
             client: client.clone(),
@@ -2137,7 +2526,7 @@ impl Scaleio {
     // more useful information
     pub fn get_drive_instances(&self, t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
         let instances = get::<Vec<Instance>>(&self.client, &self.config, "types/Device/instances")
-            .and_then(|instance| {
+            .map(|instance| {
                 let points: Vec<TsPoint> = instance
                     .iter()
                     .flat_map(|instance| instance.into_point(Some("scaleio_drive"), true))
@@ -2146,26 +2535,24 @@ impl Scaleio {
                         point
                     })
                     .collect();
-                Ok(points)
+                points
             })?;
         Ok(instances)
     }
 
     pub fn get_drive_ids(&self) -> MetricsResult<Vec<DriveId>> {
         let instance_ids =
-            get::<Vec<Instance>>(&self.client, &self.config, "types/Device/instances").and_then(
+            get::<Vec<Instance>>(&self.client, &self.config, "types/Device/instances").map(
                 |instances| {
                     let ids = instances
                         .iter()
-                        .map(|instance| {
-                            DriveId {
-                                id: instance.id.clone(),
-                                sds_id: instance.sds_id.clone(),
-                                storage_pool_id: instance.storage_pool_id.clone(),
-                            }
+                        .map(|instance| DriveId {
+                            id: instance.id.clone(),
+                            sds_id: instance.sds_id.clone(),
+                            storage_pool_id: instance.storage_pool_id.clone(),
                         })
                         .collect::<Vec<DriveId>>();
-                    Ok(ids)
+                    ids
                 },
             )?;
         Ok(instance_ids)
@@ -2173,12 +2560,12 @@ impl Scaleio {
 
     pub fn get_sds_ids(&self) -> MetricsResult<Vec<String>> {
         let sds_ids = get::<Vec<SdsObject>>(&self.client, &self.config, "types/Sds/instances")
-            .and_then(|sds_objects| {
+            .map(|sds_objects| {
                 let ids = sds_objects
                     .iter()
                     .map(|sds| sds.id.clone())
                     .collect::<Vec<String>>();
-                Ok(ids)
+                ids
             })?;
 
         Ok(sds_ids)
@@ -2194,7 +2581,7 @@ impl Scaleio {
             &self.config,
             &format!("instances/Sds::{}/relationships/Statistics", sds_id),
         )
-        .and_then(|instance| {
+        .map(|instance| {
             let points: Vec<TsPoint> = instance
                 .into_point(Some("scaleio_sds_stat"), true)
                 .iter_mut()
@@ -2204,7 +2591,7 @@ impl Scaleio {
                     point.clone()
                 })
                 .collect();
-            Ok(points)
+            points
         })?;
 
         Ok(instance_statistics)
@@ -2221,7 +2608,7 @@ impl Scaleio {
             &self.config,
             &format!("instances/Device::{}/relationships/Statistics", ids.id),
         )
-        .and_then(|instance| {
+        .map(|instance| {
             let points: Vec<TsPoint> = instance
                 .into_point(Some("scaleio_drive_stat"), true)
                 .into_iter()
@@ -2236,7 +2623,7 @@ impl Scaleio {
                     point
                 })
                 .collect();
-            Ok(points)
+            points
         })?;
 
         Ok(instance_statistics)
@@ -2379,7 +2766,7 @@ impl Scaleio {
             &self.config,
             &format!("instances/System::{}/relationships/Sdc", system_id),
         )
-        .and_then(|sdc_objects| {
+        .map(|sdc_objects| {
             let points: Vec<TsPoint> = sdc_objects
                 .iter()
                 .flat_map(|sdc| sdc.into_point(Some("scaleio_sdc"), true))
@@ -2388,7 +2775,7 @@ impl Scaleio {
                     point
                 })
                 .collect();
-            Ok(points)
+            points
         })?;
         Ok(sdc_info)
     }
@@ -2406,7 +2793,7 @@ impl Scaleio {
 
     pub fn get_sds_objects(&self, t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
         let sds_info = get::<Vec<SdsObject>>(&self.client, &self.config, "types/Sds/instances")
-            .and_then(|sds_objects| {
+            .map(|sds_objects| {
                 let points: Vec<TsPoint> = sds_objects
                     .iter()
                     .flat_map(|sds| sds.into_point(Some("scaleio_sds"), true))
@@ -2415,22 +2802,32 @@ impl Scaleio {
                         point
                     })
                     .collect();
-                Ok(points)
+                points
             })?;
         Ok(sds_info)
     }
 
-    pub fn get_system_stats(&self, system_id: &str, t: DateTime<Utc>)-> MetricsResult<Vec<TsPoint>> {
-        let systemstats = get::<SystemStatistics>(&self.client, &self.config, &format!("instances/System::{}/relationships/Statistics", system_id)).and_then(|system_stats|{
-            let points: Vec<TsPoint> = system_stats.into_point(Some("scaleio_sys_stats"), true)
-            .into_iter()
-            .map(|mut point| {
-                point.timestamp = Some(t);
-                point.add_tag("sys_id", TsValue::String(system_id.to_string()));
-                point
-            })
-            .collect();
-            Ok(points)
+    pub fn get_system_stats(
+        &self,
+        system_id: &str,
+        t: DateTime<Utc>,
+    ) -> MetricsResult<Vec<TsPoint>> {
+        let systemstats = get::<SystemStatistics>(
+            &self.client,
+            &self.config,
+            &format!("instances/System::{}/relationships/Statistics", system_id),
+        )
+        .map(|system_stats| {
+            let points: Vec<TsPoint> = system_stats
+                .into_point(Some("scaleio_sys_stats"), true)
+                .into_iter()
+                .map(|mut point| {
+                    point.timestamp = Some(t);
+                    point.add_tag("sys_id", TsValue::String(system_id.to_string()));
+                    point
+                })
+                .collect();
+            points
         })?;
         Ok(systemstats)
     }
@@ -2462,7 +2859,7 @@ impl Scaleio {
 
     pub fn get_volumes(&self, t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
         let sds_vols = get::<Vec<SdsVolume>>(&self.client, &self.config, "types/Volume/instances")
-            .and_then(|sds_vols| {
+            .map(|sds_vols| {
                 let points: Vec<TsPoint> = sds_vols
                     .iter()
                     .flat_map(|vol| vol.into_point(Some("scaleio_volume"), true))
@@ -2471,7 +2868,7 @@ impl Scaleio {
                         point
                     })
                     .collect();
-                Ok(points)
+                points
             })?;
         Ok(sds_vols)
     }
@@ -2563,8 +2960,8 @@ impl Scaleio {
         // and return corresponding sdc_id
 
         debug!("Retrieving SDC ID for {}", sdc_name);
-        let sdc_info = get::<Vec<Sdc>>(&self.client, &self.config, "api/types/Sdc/instances")
-            .and_then(|sdc_objects| {
+        let sdc_info = get::<Vec<Sdc>>(&self.client, &self.config, "api/types/Sdc/instances").map(
+            |sdc_objects| {
                 let ids: Vec<String> = sdc_objects
                     .iter()
                     .filter(|sdc| match sdc.name {
@@ -2573,8 +2970,9 @@ impl Scaleio {
                     })
                     .map(|sdc| sdc.id.clone())
                     .collect::<Vec<String>>();
-                Ok(ids)
-            })?;
+                ids
+            },
+        )?;
 
         if !sdc_info.is_empty() {
             if let Some(id) = sdc_info.get(0) {
@@ -2692,7 +3090,7 @@ fn identify_ideal_pools(
         let mut ids: Vec<String> = Vec::new();
 
         // Retain only those pools which pass the cutoff
-        storage_pools.retain(|ref each| each.spare_percentage > spare_cutoff);
+        storage_pools.retain(|each| each.spare_percentage > spare_cutoff);
         if storage_pools.is_empty() {
             // None have enough spare space
             return Err(StorageError::new(format!(
