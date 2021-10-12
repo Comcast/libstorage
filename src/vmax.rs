@@ -1244,18 +1244,9 @@ impl Vmax {
             Some(&self.config.password),
         )?;
 
-        let vol_count = match data["count"].as_u64() {
-            Some(count) => count,
-            None => 0,
-        };
-        let iterator_id = match data["id"].as_str() {
-            Some(id) => id,
-            None => "",
-        };
-        let max_count_per_page = match data["maxPageSize"].as_u64() {
-            Some(count) => count,
-            None => 0,
-        };
+        let vol_count = data["count"].as_u64().unwrap_or(0);
+        let iterator_id = data["id"].as_str().unwrap_or("");
+        let max_count_per_page = data["maxPageSize"].as_u64().unwrap_or(0);
         debug!(
             "Volume count {}, max count per page {}, iterator id {}",
             vol_count, max_count_per_page, iterator_id

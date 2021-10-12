@@ -100,21 +100,10 @@ fn parse_telegraf(output: &str, point_name: Option<&str>) -> MetricsResult<TsPoi
                 (counter_name, counter_value, Some(tags_text))
             }
             _ => {
-                 // This counter is missing the {}'s
                  let parts: Vec<&str> = line.split_whitespace().collect();
                  (parts[0], parts[1], None)
             }
         };
-            /*if start_index.is_some() && end_index.is_some() {
-                let counter_name = &line[0..start_index.unwrap()];
-                let counter_value = line[end_index.unwrap() + 1..].trim_start();
-                let tags_text = &line[start_index.unwrap() + 1..end_index.unwrap()];
-                (counter_name, counter_value, Some(tags_text))
-            } else {
-                // This counter is missing the {}'s
-                let parts: Vec<&str> = line.split_whitespace().collect();
-                (parts[0], parts[1], None)
-            };*/
 
         if counter_name.starts_with("go")
             || counter_name.starts_with("disk_inodes")

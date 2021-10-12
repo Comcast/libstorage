@@ -2306,7 +2306,6 @@ impl IntoPoint for StoragePools {
     }
 }
 
-
 impl FromXml for StoragePools {
     fn from_xml(data: &str) -> MetricsResult<Self> {
         let mut reader = Reader::from_str(data);
@@ -2857,20 +2856,12 @@ fn start_element<W: Write>(
     element_type: Option<&str>,
 ) -> MetricsResult<()> {
     let e = match (name, element_type) {
-        (Some(n), Some(e_type)) => {
-            XmlEvent::start_element(element_name)
+        (Some(n), Some(e_type)) => XmlEvent::start_element(element_name)
             .attr("name", n)
-            .attr("type", e_type)
-        },
-        (Some(n), None) => {
-            XmlEvent::start_element(element_name).attr("name", n)
-        }
-        (None, Some(e_type)) => {
-            XmlEvent::start_element(element_name).attr("type", e_type)
-        }
-        _ => {
-            XmlEvent::start_element(element_name)
-        }
+            .attr("type", e_type),
+        (Some(n), None) => XmlEvent::start_element(element_name).attr("name", n),
+        (None, Some(e_type)) => XmlEvent::start_element(element_name).attr("type", e_type),
+        _ => XmlEvent::start_element(element_name),
     };
     w.write(e)?;
     Ok(())

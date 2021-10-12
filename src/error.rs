@@ -80,7 +80,7 @@ impl err for StorageError {
         match *self {
             StorageError::CookieError(ref e) => e.description(),
             StorageError::CsvError(ref e) => e.description(),
-            StorageError::Error(ref e) => &e,
+            StorageError::Error(ref e) => e,
             StorageError::FromUtf8Error(ref e) => e.description(),
             StorageError::HttpError(ref e) => e.description(),
             StorageError::InfluxError(ref e) => match *e {
@@ -141,8 +141,6 @@ impl StorageError {
     pub fn new(err: String) -> StorageError {
         StorageError::Error(err)
     }
-
-    
 }
 
 impl From<CookieParseError> for StorageError {
