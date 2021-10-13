@@ -2767,7 +2767,7 @@ impl Vnx {
     /// it is called the mount point.) in the root file system of the mover or VDM.
     /// A mount export is identified by the Data Mover or VDM on which the file
     /// system is mounted and the mount path.
-    pub fn mount_listing_request(&mut self, t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
+    pub fn mount_listing_request(&mut self, _t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
         let mut output: Vec<u8> = Vec::new();
         // Create the XML request object to send to the VNX
         {
@@ -2791,7 +2791,7 @@ impl Vnx {
     /// donot expose this information. With Unity, it may be available via REST.
     pub fn get_nfs_share_mounts(
         &mut self,
-        t: DateTime<Utc>,
+        _t: DateTime<Utc>,
         dump_path: &Path,
     ) -> MetricsResult<Vec<TsPoint>> {
         // Check if given path points to a valid file and if non-empty
