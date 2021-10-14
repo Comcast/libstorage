@@ -71,38 +71,37 @@ pub enum StorageError {
 
 impl fmt::Display for StorageError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let err = match *self {
-            StorageError::CookieError(ref e) => e.to_string(),
-            StorageError::CsvError(ref e) => e.to_string(),
-            StorageError::Error(ref e) => e.to_string(),
-            StorageError::FromUtf8Error(ref e) => e.to_string(),
-            StorageError::HttpError(ref e) => e.to_string(),
+        match *self {
+            StorageError::CookieError(ref e) => e.fmt(f),
+            StorageError::CsvError(ref e) => e.fmt(f),
+            StorageError::Error(ref e) => f.write_str(e),
+            StorageError::FromUtf8Error(ref e) => e.fmt(f),
+            StorageError::HttpError(ref e) => e.fmt(f),
             StorageError::InfluxError(ref e) => match *e {
-                InfluxError::SyntaxError(ref s) => s.to_string(),
-                InfluxError::InvalidCredentials(ref s) => s.to_string(),
-                InfluxError::DataBaseDoesNotExist(ref s) => s.to_string(),
-                InfluxError::RetentionPolicyDoesNotExist(ref s) => s.to_string(),
-                InfluxError::Communication(ref s) => s.to_string(),
-                InfluxError::Unknow(ref s) => s.to_string(),
+                InfluxError::SyntaxError(ref s) => f.write_str(s),
+                InfluxError::InvalidCredentials(ref s) => f.write_str(s),
+                InfluxError::DataBaseDoesNotExist(ref s) => f.write_str(s),
+                InfluxError::RetentionPolicyDoesNotExist(ref s) => f.write_str(s),
+                InfluxError::Communication(ref s) => f.write_str(s),
+                InfluxError::Unknow(ref s) => f.write_str(s),
             },
-            StorageError::InvalidHeaderName(ref e) => e.to_string(),
-            StorageError::InvalidHeaderValue(ref e) => e.to_string(),
-            StorageError::IoError(ref e) => e.to_string(),
+            StorageError::InvalidHeaderName(ref e) => e.fmt(f),
+            StorageError::InvalidHeaderValue(ref e) => e.fmt(f),
+            StorageError::IoError(ref e) => e.fmt(f),
             #[cfg(feature = "isilon-library")]
-            StorageError::IsilonError(ref e) => e.to_string(),
-            StorageError::JsonError(ref e) => e.to_string(),
-            StorageError::NativeTlsError(ref e) => e.to_string(),
-            StorageError::ParseBoolError(ref e) => e.to_string(),
-            StorageError::ParseError(ref e) => e.to_string(),
-            StorageError::ParseFloatError(ref e) => e.to_string(),
-            StorageError::ParseIntError(ref e) => e.to_string(),
-            StorageError::PostgresError(ref e) => e.to_string(),
-            StorageError::ThreadPoolBuildError(ref e) => e.to_string(),
-            StorageError::TreeXmlError(ref e) => e.to_string(),
-            StorageError::ToStrError(ref e) => e.to_string(),
-            StorageError::XmlEmitterError(ref e) => e.to_string(),
-        };
-        f.write_str(&err)
+            StorageError::IsilonError(ref e) => e.fmt(f),
+            StorageError::JsonError(ref e) => e.fmt(f),
+            StorageError::NativeTlsError(ref e) => e.fmt(f),
+            StorageError::ParseBoolError(ref e) => e.fmt(f),
+            StorageError::ParseError(ref e) => e.fmt(f),
+            StorageError::ParseFloatError(ref e) => e.fmt(f),
+            StorageError::ParseIntError(ref e) => e.fmt(f),
+            StorageError::PostgresError(ref e) => e.fmt(f),
+            StorageError::ThreadPoolBuildError(ref e) => e.fmt(f),
+            StorageError::TreeXmlError(ref e) => e.fmt(f),
+            StorageError::ToStrError(ref e) => e.fmt(f),
+            StorageError::XmlEmitterError(ref e) => e.fmt(f),
+        }
     }
 }
 
