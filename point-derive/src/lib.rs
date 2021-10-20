@@ -22,7 +22,7 @@ use proc_macro2::{Ident, Span};
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
 
-#[proc_macro_derive(IntoPoint)]
+#[proc_macro_derive(IntoPoint,Sync)]
 pub fn point_derive(input: TokenStream) -> TokenStream {
     // Parse the string representation
     let ast = parse_macro_input!(input as DeriveInput);
@@ -34,7 +34,7 @@ pub fn point_derive(input: TokenStream) -> TokenStream {
     TokenStream::from(generated)
 }
 
-#[proc_macro_derive(IntoChildPoint)]
+#[proc_macro_derive(IntoChildPoint,Sync)]
 pub fn child_point_derive(input: TokenStream) -> TokenStream {
     // Parse the string representation
     let ast = parse_macro_input!(input as DeriveInput);
@@ -174,7 +174,7 @@ fn impl_struct_point_fields(name: &syn::Ident, fields: &syn::Fields, child: bool
     let u_16: Ident = Ident::new("u16", Span::call_site());
     let u_64: Ident = Ident::new("u64", Span::call_site());
     let uuid: Ident = Ident::new("Uuid", Span::call_site());
-    let value: Ident = Ident::new("Value", Span::call_site());
+    let _value: Ident = Ident::new("Value", Span::call_site());
     let _vec: Ident = Ident::new("Vec", Span::call_site());
 
     let mut result = Vec::new();
