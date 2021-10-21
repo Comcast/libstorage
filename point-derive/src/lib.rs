@@ -22,7 +22,7 @@ use proc_macro2::{Ident, Span};
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
 
-#[proc_macro_derive(IntoPoint,Sync)]
+#[proc_macro_derive(IntoPoint)]
 pub fn point_derive(input: TokenStream) -> TokenStream {
     // Parse the string representation
     let ast = parse_macro_input!(input as DeriveInput);
@@ -34,7 +34,7 @@ pub fn point_derive(input: TokenStream) -> TokenStream {
     TokenStream::from(generated)
 }
 
-#[proc_macro_derive(IntoChildPoint,Sync)]
+#[proc_macro_derive(IntoChildPoint)]
 pub fn child_point_derive(input: TokenStream) -> TokenStream {
     // Parse the string representation
     let ast = parse_macro_input!(input as DeriveInput);
