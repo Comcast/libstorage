@@ -174,7 +174,7 @@ fn impl_struct_point_fields(name: &syn::Ident, fields: &syn::Fields, child: bool
     let u_16: Ident = Ident::new("u16", Span::call_site());
     let u_64: Ident = Ident::new("u64", Span::call_site());
     let uuid: Ident = Ident::new("Uuid", Span::call_site());
-    let value: Ident = Ident::new("Value", Span::call_site());
+    let _value: Ident = Ident::new("Value", Span::call_site());
     let _vec: Ident = Ident::new("Vec", Span::call_site());
 
     let mut result = Vec::new();
