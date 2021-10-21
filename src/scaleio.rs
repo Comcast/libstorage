@@ -76,8 +76,8 @@ fn test_get_system_config() {
     println!("result: {:#?}", i);
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct SystemConfig {
     pub system_id: String,
     pub mdm_port: String,
@@ -96,8 +96,8 @@ pub struct SystemConfig {
 }
 
 // BWC=Bandwidth Calculation
-#[serde(rename_all = "camelCase")]
 #[derive(Clone, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct BWC {
     pub total_weight_in_kb: u64,
     pub num_occured: u64,
@@ -131,8 +131,8 @@ impl BWC {
     }
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Clone, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct CertificateInfo {
     subject: String,
     issuer: String,
@@ -143,8 +143,8 @@ pub struct CertificateInfo {
     valid_to_asn1_format: String,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Clone, Deserialize, Debug, IntoPoint)]
+#[serde(rename_all = "camelCase")]
 pub struct OscillatingCounterWindow {
     pub threshold: Option<i64>,
     pub window_size_in_sec: Option<i64>,
@@ -242,16 +242,16 @@ pub struct OscillatingCounterWindow {
     pub rfcache_write_pending: Option<u64>,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Clone, Deserialize, Debug)] 
+#[serde(rename_all = "camelCase")]
 pub struct FailureCounter {
     pub short_window: Window,
     pub medium_window: Option<Window>,
     pub long_window: Option<Window>,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Clone, Deserialize, Debug)] // v3 look for OscillatingCounter
+#[serde(rename_all = "camelCase")]
 pub struct Successfulio {
     pub short_window: Option<OscillatingCounterWindow>,
     pub medium_window: Option<OscillatingCounterWindow>,
@@ -342,8 +342,8 @@ pub struct DriveId {
     storage_pool_id: String, // storage pool id
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct DeviceStatistics {
     avg_write_size_in_bytes: u64,             // in v3
     active_moving_in_fwd_rebuild_jobs: u64,   // in v3
@@ -922,8 +922,8 @@ pub struct ClusterSelectedStatisticsResponse {
     pub storage_pool: HashMap<String, StoragePoolInfo>,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Debug, IntoPoint)]
+#[serde(rename_all = "camelCase")]
 pub struct StoragePoolInfo {
     // StoragePoolStatistics (selected ones)
     pub num_of_devices: u64,
@@ -964,8 +964,8 @@ impl IntoPoint for SdcSelectedStatisticsResponse {
     }
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Debug, IntoPoint)]
+#[serde(rename_all = "camelCase")]
 pub struct SdcStatsInfo {
     pub user_data_read_bwc: BWC,
     pub user_data_write_bwc: BWC,
@@ -977,8 +977,8 @@ pub struct SdcStatsInfo {
     pub num_of_mapped_volumes: u64,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Clone, Deserialize, Debug, IntoPoint)]
+#[serde(rename_all = "camelCase")]
 pub struct Instance {
     // Device Object
     pub device_current_path_name: String,  // in v3
@@ -1001,8 +1001,8 @@ pub struct Instance {
                                           // SDS object....
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct MdmCluster {
     pub master: TieBreaker,            //
     pub slaves: Vec<TieBreaker>,       //
@@ -1018,8 +1018,8 @@ pub struct MdmCluster {
     pub virtual_ip: Option<Vec<String>>, // NEW V3
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Serialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct SelectedStatisticsRequest {
     pub selected_statistics_list: Vec<StatsRequest>,
 }
@@ -1063,8 +1063,8 @@ pub enum CacheWriteHandlingMode {
     Cached,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Serialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct StatsRequest {
     #[serde(rename = "type")]
     pub req_type: StatsRequestType,
@@ -1081,8 +1081,8 @@ pub struct IpObject {
     pub role: IpRole,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize, IntoPoint)]
+#[serde(rename_all = "camelCase")]
 pub struct ScsiInitiatorMappingInfo {
     pub scsi_initiator_id: String,
     pub scsi_initiator_name: String,
@@ -1090,8 +1090,8 @@ pub struct ScsiInitiatorMappingInfo {
     pub lun: String,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SdcMappingInfo {
     pub sdc_id: String,
     pub sdc_ip: String,
@@ -1111,8 +1111,8 @@ impl IntoPoint for SdcMappingInfo {
     }
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SdsVolume {
     // Volume Object
     pub id: String,
@@ -1222,8 +1222,8 @@ fn test_sds_statistics() {
     println!("result: {:#?}", i);
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize, IntoPoint)]
+#[serde(rename_all = "camelCase")]
 pub struct SdsStatistics {
     active_moving_in_bck_rebuild_jobs: u64,
     active_moving_in_fwd_rebuild_jobs: u64,
@@ -1394,8 +1394,8 @@ pub struct SdsStatistics {
     unused_capacity_in_kb: u64,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SdsObject {
     pub ip_list: Vec<IpObject>,
     pub on_vm_ware: bool,
@@ -1568,8 +1568,8 @@ fn test_pool_response() {
     println!("result: {:#?}", i);
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct PoolInstanceResponse {
     pub rebuild_io_priority_policy: RebuildIoPriority,
     pub rebalance_io_priority_policy: RebuildIoPriority,
@@ -1616,8 +1616,8 @@ fn test_sdc_objects() {
     println!("result: {:#?}", i);
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Clone, Deserialize, Debug, IntoPoint)]
+#[serde(rename_all = "camelCase")]
 pub struct Sdc {
     pub sdc_approved: bool,
     pub mdm_connection_state: String,
@@ -1647,8 +1647,8 @@ fn test_system_response() {
     println!("result: {:#?}", i);
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize, IntoPoint)]
+#[serde(rename_all = "camelCase")]
 pub struct System {
     pub system_version_name: String,                    // in v3
     pub capacity_alert_high_threshold_percent: u16,     // in V3
@@ -1684,8 +1684,8 @@ pub struct System {
     pub links: Vec<HashMap<String, String>>,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SystemStatistics {
     pub capacity_limit_in_kb: u64,
     pub max_capacity_in_kb: u64,
@@ -2426,8 +2426,8 @@ fn test_system_stats() {
     let points = i.into_point(None, true);
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Clone, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct TieBreaker {
     pub openssl_version: String,
     #[serde(rename = "managementIPs")]
@@ -2441,8 +2441,8 @@ pub struct TieBreaker {
     pub port: u16,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Clone, Deserialize, Debug)] 
+#[serde(rename_all = "camelCase")]
 pub struct Window {
     threshold: u64,
     window_size_in_sec: u64,
@@ -3056,8 +3056,8 @@ pub enum VolumeRequestType {
     ThickProvisioned,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Serialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct VolumeRequest {
     pub volume_size_in_kb: String,
     pub storage_pool_id: String,

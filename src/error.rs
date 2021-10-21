@@ -71,43 +71,43 @@ pub enum StorageError {
 
 impl fmt::Display for StorageError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str(self.description())
+        match *self {
+            StorageError::CookieError(ref e) => e.fmt(f),
+            StorageError::CsvError(ref e) => e.fmt(f),
+            StorageError::Error(ref e) => f.write_str(e),
+            StorageError::FromUtf8Error(ref e) => e.fmt(f),
+            StorageError::HttpError(ref e) => e.fmt(f),
+            StorageError::InfluxError(ref e) => match *e {
+                InfluxError::SyntaxError(ref s) => f.write_str(s),
+                InfluxError::InvalidCredentials(ref s) => f.write_str(s),
+                InfluxError::DataBaseDoesNotExist(ref s) => f.write_str(s),
+                InfluxError::RetentionPolicyDoesNotExist(ref s) => f.write_str(s),
+                InfluxError::Communication(ref s) => f.write_str(s),
+                InfluxError::Unknow(ref s) => f.write_str(s),
+            },
+            StorageError::InvalidHeaderName(ref e) => e.fmt(f),
+            StorageError::InvalidHeaderValue(ref e) => e.fmt(f),
+            StorageError::IoError(ref e) => e.fmt(f),
+            #[cfg(feature = "isilon-library")]
+            StorageError::IsilonError(ref e) => e.fmt(f),
+            StorageError::JsonError(ref e) => e.fmt(f),
+            StorageError::NativeTlsError(ref e) => e.fmt(f),
+            StorageError::ParseBoolError(ref e) => e.fmt(f),
+            StorageError::ParseError(ref e) => e.fmt(f),
+            StorageError::ParseFloatError(ref e) => e.fmt(f),
+            StorageError::ParseIntError(ref e) => e.fmt(f),
+            StorageError::PostgresError(ref e) => e.fmt(f),
+            StorageError::ThreadPoolBuildError(ref e) => e.fmt(f),
+            StorageError::TreeXmlError(ref e) => e.fmt(f),
+            StorageError::ToStrError(ref e) => e.fmt(f),
+            StorageError::XmlEmitterError(ref e) => e.fmt(f),
+        }
     }
 }
 
 impl err for StorageError {
     fn description(&self) -> &str {
-        match *self {
-            StorageError::CookieError(ref e) => e.description(),
-            StorageError::CsvError(ref e) => e.description(),
-            StorageError::Error(ref e) => e,
-            StorageError::FromUtf8Error(ref e) => e.description(),
-            StorageError::HttpError(ref e) => e.description(),
-            StorageError::InfluxError(ref e) => match *e {
-                InfluxError::SyntaxError(ref s) => s,
-                InfluxError::InvalidCredentials(ref s) => s,
-                InfluxError::DataBaseDoesNotExist(ref s) => s,
-                InfluxError::RetentionPolicyDoesNotExist(ref s) => s,
-                InfluxError::Communication(ref s) => s,
-                InfluxError::Unknow(ref s) => s,
-            },
-            StorageError::InvalidHeaderName(ref e) => e.description(),
-            StorageError::InvalidHeaderValue(ref e) => e.description(),
-            StorageError::IoError(ref e) => e.description(),
-            #[cfg(feature = "isilon-library")]
-            StorageError::IsilonError(ref e) => e.description(),
-            StorageError::JsonError(ref e) => e.description(),
-            StorageError::NativeTlsError(ref e) => e.description(),
-            StorageError::ParseBoolError(ref e) => e.description(),
-            StorageError::ParseError(ref e) => e.description(),
-            StorageError::ParseFloatError(ref e) => e.description(),
-            StorageError::ParseIntError(ref e) => e.description(),
-            StorageError::PostgresError(ref e) => e.description(),
-            StorageError::ThreadPoolBuildError(ref e) => e.description(),
-            StorageError::TreeXmlError(ref e) => e.description(),
-            StorageError::ToStrError(ref e) => e.description(),
-            StorageError::XmlEmitterError(ref e) => e.description(),
-        }
+        "description() is deprecated; use Display"
     }
     fn source(&self) -> Option<&(dyn err + 'static)> {
         match *self {
@@ -141,6 +141,7 @@ impl StorageError {
     pub fn new(err: String) -> StorageError {
         StorageError::Error(err)
     }
+
 }
 
 impl From<CookieParseError> for StorageError {

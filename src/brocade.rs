@@ -80,8 +80,8 @@ fn parse_resource_groups() {
     let i: ResourceGroups = serde_json::from_str(&buff).unwrap();
     println!("result: {:#?}", i);
 }
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct ResourceGroups {
     pub resource_groups: Vec<ResourceGroup>,
 }
@@ -94,8 +94,8 @@ pub struct ResourceGroup {
     pub resource_type: String,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct BufferCredit {
     pub bb_credit: u64,
     #[serde(rename = "peerBBCredit")]
@@ -118,8 +118,8 @@ fn parse_fc_fabrics() {
     println!("result: {:#?}", i);
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct FcFabrics {
     pub fc_fabrics: Vec<FcFabric>,
     pub start_index: Option<i32>,
@@ -127,8 +127,8 @@ pub struct FcFabrics {
     pub total_results: Option<u64>,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Debug, IntoPoint)]
+#[serde(rename_all = "camelCase")]
 pub struct FcFabric {
     pub key: String,
     pub seed_switch_wwn: String,
@@ -144,8 +144,8 @@ pub struct FcFabric {
     pub seed_switch_ip_address: String,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct FcPorts {
     pub fc_ports: Vec<FcPort>,
     pub start_index: Option<i32>,
@@ -166,8 +166,8 @@ fn parse_fc_ports() {
     println!("result: {:#?}", i);
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Debug, IntoPoint)]
+#[serde(rename_all = "camelCase")]
 pub struct FcPort {
     key: String,
     wwn: String,
@@ -216,8 +216,8 @@ pub struct FcPort {
     master_port_number: i64,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct Fec {
     pub corrected_blocks: u64,
     pub uncorrected_blocks: u64,
@@ -236,8 +236,8 @@ fn parse_fc_switches() {
     println!("result: {:#?}", i);
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct FcSwitches {
     pub fc_switches: Vec<FcSwitch>,
     pub start_index: Option<i32>,
@@ -245,8 +245,8 @@ pub struct FcSwitches {
     pub total_results: Option<u64>,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Deserialize, Debug, IntoPoint)]
+#[serde(rename_all = "camelCase")]
 pub struct FcSwitch {
     pub key: String,
     #[serde(rename = "type")]
