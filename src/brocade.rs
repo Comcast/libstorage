@@ -43,14 +43,14 @@ pub struct BrocadeConfig {
 }
 
 pub struct Brocade {
-    client: reqwest::Client,
+    client: reqwest::blocking::Client,
     config: BrocadeConfig,
     token: String,
 }
 
 impl Brocade {
     /// Initialize and connect to a Brocade switch.
-    pub fn new(client: &reqwest::Client, config: BrocadeConfig) -> MetricsResult<Self> {
+    pub fn new(client: &reqwest::blocking::Client, config: BrocadeConfig) -> MetricsResult<Self> {
         let token = login(client, &config)?;
         Ok(Brocade {
             client: client.clone(),
@@ -487,7 +487,7 @@ pub enum TimeSeries {
 }
 
 // Connect to the server and request a new api token
-pub fn login(client: &reqwest::Client, config: &BrocadeConfig) -> MetricsResult<String> {
+pub fn login(client: &reqwest::blocking::Client, config: &BrocadeConfig) -> MetricsResult<String> {
     let mut headers = HeaderMap::new();
     headers.insert(
         ACCEPT,

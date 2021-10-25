@@ -156,7 +156,7 @@ fn parse_telegraf(output: &str, point_name: Option<&str>) -> MetricsResult<TsPoi
 
 // Call out to telegraf and return the result as a Vec<TsPoint>
 pub fn get_metrics(
-    client: &reqwest::Client,
+    client: &reqwest::blocking::Client,
     config: &TelegrafConfig,
     endpoint: &str,
 ) -> MetricsResult<TsPoint> {

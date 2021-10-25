@@ -45,7 +45,7 @@ pub struct OpenstackConfig {
 }
 
 pub struct Openstack {
-    client: reqwest::Client,
+    client: reqwest::blocking::Client,
     config: OpenstackConfig,
 }
 
@@ -323,7 +323,7 @@ impl IntoPoint for Volumes {
 }
 
 impl Openstack {
-    pub fn new(client: &reqwest::Client, config: OpenstackConfig) -> Self {
+    pub fn new(client: &reqwest::blocking::Client, config: OpenstackConfig) -> Self {
         Openstack {
             client: client.clone(),
             config,
@@ -406,7 +406,7 @@ impl Openstack {
             Some(port) => format!("https://{}:{}/v3/auth/tokens", self.config.endpoint, port),
             None => format!("https://{}/v3/auth/tokens", self.config.endpoint),
         };
-        let resp: reqwest::Response = loop {
+        let resp: reqwest::blocking::Response = loop {
             match self.client.post(&url).json(&auth_json).send() {
                 Ok(status) => match status.error_for_status() {
                     Ok(resp) => break resp,

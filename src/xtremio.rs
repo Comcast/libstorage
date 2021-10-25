@@ -46,12 +46,12 @@ pub struct XtremIOConfig {
 }
 
 pub struct XtremIo {
-    client: reqwest::Client,
+    client: reqwest::blocking::Client,
     config: XtremIOConfig,
 }
 
 impl XtremIo {
-    pub fn new(client: &reqwest::Client, config: XtremIOConfig) -> Self {
+    pub fn new(client: &reqwest::blocking::Client, config: XtremIOConfig) -> Self {
         XtremIo {
             client: client.clone(),
             config,
