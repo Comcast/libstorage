@@ -2434,7 +2434,7 @@ fn login_request(
     params.insert("Login", "Login".into());
 
     let s = client
-        .post(&format!("https://{}/Login", config.endpoint))
+        .post(&format!("http://{}/Login", config.endpoint))
         .form(&params)
         .send()?
         .error_for_status()?;
