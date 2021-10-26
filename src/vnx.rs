@@ -2433,6 +2433,7 @@ fn login_request(
     params.insert("password", config.password.clone());
     params.insert("Login", "Login".into());
 
+    log::info!("{:?}", params);
     let s = client
         .post(&format!("http://{}/Login", config.endpoint))
         .form(&params)
