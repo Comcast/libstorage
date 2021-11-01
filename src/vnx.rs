@@ -38,6 +38,7 @@ use quick_xml::Reader;
 use reqwest::header::{
     HeaderMap, HeaderName, HeaderValue, CONTENT_LENGTH, CONTENT_TYPE, COOKIE, SET_COOKIE,
 };
+use tokio::runtime::Runtime;
 use xml::writer::{EventWriter, XmlEvent};
 
 pub trait FromXml {
@@ -2423,8 +2424,8 @@ fn test_xml_reader() {
     println!("Result: {:?}", result);
 }
 
-fn login_request(
-    client: &reqwest::blocking::Client,
+async fn login_request(
+    client: &reqwest::Client,
     config: &VnxConfig,
     cookie_jar: &mut CookieJar,
 ) -> MetricsResult<()> {
@@ -2434,9 +2435,9 @@ fn login_request(
     params.insert("Login", "Login".into());
 
     let s = client
-        .post(&format!("https://{}/Login", config.endpoint))
-        .form(&params)
-        .send()?
+        .post(&format!("https://{}/Login?user={}&password={}&Login=Login", config.endpoint, config.user, config.password))
+        .send()
+        .await?
         .error_for_status()?;
 
     // From here we should get back a cookie
@@ -2454,23 +2455,25 @@ fn login_request(
 }
 
 pub struct Vnx {
-    client: reqwest::blocking::Client,
+    client: reqwest::Client,
     config: VnxConfig,
     cookie_jar: CookieJar,
 }
 
 impl Drop for Vnx {
     fn drop(&mut self) {
-        if let Err(e) = self.logout_request() {
+        let mut rt = Runtime::new().unwrap();
+        if let Err(e) = rt.block_on(self.logout_request()) {
             error!("Vnx logout request failed: {}", e);
         }
     }
 }
 
 impl Vnx {
-    pub fn new(client: &reqwest::blocking::Client, config: VnxConfig) -> MetricsResult<Self> {
+    pub fn new(client: &reqwest::Client, config: VnxConfig) -> MetricsResult<Self> {
+        let mut rt = Runtime::new()?;
         let mut cookie_jar = CookieJar::new();
-        login_request(client, &config, &mut cookie_jar)?;
+        rt.block_on(login_request(client, &config, &mut cookie_jar))?;
         Ok(Vnx {
             client: client.clone(),
             config,
@@ -2478,7 +2481,7 @@ impl Vnx {
         })
     }
 
-    pub fn logout_request(&self) -> MetricsResult<()> {
+    pub async fn logout_request(&self) -> MetricsResult<()> {
         let mut headers = HeaderMap::new();
         headers.insert(CONTENT_LENGTH, HeaderValue::from_str("0")?);
         headers.insert(CONTENT_TYPE, HeaderValue::from_str("application/xml")?);
@@ -2522,12 +2525,13 @@ impl Vnx {
             ))
             .headers(headers)
             .body("")
-            .send()?
+            .send()
+            .await?
             .error_for_status()?;
         Ok(())
     }
 
-    fn api_request<T>(&mut self, req: Vec<u8>) -> MetricsResult<T>
+    async fn api_request<T>(&mut self, req: Vec<u8>) -> MetricsResult<T>
     where
         T: FromXml,
     {
@@ -2585,7 +2589,8 @@ impl Vnx {
             ))
             .body(req)
             .headers(headers)
-            .send()?
+            .send()
+            .await?
             .error_for_status()?;
 
         // From here we should get back a JSESSIONID cookie
@@ -2595,7 +2600,7 @@ impl Vnx {
             self.cookie_jar.add(parsed);
         };
 
-        let data = s.text()?;
+        let data = s.text().await?;
         debug!("api_request response: {}", data);
         let res = T::from_xml(&data)?;
 
@@ -2603,23 +2608,27 @@ impl Vnx {
     }
 
     pub fn mover_network_stats_request(&mut self, mover_id: &str) -> MetricsResult<Vec<TsPoint>> {
-        self.mover_stats_request::<NetworkAllSample>(mover_id, &MoverStatsRequest::Network)
+        let mut rt = Runtime::new()?;
+        rt.block_on(self.mover_stats_request::<NetworkAllSample>(mover_id, &MoverStatsRequest::Network))
     }
 
     pub fn mover_cifs_stats_request(&mut self, mover_id: &str) -> MetricsResult<Vec<TsPoint>> {
-        self.mover_stats_request::<CifsAllSample>(mover_id, &MoverStatsRequest::Cifs)
+        let mut rt = Runtime::new()?;
+        rt.block_on(self.mover_stats_request::<CifsAllSample>(mover_id, &MoverStatsRequest::Cifs))
     }
 
     pub fn mover_resource_stats_request(&mut self, mover_id: &str) -> MetricsResult<Vec<TsPoint>> {
-        self.mover_stats_request::<ResourceUsageSample>(mover_id, &MoverStatsRequest::ResourceUsage)
+        let mut rt = Runtime::new()?;
+        rt.block_on(self.mover_stats_request::<ResourceUsageSample>(mover_id, &MoverStatsRequest::ResourceUsage))
     }
 
     pub fn mover_nfs_stats_request(&mut self, mover_id: &str) -> MetricsResult<Vec<TsPoint>> {
-        self.mover_stats_request::<NfsAllSample>(mover_id, &MoverStatsRequest::Nfs)
+        let mut rt = Runtime::new()?;
+        rt.block_on(self.mover_stats_request::<NfsAllSample>(mover_id, &MoverStatsRequest::Nfs))
     }
 
     // Helper function
-    fn mover_stats_request<T>(
+    async fn mover_stats_request<T>(
         &mut self,
         mover_id: &str,
         req_type: &MoverStatsRequest,
@@ -2639,7 +2648,7 @@ impl Vnx {
             end_element(&mut writer, "MoverStats")?;
             end_query_stats_request(&mut writer)?;
         }
-        let res: T = self.api_request(output)?;
+        let res: T = self.api_request(output).await?;
         Ok(res.into_point(None, true))
     }
 
@@ -2682,6 +2691,7 @@ impl Vnx {
     */
 
     pub fn storage_pool_query_request(&mut self) -> MetricsResult<StoragePools> {
+        let mut rt = Runtime::new()?;
         let mut output: Vec<u8> = Vec::new();
         {
             let mut writer = EventWriter::new(&mut output);
@@ -2690,11 +2700,12 @@ impl Vnx {
             end_element(&mut writer, "StoragePoolQueryParams")?;
             end_query_request(&mut writer)?;
         }
-        let res: StoragePools = self.api_request(output)?;
+        let res: StoragePools = rt.block_on(self.api_request(output))?;
         Ok(res)
     }
 
     pub fn disk_info_request(&mut self, mover_id: &str) -> MetricsResult<Vec<TsPoint>> {
+        let mut rt = Runtime::new()?;
         let mut output: Vec<u8> = Vec::new();
         {
             let mut writer = EventWriter::new(&mut output);
@@ -2712,11 +2723,12 @@ impl Vnx {
             end_element(&mut writer, "RequestPacket")?;
         }
         debug!("{}", String::from_utf8_lossy(&output));
-        let res: DiskInfo = self.api_request(output)?;
+        let res: DiskInfo = rt.block_on(self.api_request(output))?;
         Ok(res.into_point(Some("vnx_disk_info"), true))
     }
 
     pub fn cifs_server_request(&mut self) -> MetricsResult<Vec<TsPoint>> {
+        let mut rt = Runtime::new()?;
         let mut output: Vec<u8> = Vec::new();
 
         {
@@ -2727,11 +2739,12 @@ impl Vnx {
             end_query_request(&mut writer)?;
         }
 
-        let res: CifsServers = self.api_request(output)?;
+        let res: CifsServers = rt.block_on(self.api_request(output))?;
         Ok(res.into_point(Some("vnx_cifs_servers"), false))
     }
 
     pub fn filesystem_capacity_request(&mut self) -> MetricsResult<Vec<TsPoint>> {
+        let mut rt = Runtime::new()?;
         let mut output: Vec<u8> = Vec::new();
         {
             let mut writer = EventWriter::new(&mut output);
@@ -2745,11 +2758,11 @@ impl Vnx {
             end_element(&mut writer, "FileSystemQueryParams")?;
             end_query_request(&mut writer)?;
         }
-        let res: FileSystemCapacities = self.api_request(output)?;
+        let res: FileSystemCapacities = rt.block_on(self.api_request(output))?;
         Ok(res.into_point(Some("vnx_filesystem_capacity"), true))
     }
 
-    pub fn filesystem_usage_request(&mut self) -> MetricsResult<Vec<TsPoint>> {
+    pub async fn filesystem_usage_request(&mut self) -> MetricsResult<Vec<TsPoint>> {
         let mut output: Vec<u8> = Vec::new();
         {
             let mut writer = EventWriter::new(&mut output);
@@ -2758,7 +2771,7 @@ impl Vnx {
             end_element(&mut writer, "FileSystemUsage")?;
             end_query_stats_request(&mut writer)?;
         }
-        let res: FilesystemUsage = self.api_request(output)?;
+        let res: FilesystemUsage = self.api_request(output).await?;
         Ok(res.into_point(None, true))
     }
 
@@ -2768,6 +2781,7 @@ impl Vnx {
     /// A mount export is identified by the Data Mover or VDM on which the file
     /// system is mounted and the mount path.
     pub fn mount_listing_request(&mut self, _t: DateTime<Utc>) -> MetricsResult<Vec<TsPoint>> {
+        let mut rt = Runtime::new()?;
         let mut output: Vec<u8> = Vec::new();
         // Create the XML request object to send to the VNX
         {
@@ -2778,7 +2792,7 @@ impl Vnx {
             end_query_request(&mut writer)?;
         }
         // Request the mount info from the VNX
-        let res = self.api_request::<Mounts>(output)?;
+        let res = rt.block_on(self.api_request::<Mounts>(output))?;
 
         let points = res.into_point(Some("vnx_mounts"), false);
         Ok(points)
