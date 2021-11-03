@@ -44,12 +44,12 @@ pub struct VmaxConfig {
 }
 
 pub struct Vmax {
-    client: reqwest::Client,
+    client: reqwest::blocking::Client,
     config: VmaxConfig,
 }
 
 impl Vmax {
-    pub fn new(client: &reqwest::Client, config: VmaxConfig) -> Self {
+    pub fn new(client: &reqwest::blocking::Client, config: VmaxConfig) -> Self {
         Vmax {
             client: client.clone(),
             config,

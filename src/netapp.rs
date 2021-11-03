@@ -27,7 +27,7 @@ use chrono::offset::Utc;
 use chrono::DateTime;
 use log::debug;
 use reqwest::header::{HeaderValue, CONTENT_TYPE};
-use reqwest::Client;
+use reqwest::blocking::Client;
 use treexml::Document;
 use uuid::Uuid;
 use xml::writer::{EventWriter, XmlEvent};
@@ -53,12 +53,12 @@ pub struct NetappConfig {
 }
 
 pub struct Netapp {
-    client: reqwest::Client,
+    client: reqwest::blocking::Client,
     config: NetappConfig,
 }
 
 impl Netapp {
-    pub fn new(client: &reqwest::Client, config: NetappConfig) -> Self {
+    pub fn new(client: &reqwest::blocking::Client, config: NetappConfig) -> Self {
         Netapp {
             client: client.clone(),
             config,

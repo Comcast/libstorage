@@ -42,12 +42,12 @@ pub struct SolidfireConfig {
 }
 
 pub struct Solidfire {
-    client: reqwest::Client,
+    client: reqwest::blocking::Client,
     config: SolidfireConfig,
 }
 
 impl Solidfire {
-    pub fn new(client: &reqwest::Client, config: SolidfireConfig) -> Self {
+    pub fn new(client: &reqwest::blocking::Client, config: SolidfireConfig) -> Self {
         Solidfire {
             client: client.clone(),
             config,

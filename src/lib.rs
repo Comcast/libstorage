@@ -93,7 +93,7 @@ where
 }
 
 pub fn get<T>(
-    client: &reqwest::Client,
+    client: &reqwest::blocking::Client,
     endpoint: &str,
     user: &str,
     pass: Option<&str>,
