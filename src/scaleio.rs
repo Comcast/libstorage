@@ -59,7 +59,7 @@ pub struct ScaleioConfig {
 }
 
 pub struct Scaleio {
-    client: reqwest::Client,
+    client: reqwest::blocking::Client,
     config: ScaleioConfig,
 }
 
@@ -2448,7 +2448,7 @@ pub struct Window {
     window_size_in_sec: u64,
 }
 
-fn get<T>(client: &reqwest::Client, config: &ScaleioConfig, api: &str) -> MetricsResult<T>
+fn get<T>(client: &reqwest::blocking::Client, config: &ScaleioConfig, api: &str) -> MetricsResult<T>
 where
     T: DeserializeOwned + Debug,
 {
@@ -2463,7 +2463,7 @@ where
 }
 
 // Connect to the metadata server and request a new api token
-pub fn get_api_token(client: &reqwest::Client, config: &ScaleioConfig) -> MetricsResult<String> {
+pub fn get_api_token(client: &reqwest::blocking::Client, config: &ScaleioConfig) -> MetricsResult<String> {
     let mut token = client
         .get(&format!("https://{}/api/login", config.endpoint))
         .basic_auth(config.user.clone(), Some(config.password.clone()))
@@ -2507,7 +2507,7 @@ named!(
 );
 
 impl Scaleio {
-    pub fn new(client: &reqwest::Client, mut config: ScaleioConfig) -> MetricsResult<Self> {
+    pub fn new(client: &reqwest::blocking::Client, mut config: ScaleioConfig) -> MetricsResult<Self> {
         let token = get_api_token(client, &config)?;
         config.password = token;
         Ok(Scaleio {
@@ -3189,7 +3189,7 @@ fn test_create_and_map_volume() {
         .expect("SDC hostname is missing");
     let spare_cutoff: u8 = config["spare_cutoff"].as_u8().unwrap();
 
-    let web_client = reqwest::Client::builder().build().unwrap();
+    let web_client = reqwest::blocking::Client::builder().build().unwrap();
 
     let token = get_api_token(&web_client, &scaleio_config).unwrap();
     // valid 10 mins

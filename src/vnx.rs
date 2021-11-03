@@ -2424,7 +2424,7 @@ fn test_xml_reader() {
 }
 
 fn login_request(
-    client: &reqwest::Client,
+    client: &reqwest::blocking::Client,
     config: &VnxConfig,
     cookie_jar: &mut CookieJar,
 ) -> MetricsResult<()> {
@@ -2454,7 +2454,7 @@ fn login_request(
 }
 
 pub struct Vnx {
-    client: reqwest::Client,
+    client: reqwest::blocking::Client,
     config: VnxConfig,
     cookie_jar: CookieJar,
 }
@@ -2468,7 +2468,7 @@ impl Drop for Vnx {
 }
 
 impl Vnx {
-    pub fn new(client: &reqwest::Client, config: VnxConfig) -> MetricsResult<Self> {
+    pub fn new(client: &reqwest::blocking::Client, config: VnxConfig) -> MetricsResult<Self> {
         let mut cookie_jar = CookieJar::new();
         login_request(client, &config, &mut cookie_jar)?;
         Ok(Vnx {

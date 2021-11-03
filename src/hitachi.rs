@@ -32,12 +32,12 @@ use log::{error, trace, warn};
 use reqwest::header::ACCEPT;
 
 pub struct Hitachi {
-    client: reqwest::Client,
+    client: reqwest::blocking::Client,
     config: HitachiConfig,
 }
 
 impl Hitachi {
-    pub fn new(client: &reqwest::Client, config: HitachiConfig) -> Self {
+    pub fn new(client: &reqwest::blocking::Client, config: HitachiConfig) -> Self {
         Hitachi {
             client: client.clone(),
             config,
