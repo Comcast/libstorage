@@ -210,6 +210,7 @@ impl NfsMountedShares {
     fn from_str(data: &str) -> MetricsResult<Self> {
         let mut nfs_mounted_shares: Vec<NfsMountedShare> = Vec::new();
         let lines: Vec<&str> = data.split('\n').collect();
+        let lines_len = lines.len();
         let mut skip = 0;
         for (i, line) in lines.iter().enumerate() {
             if i == skip && skip != 0 {
@@ -223,28 +224,38 @@ impl NfsMountedShares {
             let access: Vec<String> = share[1].split(',').map(|s| s.to_string()).collect();
             let p = Path::new(&path);
 
-            //check if next share is actually just the alternate name
-            let next_share: Vec<&str> = lines[i + 1].split_whitespace().collect();
+            //check if next share is actually just the alternate name, if there is a next share
             let mut alternate_name = match p.file_name() {
                 Some(alt) => alt.to_string_lossy().to_string(),
                 None => String::new(),
             };
-            if next_share.len() == 2 {
-                let next_path = next_share[0].to_string();
-                let next_access: Vec<String> =
-                    next_share[1].split(',').map(|s| s.to_string()).collect();
-                if next_access == access || path.contains(&next_path) {
-                    alternate_name = next_path;
-                    skip = i + 1;
+            if i + 1 >= lines_len {
+                nfs_mounted_shares.push(NfsMountedShare {
+                    path: path.clone(),
+                    is_share: true,
+                    share_name: path.clone(),
+                    alternate_name: alternate_name.clone(),
+                    access: access.clone(),
+                });
+            } else {
+                let next_share: Vec<&str> = lines[i + 1].split_whitespace().collect();
+                if next_share.len() == 2 {
+                    let next_path = next_share[0].to_string();
+                    let next_access: Vec<String> =
+                        next_share[1].split(',').map(|s| s.to_string()).collect();
+                    if next_access == access || path.contains(&next_path) {
+                        alternate_name = next_path;
+                        skip = i + 1;
+                    }
                 }
+                nfs_mounted_shares.push(NfsMountedShare {
+                    path: path.clone(),
+                    is_share: true,
+                    share_name: path.clone(),
+                    alternate_name: alternate_name.clone(),
+                    access: access.clone(),
+                });
             }
-            nfs_mounted_shares.push(NfsMountedShare {
-                path: path.clone(),
-                is_share: true,
-                share_name: path.clone(),
-                alternate_name: alternate_name.clone(),
-                access: access.clone(),
-            });
         }
         Ok(NfsMountedShares { nfs_mounted_shares })
     }
