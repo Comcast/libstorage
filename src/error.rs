@@ -107,7 +107,37 @@ impl fmt::Display for StorageError {
 
 impl err for StorageError {
     fn description(&self) -> &str {
-        "description() is deprecated; use Display"
+        match *self {
+            StorageError::CookieError(ref e) => e.description(),
+            StorageError::CsvError(ref e) => e.description(),
+            StorageError::Error(ref e) => e,
+            StorageError::FromUtf8Error(ref e) => e.description(),
+            StorageError::HttpError(ref e) => e.description(),
+            StorageError::InfluxError(ref e) => match *e {
+                InfluxError::SyntaxError(ref s) => s,
+                InfluxError::InvalidCredentials(ref s) => s,
+                InfluxError::DataBaseDoesNotExist(ref s) => s,
+                InfluxError::RetentionPolicyDoesNotExist(ref s) => s,
+                InfluxError::Communication(ref s) => s,
+                InfluxError::Unknow(ref s) => s,
+            },
+            StorageError::InvalidHeaderName(ref e) => e.description(),
+            StorageError::InvalidHeaderValue(ref e) => e.description(),
+            StorageError::IoError(ref e) => e.description(),
+            #[cfg(feature = "isilon-library")]
+            StorageError::IsilonError(ref e) => e.description(),
+            StorageError::JsonError(ref e) => e.description(),
+            StorageError::NativeTlsError(ref e) => e.description(),
+            StorageError::ParseBoolError(ref e) => e.description(),
+            StorageError::ParseError(ref e) => e.description(),
+            StorageError::ParseFloatError(ref e) => e.description(),
+            StorageError::ParseIntError(ref e) => e.description(),
+            StorageError::PostgresError(ref e) => e.description(),
+            StorageError::ThreadPoolBuildError(ref e) => e.description(),
+            StorageError::TreeXmlError(ref e) => e.description(),
+            StorageError::ToStrError(ref e) => e.description(),
+            StorageError::XmlEmitterError(ref e) => e.description(),
+        }
     }
     fn source(&self) -> Option<&(dyn err + 'static)> {
         match *self {
