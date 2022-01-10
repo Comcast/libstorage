@@ -1922,7 +1922,7 @@ pub struct SystemStatistics {
     pub net_trimmed_user_data_capacity_in_kb: Option<u64>,
     pub net_provisioned_addresses_in_kb: Option<u64>,
     pub net_unused_capacity_in_kb: Option<u64>,
-    pub thin_and_snapshot_ratio: Option<u64>,
+    pub thin_and_snapshot_ratio: Option<f64>,
     pub overall_usage_ratio: Option<f64>,
     pub net_capacity_in_use_in_kb: Option<u64>,
     pub aggregate_compression_level: Option<u64>,
