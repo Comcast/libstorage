@@ -106,9 +106,6 @@ impl fmt::Display for StorageError {
 }
 
 impl err for StorageError {
-    fn description(&self) -> &str {
-        "description() is deprecated; use Display"
-    }
     fn source(&self) -> Option<&(dyn err + 'static)> {
         match *self {
             StorageError::CookieError(ref e) => e.source(),
