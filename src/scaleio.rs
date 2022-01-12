@@ -1490,7 +1490,9 @@ impl IntoPoint for SdsObject {
         p.add_field("drl_mode", TsValue::String(self.drl_mode.to_string()));
         p.add_field("rmcache_enabled", TsValue::Boolean(self.rmcache_enabled));
         p.add_field("rmcache_size_in_kb", TsValue::Long(self.rmcache_size_in_kb));
-        p.add_field("rmcache_frozen", TsValue::Boolean(self.rmcache_frozen));
+        if let Some(rmcache_frozen) = self.rmcache_frozen {
+            p.add_field("rmcache_frozen", TsValue::Boolean(rmcache_frozen));
+        }
         p.add_field(
             "rmcache_memory_allocation_state",
             TsValue::String(self.rmcache_memory_allocation_state.to_string()),
@@ -1615,8 +1617,8 @@ pub struct PoolInstanceResponse {
     pub rmcache_write_handling_mode: CacheWriteHandlingMode,
     pub checksum_enabled: bool,
     pub use_rfcache: bool,
-    pub rebuild_enabled: bool,
-    pub rebalance_enabled: bool,
+    pub rebuild_enabled: Option<bool>,
+    pub rebalance_enabled: Option<bool>,
     pub num_of_parallel_rebuild_rebalance_jobs_per_device: u16,
     pub capacity_alert_high_threshold: u8,
     pub capacity_alert_critical_threshold: u8,
