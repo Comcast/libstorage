@@ -1949,7 +1949,7 @@ pub struct SystemStatistics {
     pub thin_and_snapshot_ratio: Option<f64>,
     pub overall_usage_ratio: Option<f64>,
     pub net_capacity_in_use_in_kb: Option<u64>,
-    pub aggregate_compression_level: Option<u64>,
+    pub aggregate_compression_level: Option<String>,
     pub fgl_user_data_capacity_in_kb: Option<u64>,
     pub mg_user_ddata_ccapacity_in_kb: Option<u64>,
     pub max_user_data_capacity_in_kb: Option<u64>,
