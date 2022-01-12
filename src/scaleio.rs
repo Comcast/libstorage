@@ -143,6 +143,22 @@ pub struct CertificateInfo {
     valid_to_asn1_format: String,
 }
 
+#[derive(Clone, Deserialize, Debug)]
+#[serde(rename_all = "camelCase", untagged)]
+pub enum ThinCapacityAllocatedInKb {
+    Km{thin_capacity_allocated_in_km: u64},
+    Kb{thin_capacity_allocated_in_kb: u64},
+}
+impl ThinCapacityAllocatedInKb {
+    fn get_thin_capacity_allocated_in_kb(self) -> u64 {
+        match self {
+            ThinCapacityAllocatedInKb::Km{thin_capacity_allocated_in_km: b} => b,
+            ThinCapacityAllocatedInKb::Kb{thin_capacity_allocated_in_kb: c}=> c,
+        }
+    }
+}
+
+
 #[derive(Clone, Deserialize, Debug, IntoPoint)]
 #[serde(rename_all = "camelCase")]
 pub struct OscillatingCounterWindow {
@@ -198,7 +214,8 @@ pub struct OscillatingCounterWindow {
     pub rebalance_write_bwc: Option<BWC>,
     pub background_scan_compare_count: Option<u64>,
     pub background_scanned_in_mb: Option<u64>,
-    pub thin_capacity_allocated_in_km: Option<u64>,
+    #[serde(flatten)]
+    pub thin_capacity_allocated_in_km: Option<ThinCapacityAllocatedInKb >,
     pub rm_pending_allocated_in_kb: Option<u64>,
     pub semi_protected_vac_in_kb: Option<u64>,
     pub in_maintenance_vac_in_kb: Option<u64>,
@@ -489,7 +506,8 @@ pub struct DeviceStatistics {
     temp_capacity_vac_in_kb: Option<u64>,     // NEW v3
     thick_capacity_in_use_in_kb: u64,         // in v3
     thin_capacity_in_use_in_kb: u64,          // in v3
-    thin_capacity_allocated_in_km: u64,       // in v3
+    #[serde(flatten)]
+    thin_capacity_allocated_in_km: ThinCapacityAllocatedInKb ,       // in v3
     total_changelog_records_to_destage: Option<u64>, // NEW V3
     #[serde(rename = "totalChecksumMigrationSizeInKB")]
     total_checksum_migration_size_in_kb: Option<u64>, // NEW V3
@@ -587,7 +605,7 @@ impl IntoPoint for DeviceStatistics {
         );
         p.add_field(
             "thin_capacity_allocated_in_km",
-            TsValue::Long(self.thin_capacity_allocated_in_km),
+            TsValue::Long(self.thin_capacity_allocated_in_km.clone().get_thin_capacity_allocated_in_kb()),
         );
         p.add_field(
             "total_read_bwc",
@@ -935,7 +953,8 @@ pub struct StoragePoolInfo {
     pub capacity_limit_in_kb: u64,
     pub thick_capacity_in_use_in_kb: u64,
     pub thin_capacity_in_use_in_kb: u64,
-    pub thin_capacity_allocated_in_km: u64,
+    #[serde(flatten)]
+    pub thin_capacity_allocated_in_km: ThinCapacityAllocatedInKb,
     pub total_write_bwc: BWC,
     pub total_read_bwc: BWC,
 }
@@ -1118,7 +1137,7 @@ pub struct SdsVolume {
     pub id: String,
     pub name: Option<String>,
     pub size_in_kb: u64,
-    pub is_obfuscated: bool,
+    pub is_obfuscated: Option<bool>,
     pub creation_time: u64,
     pub volume_type: String,
     pub consistency_group_id: Option<String>,
@@ -1140,7 +1159,9 @@ impl IntoPoint for SdsVolume {
             p.add_tag("name", TsValue::String(name.clone()));
         }
         p.add_field("size_in_kb", TsValue::Long(self.size_in_kb));
-        p.add_field("is_obfuscated", TsValue::Boolean(self.is_obfuscated));
+        if let Some(ref is_obfuscated) = self.is_obfuscated {
+            p.add_field("is_obfuscated", TsValue::Boolean(is_obfuscated.clone()));
+        }
         p.add_field("creation_time", TsValue::Long(self.creation_time));
         p.add_tag("volume_type", TsValue::String(self.volume_type.clone()));
         if let Some(ref group_id) = self.consistency_group_id {
@@ -1386,7 +1407,8 @@ pub struct SdsStatistics {
     snap_capacity_in_use_in_kb: u64,
     snap_capacity_in_use_occupied_in_kb: u64,
     thick_capacity_in_use_in_kb: u64,
-    thin_capacity_allocated_in_km: u64,
+    #[serde(flatten)]
+    thin_capacity_allocated_in_km: ThinCapacityAllocatedInKb,
     thin_capacity_in_use_in_kb: u64,
     total_read_bwc: BWC,
     total_write_bwc: BWC,
