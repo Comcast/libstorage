@@ -1431,7 +1431,7 @@ pub struct SdsObject {
     pub drl_mode: DrlMode,
     pub rmcache_enabled: bool,
     pub rmcache_size_in_kb: u64,
-    pub rmcache_frozen: bool,
+    pub rmcache_frozen: Option<bool>,
     pub rmcache_memory_allocation_state: MemoryAllocationState,
     pub rfcache_enabled: bool,
     pub maintenance_state: MaintenanceState,
