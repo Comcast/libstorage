@@ -1133,7 +1133,7 @@ pub struct SdsVolume {
     pub creation_time: u64,
     pub volume_type: String,
     pub consistency_group_id: Option<String>,
-    pub mapping_to_all_sdcs_enabled: bool,
+    pub mapping_to_all_sdcs_enabled: Option<bool>,
     pub mapped_sdc_info: Option<Vec<SdcMappingInfo>>,
     pub mapped_scsi_initiator_info_list: Option<Vec<ScsiInitiatorMappingInfo>>,
     pub ancestor_volume_id: Option<String>,
@@ -1159,10 +1159,13 @@ impl IntoPoint for SdsVolume {
         if let Some(ref group_id) = self.consistency_group_id {
             p.add_tag("consistency_group_id", TsValue::String(group_id.clone()));
         }
-        p.add_field(
-            "mapping_to_all_sdcs_enabled",
-            TsValue::Boolean(self.mapping_to_all_sdcs_enabled),
-        );
+        if let Some(ref mapping_to_all_sdcs_enabled) = self.mapping_to_all_sdcs_enabled {
+            p.add_field(
+                "mapping_to_all_sdcs_enabled",
+                TsValue::Boolean(mapping_to_all_sdcs_enabled.clone()),
+            );
+        }
+        
 
         // This is a 1:Many relationship so we're going to denormalize that here
         // and store the sdc_info is a separate table with the volume id so we can
