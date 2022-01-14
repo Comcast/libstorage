@@ -898,6 +898,13 @@ fn test_instances() {
 
     let i: Vec<Instance> = serde_json::from_str(&buff).unwrap();
     println!("result: {:#?}", i);
+
+    let mut f = File::open("tests/scaleio/instances_v3.json").unwrap();
+    let mut buff = String::new();
+    f.read_to_string(&mut buff).unwrap();
+
+    let i: Vec<Instance> = serde_json::from_str(&buff).unwrap();
+    println!("result: {:#?}", i);
 }
 
 #[test]
@@ -1007,12 +1014,12 @@ pub struct Instance {
     pub device_original_path_name: String, // in v3
     pub rfcache_error_device_does_not_exist: bool,
     pub sds_id: String,
-    pub device_state: DeviceState,         // in v3
+    pub device_state: Option<DeviceState>,         // in v3
     pub capacity_limit_in_kb: Option<u64>, // in v3
     pub max_capacity_in_kb: u64,           // in v3
-    pub storage_pool_id: String,           // in v3 ** required
+    pub storage_pool_id: Option<String>,           // in v3 ** required, however can still be null
     pub long_successful_ios: Option<Successfulio>,
-    pub error_state: String,  // in v3 (note this could be an enum)
+    pub error_state: Option<String>,  // in v3 (note this could be an enum)
     pub name: Option<String>, // in v3
     pub id: String,           // in v3
     pub links: Vec<Link>,
@@ -2595,7 +2602,7 @@ impl Scaleio {
                         .map(|instance| DriveId {
                             id: instance.id.clone(),
                             sds_id: instance.sds_id.clone(),
-                            storage_pool_id: instance.storage_pool_id.clone(),
+                            storage_pool_id: instance.storage_pool_id.clone().unwrap_or(String::new()),
                         })
                         .collect::<Vec<DriveId>>();
                     ids
