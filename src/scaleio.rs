@@ -957,8 +957,7 @@ pub struct StoragePoolInfo {
     pub capacity_limit_in_kb: u64,
     pub thick_capacity_in_use_in_kb: u64,
     pub thin_capacity_in_use_in_kb: u64,
-    #[serde(flatten)]
-    pub thin_capacity_allocated_in_km: ThinCapacityAllocatedInKb,
+    pub thin_capacity_allocated_in_km: u64,
     pub total_write_bwc: BWC,
     pub total_read_bwc: BWC,
 }
@@ -1248,6 +1247,7 @@ fn test_sds_statistics() {
 
     let i: SdsStatistics = serde_json::from_str(&buff).unwrap();
     println!("result: {:#?}", i);
+
 }
 
 #[derive(Debug, Deserialize, IntoPoint)]
@@ -1414,8 +1414,7 @@ pub struct SdsStatistics {
     snap_capacity_in_use_in_kb: u64,
     snap_capacity_in_use_occupied_in_kb: u64,
     thick_capacity_in_use_in_kb: u64,
-    #[serde(flatten)]
-    thin_capacity_allocated_in_km: ThinCapacityAllocatedInKb,
+    thin_capacity_allocated_in_km: u64,
     thin_capacity_in_use_in_kb: u64,
     total_read_bwc: BWC,
     total_write_bwc: BWC,
