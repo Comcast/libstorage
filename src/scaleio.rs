@@ -143,6 +143,23 @@ pub struct CertificateInfo {
     valid_to_asn1_format: String,
 }
 
+#[derive(Clone, Deserialize, Debug)]
+#[serde(untagged, rename_all = "camelCase")]
+pub enum ThinCapacityAllocatedInKb {
+    Km{ thin_capacity_allocated_in_km: u64},
+    Kb{ thin_capacity_allocated_in_kb: u64},
+}
+
+impl ThinCapacityAllocatedInKb {
+    pub fn get_thin_capacity_allocated(self) -> u64 {
+        match self {
+            ThinCapacityAllocatedInKb::Km{ thin_capacity_allocated_in_km} => thin_capacity_allocated_in_km,
+            ThinCapacityAllocatedInKb::Kb{ thin_capacity_allocated_in_kb} => thin_capacity_allocated_in_kb,
+        }
+    }
+}
+
+
 #[derive(Clone, Deserialize, Debug, IntoPoint)]
 #[serde(rename_all = "camelCase")]
 pub struct OscillatingCounterWindow {
@@ -198,8 +215,8 @@ pub struct OscillatingCounterWindow {
     pub rebalance_write_bwc: Option<BWC>,
     pub background_scan_compare_count: Option<u64>,
     pub background_scanned_in_mb: Option<u64>,
-    pub thin_capacity_allocated_in_km: Option<u64>,
-    pub thin_capacity_allocated_in_kb: Option<u64>,
+    #[serde(flatten)]
+    pub thin_capacity_allocated_in_km: ThinCapacityAllocatedInKb,
     pub rm_pending_allocated_in_kb: Option<u64>,
     pub semi_protected_vac_in_kb: Option<u64>,
     pub in_maintenance_vac_in_kb: Option<u64>,
@@ -490,8 +507,8 @@ pub struct DeviceStatistics {
     temp_capacity_vac_in_kb: Option<u64>,     // NEW v3
     thick_capacity_in_use_in_kb: u64,         // in v3
     thin_capacity_in_use_in_kb: u64,          // in v3
-    thin_capacity_allocated_in_km: Option<u64>,       // in v3
-    thin_capacity_allocated_in_kb: Option<u64>,
+    #[serde(flatten)]
+    thin_capacity_allocated_in_km: ThinCapacityAllocatedInKb,       // in v3
     total_changelog_records_to_destage: Option<u64>, // NEW V3
     #[serde(rename = "totalChecksumMigrationSizeInKB")]
     total_checksum_migration_size_in_kb: Option<u64>, // NEW V3
@@ -587,17 +604,12 @@ impl IntoPoint for DeviceStatistics {
             "thin_capacity_in_use_in_kb",
             TsValue::Long(self.thin_capacity_in_use_in_kb),
         );
-        if let Some(ref thin_capacity_allocated_in_km) = self.thin_capacity_allocated_in_km {
-            p.add_field(
-                "thin_capacity_allocated_in_km",
-                TsValue::Long(thin_capacity_allocated_in_km.clone()),
-            );
-        } else { // there must be 
-            p.add_field(
-                "thin_capacity_allocated_in_km",
-                TsValue::Long(self.thin_capacity_allocated_in_kb.unwrap().clone()),
-            );
-        }
+       
+        p.add_field(
+            "thin_capacity_allocated_in_km",
+            TsValue::Long(self.thin_capacity_allocated_in_km.clone().get_thin_capacity_allocated()),
+        );
+
         
         p.add_field(
             "total_read_bwc",
@@ -945,8 +957,8 @@ pub struct StoragePoolInfo {
     pub capacity_limit_in_kb: u64,
     pub thick_capacity_in_use_in_kb: u64,
     pub thin_capacity_in_use_in_kb: u64,
-    pub thin_capacity_allocated_in_km: Option<u64>,
-    pub thin_capacity_allocated_in_kb: Option<u64>,
+    #[serde(flatten)]
+    pub thin_capacity_allocated_in_km: ThinCapacityAllocatedInKb,
     pub total_write_bwc: BWC,
     pub total_read_bwc: BWC,
 }
@@ -1402,8 +1414,8 @@ pub struct SdsStatistics {
     snap_capacity_in_use_in_kb: u64,
     snap_capacity_in_use_occupied_in_kb: u64,
     thick_capacity_in_use_in_kb: u64,
-    thin_capacity_allocated_in_km: Option<u64>,
-    thin_capacity_allocated_in_kb: Option<u64>,
+    #[serde(flatten)]
+    thin_capacity_allocated_in_km: ThinCapacityAllocatedInKb,
     thin_capacity_in_use_in_kb: u64,
     total_read_bwc: BWC,
     total_write_bwc: BWC,
@@ -1704,6 +1716,13 @@ pub struct System {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(untagged, rename_all = "camelCase")]
+pub enum CompressedDataCompressionRatio {
+    Null{compressed_data_compression_ratio: String}, // for "NaN" cases
+    Ratio { compressed_data_compression_ratio: Option<u64>},
+}
+
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SystemStatistics {
     pub capacity_limit_in_kb: u64,
@@ -1952,7 +1971,8 @@ pub struct SystemStatistics {
     pub net_fgl_uncompressed_data_size_in_kb: Option<u64>,
     pub net_fgl_compressed_data_size_in_kb: Option<u64>,
     pub net_fgl_user_data_capacity_in_kb: Option<u64>,
-    pub compressed_data_compression_ratio: Option<u64>,
+    #[serde(flatten)]
+    pub compressed_data_compression_ratio: CompressedDataCompressionRatio,
     pub net_mg_user_data_capacity_in_kb: Option<u64>,
     pub net_max_user_data_capacity_in_kb: Option<u64>,
     pub net_user_data_capacity_no_trim_in_kb: Option<u64>,
@@ -2443,6 +2463,14 @@ fn test_system_stats() {
     println!("result: {:#?}", i);
 
     let points = i.into_point(None, true);
+
+    let mut f = File::open("tests/scaleio/system_statistics_v3.json").unwrap();
+    let mut buff = String::new();
+    f.read_to_string(&mut buff).unwrap();
+    println!("buff: {}", buff);
+
+    let i: SystemStatistics = serde_json::from_str(&buff).unwrap();
+    println!("result: {:#?}", i);
 }
 
 #[derive(Clone, Deserialize, Debug)]
