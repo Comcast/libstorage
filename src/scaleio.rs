@@ -350,6 +350,15 @@ fn test_scaleio_drive_stats() {
     let points = i.into_point(Some("scaleio_device"), true);
     println!("result: {:#?}", i);
     println!("points: {:?}", points);
+
+    let mut f = File::open("tests/scaleio/device_statistics_v3.json").unwrap();
+    let mut buff = String::new();
+    f.read_to_string(&mut buff).unwrap();
+
+    let i: DeviceStatistics = serde_json::from_str(&buff).unwrap();
+    let points = i.into_point(Some("scaleio_device"), true);
+    println!("result: {:#?}", i);
+    println!("points: {:?}", points);
 }
 
 #[derive(Debug, Clone)]
@@ -388,7 +397,8 @@ pub struct DeviceStatistics {
     checksum_calculation_completion_percent: Option<u64>, // NEW V3
     checksum_capacity_in_kb: Option<u64>,     // NEW v3
     checksum_migration_completion_percent: Option<u64>, // NEW V3
-    compressed_data_compression_ratio: Option<f64>, // NEW V3
+    #[serde(flatten)]
+    pub compressed_data_compression_ratio: CompressedDataCompressionRatio, // NEW V3
     compression_ratio: Option<f64>,           // NEW V3
     #[serde(rename = "currentChecksumMigrationSizeInKB")]
     current_checksum_migration_size_in_kb: Option<u64>, // NEW V3
@@ -507,8 +517,7 @@ pub struct DeviceStatistics {
     temp_capacity_vac_in_kb: Option<u64>,     // NEW v3
     thick_capacity_in_use_in_kb: u64,         // in v3
     thin_capacity_in_use_in_kb: u64,          // in v3
-    #[serde(flatten)]
-    thin_capacity_allocated_in_km: ThinCapacityAllocatedInKb,       // in v3
+    thin_capacity_allocated_in_km: u64,       // in v3
     total_changelog_records_to_destage: Option<u64>, // NEW V3
     #[serde(rename = "totalChecksumMigrationSizeInKB")]
     total_checksum_migration_size_in_kb: Option<u64>, // NEW V3
@@ -607,7 +616,7 @@ impl IntoPoint for DeviceStatistics {
        
         p.add_field(
             "thin_capacity_allocated_in_km",
-            TsValue::Long(self.thin_capacity_allocated_in_km.clone().get_thin_capacity_allocated()),
+            TsValue::Long(self.thin_capacity_allocated_in_km),
         );
 
         
