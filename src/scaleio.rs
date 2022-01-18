@@ -2656,6 +2656,9 @@ impl Scaleio {
         t: DateTime<Utc>,
         ids: &DriveId,
     ) -> MetricsResult<Vec<TsPoint>> {
+        if ids.storage_pool_id.is_empty() {
+            return Ok(vec![])
+        }
         let instance_statistics = get::<DeviceStatistics>(
             &self.client,
             &self.config,
