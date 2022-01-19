@@ -143,6 +143,23 @@ pub struct CertificateInfo {
     valid_to_asn1_format: String,
 }
 
+#[derive(Clone, Deserialize, Debug)]
+#[serde(untagged, rename_all = "camelCase")]
+pub enum ThinCapacityAllocatedInKb {
+    Km{ thin_capacity_allocated_in_km: u64},
+    Kb{ thin_capacity_allocated_in_kb: u64},
+}
+
+impl ThinCapacityAllocatedInKb {
+    pub fn get_thin_capacity_allocated(self) -> u64 {
+        match self {
+            ThinCapacityAllocatedInKb::Km{ thin_capacity_allocated_in_km} => thin_capacity_allocated_in_km,
+            ThinCapacityAllocatedInKb::Kb{ thin_capacity_allocated_in_kb} => thin_capacity_allocated_in_kb,
+        }
+    }
+}
+
+
 #[derive(Clone, Deserialize, Debug, IntoPoint)]
 #[serde(rename_all = "camelCase")]
 pub struct OscillatingCounterWindow {
@@ -198,7 +215,8 @@ pub struct OscillatingCounterWindow {
     pub rebalance_write_bwc: Option<BWC>,
     pub background_scan_compare_count: Option<u64>,
     pub background_scanned_in_mb: Option<u64>,
-    pub thin_capacity_allocated_in_km: Option<u64>,
+    #[serde(flatten)]
+    pub thin_capacity_allocated_in_km: ThinCapacityAllocatedInKb,
     pub rm_pending_allocated_in_kb: Option<u64>,
     pub semi_protected_vac_in_kb: Option<u64>,
     pub in_maintenance_vac_in_kb: Option<u64>,
@@ -332,6 +350,15 @@ fn test_scaleio_drive_stats() {
     let points = i.into_point(Some("scaleio_device"), true);
     println!("result: {:#?}", i);
     println!("points: {:?}", points);
+
+    let mut f = File::open("tests/scaleio/device_statistics_v3.json").unwrap();
+    let mut buff = String::new();
+    f.read_to_string(&mut buff).unwrap();
+
+    let i: DeviceStatistics = serde_json::from_str(&buff).unwrap();
+    let points = i.into_point(Some("scaleio_device"), true);
+    println!("result: {:#?}", i);
+    println!("points: {:?}", points);
 }
 
 #[derive(Debug, Clone)]
@@ -370,7 +397,8 @@ pub struct DeviceStatistics {
     checksum_calculation_completion_percent: Option<u64>, // NEW V3
     checksum_capacity_in_kb: Option<u64>,     // NEW v3
     checksum_migration_completion_percent: Option<u64>, // NEW V3
-    compressed_data_compression_ratio: Option<f64>, // NEW V3
+    #[serde(flatten)]
+    pub compressed_data_compression_ratio: CompressedDataCompressionRatio, // NEW V3
     compression_ratio: Option<f64>,           // NEW V3
     #[serde(rename = "currentChecksumMigrationSizeInKB")]
     current_checksum_migration_size_in_kb: Option<u64>, // NEW V3
@@ -585,10 +613,13 @@ impl IntoPoint for DeviceStatistics {
             "thin_capacity_in_use_in_kb",
             TsValue::Long(self.thin_capacity_in_use_in_kb),
         );
+       
         p.add_field(
             "thin_capacity_allocated_in_km",
             TsValue::Long(self.thin_capacity_allocated_in_km),
         );
+
+        
         p.add_field(
             "total_read_bwc",
             TsValue::Long(self.total_read_bwc.total_weight_in_kb),
@@ -876,6 +907,13 @@ fn test_instances() {
 
     let i: Vec<Instance> = serde_json::from_str(&buff).unwrap();
     println!("result: {:#?}", i);
+
+    let mut f = File::open("tests/scaleio/instances_v3.json").unwrap();
+    let mut buff = String::new();
+    f.read_to_string(&mut buff).unwrap();
+
+    let i: Vec<Instance> = serde_json::from_str(&buff).unwrap();
+    println!("result: {:#?}", i);
 }
 
 #[test]
@@ -985,12 +1023,12 @@ pub struct Instance {
     pub device_original_path_name: String, // in v3
     pub rfcache_error_device_does_not_exist: bool,
     pub sds_id: String,
-    pub device_state: DeviceState,         // in v3
+    pub device_state: Option<DeviceState>,         // in v3
     pub capacity_limit_in_kb: Option<u64>, // in v3
     pub max_capacity_in_kb: u64,           // in v3
-    pub storage_pool_id: String,           // in v3 ** required
+    pub storage_pool_id: Option<String>,           // in v3 ** required, however can still be null
     pub long_successful_ios: Option<Successfulio>,
-    pub error_state: String,  // in v3 (note this could be an enum)
+    pub error_state: Option<String>,  // in v3 (note this could be an enum)
     pub name: Option<String>, // in v3
     pub id: String,           // in v3
     pub links: Vec<Link>,
@@ -1118,11 +1156,11 @@ pub struct SdsVolume {
     pub id: String,
     pub name: Option<String>,
     pub size_in_kb: u64,
-    pub is_obfuscated: bool,
+    pub is_obfuscated: Option<bool>,
     pub creation_time: u64,
     pub volume_type: String,
     pub consistency_group_id: Option<String>,
-    pub mapping_to_all_sdcs_enabled: bool,
+    pub mapping_to_all_sdcs_enabled: Option<bool>,
     pub mapped_sdc_info: Option<Vec<SdcMappingInfo>>,
     pub mapped_scsi_initiator_info_list: Option<Vec<ScsiInitiatorMappingInfo>>,
     pub ancestor_volume_id: Option<String>,
@@ -1140,16 +1178,21 @@ impl IntoPoint for SdsVolume {
             p.add_tag("name", TsValue::String(name.clone()));
         }
         p.add_field("size_in_kb", TsValue::Long(self.size_in_kb));
-        p.add_field("is_obfuscated", TsValue::Boolean(self.is_obfuscated));
+        if let Some(ref is_obfuscated) = self.is_obfuscated {
+            p.add_field("is_obfuscated", TsValue::Boolean(is_obfuscated.clone()));
+        }
         p.add_field("creation_time", TsValue::Long(self.creation_time));
         p.add_tag("volume_type", TsValue::String(self.volume_type.clone()));
         if let Some(ref group_id) = self.consistency_group_id {
             p.add_tag("consistency_group_id", TsValue::String(group_id.clone()));
         }
-        p.add_field(
-            "mapping_to_all_sdcs_enabled",
-            TsValue::Boolean(self.mapping_to_all_sdcs_enabled),
-        );
+        if let Some(ref mapping_to_all_sdcs_enabled) = self.mapping_to_all_sdcs_enabled {
+            p.add_field(
+                "mapping_to_all_sdcs_enabled",
+                TsValue::Boolean(mapping_to_all_sdcs_enabled.clone()),
+            );
+        }
+        
 
         // This is a 1:Many relationship so we're going to denormalize that here
         // and store the sdc_info is a separate table with the volume id so we can
@@ -1220,6 +1263,7 @@ fn test_sds_statistics() {
 
     let i: SdsStatistics = serde_json::from_str(&buff).unwrap();
     println!("result: {:#?}", i);
+
 }
 
 #[derive(Debug, Deserialize, IntoPoint)]
@@ -1409,7 +1453,7 @@ pub struct SdsObject {
     pub drl_mode: DrlMode,
     pub rmcache_enabled: bool,
     pub rmcache_size_in_kb: u64,
-    pub rmcache_frozen: bool,
+    pub rmcache_frozen: Option<bool>,
     pub rmcache_memory_allocation_state: MemoryAllocationState,
     pub rfcache_enabled: bool,
     pub maintenance_state: MaintenanceState,
@@ -1468,7 +1512,9 @@ impl IntoPoint for SdsObject {
         p.add_field("drl_mode", TsValue::String(self.drl_mode.to_string()));
         p.add_field("rmcache_enabled", TsValue::Boolean(self.rmcache_enabled));
         p.add_field("rmcache_size_in_kb", TsValue::Long(self.rmcache_size_in_kb));
-        p.add_field("rmcache_frozen", TsValue::Boolean(self.rmcache_frozen));
+        if let Some(rmcache_frozen) = self.rmcache_frozen {
+            p.add_field("rmcache_frozen", TsValue::Boolean(rmcache_frozen));
+        }
         p.add_field(
             "rmcache_memory_allocation_state",
             TsValue::String(self.rmcache_memory_allocation_state.to_string()),
@@ -1593,8 +1639,8 @@ pub struct PoolInstanceResponse {
     pub rmcache_write_handling_mode: CacheWriteHandlingMode,
     pub checksum_enabled: bool,
     pub use_rfcache: bool,
-    pub rebuild_enabled: bool,
-    pub rebalance_enabled: bool,
+    pub rebuild_enabled: Option<bool>,
+    pub rebalance_enabled: Option<bool>,
     pub num_of_parallel_rebuild_rebalance_jobs_per_device: u16,
     pub capacity_alert_high_threshold: u8,
     pub capacity_alert_critical_threshold: u8,
@@ -1682,6 +1728,13 @@ pub struct System {
     pub name: String,                                   // in V3
     pub id: String,                                     // in V3
     pub links: Vec<HashMap<String, String>>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(untagged, rename_all = "camelCase")]
+pub enum CompressedDataCompressionRatio {
+    Null{compressed_data_compression_ratio: String}, // for "NaN" cases
+    Ratio { compressed_data_compression_ratio: Option<u64>},
 }
 
 #[derive(Debug, Deserialize)]
@@ -1922,10 +1975,10 @@ pub struct SystemStatistics {
     pub net_trimmed_user_data_capacity_in_kb: Option<u64>,
     pub net_provisioned_addresses_in_kb: Option<u64>,
     pub net_unused_capacity_in_kb: Option<u64>,
-    pub thin_and_snapshot_ratio: Option<u64>,
+    pub thin_and_snapshot_ratio: Option<f64>,
     pub overall_usage_ratio: Option<f64>,
     pub net_capacity_in_use_in_kb: Option<u64>,
-    pub aggregate_compression_level: Option<u64>,
+    pub aggregate_compression_level: Option<String>,
     pub fgl_user_data_capacity_in_kb: Option<u64>,
     pub mg_user_ddata_ccapacity_in_kb: Option<u64>,
     pub max_user_data_capacity_in_kb: Option<u64>,
@@ -1933,7 +1986,8 @@ pub struct SystemStatistics {
     pub net_fgl_uncompressed_data_size_in_kb: Option<u64>,
     pub net_fgl_compressed_data_size_in_kb: Option<u64>,
     pub net_fgl_user_data_capacity_in_kb: Option<u64>,
-    pub compressed_data_compression_ratio: Option<u64>,
+    #[serde(flatten)]
+    pub compressed_data_compression_ratio: CompressedDataCompressionRatio,
     pub net_mg_user_data_capacity_in_kb: Option<u64>,
     pub net_max_user_data_capacity_in_kb: Option<u64>,
     pub net_user_data_capacity_no_trim_in_kb: Option<u64>,
@@ -2424,6 +2478,14 @@ fn test_system_stats() {
     println!("result: {:#?}", i);
 
     let points = i.into_point(None, true);
+
+    let mut f = File::open("tests/scaleio/system_statistics_v3.json").unwrap();
+    let mut buff = String::new();
+    f.read_to_string(&mut buff).unwrap();
+    println!("buff: {}", buff);
+
+    let i: SystemStatistics = serde_json::from_str(&buff).unwrap();
+    println!("result: {:#?}", i);
 }
 
 #[derive(Clone, Deserialize, Debug)]
@@ -2549,7 +2611,7 @@ impl Scaleio {
                         .map(|instance| DriveId {
                             id: instance.id.clone(),
                             sds_id: instance.sds_id.clone(),
-                            storage_pool_id: instance.storage_pool_id.clone(),
+                            storage_pool_id: instance.storage_pool_id.clone().unwrap_or(String::new()),
                         })
                         .collect::<Vec<DriveId>>();
                     ids
@@ -2603,6 +2665,9 @@ impl Scaleio {
         t: DateTime<Utc>,
         ids: &DriveId,
     ) -> MetricsResult<Vec<TsPoint>> {
+        if ids.storage_pool_id == "NaN".to_string() || ids.storage_pool_id.is_empty() {
+            return Ok(vec![])
+        }
         let instance_statistics = get::<DeviceStatistics>(
             &self.client,
             &self.config,
