@@ -1724,7 +1724,7 @@ pub struct System {
     pub tls_version: String,                            // in v3
     pub show_guid: bool,                                // in v3
     pub authentication_method: String,                  // in v3
-    pub mdm_to_sds_policy: String,                      // in v3
+    pub mdm_to_sds_policy: Option<String>,                      // in v3
     pub mdm_cluster: MdmCluster,                        // in v3
     pub perf_profile: PerfProfile,                      // in v3
     pub install_id: String,                             // in v3
