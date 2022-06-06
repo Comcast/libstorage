@@ -516,7 +516,8 @@ pub struct DeviceStatistics {
     snapshot_capacity_in_kb: Option<u64>,     // NEW V3
     temp_capacity_vac_in_kb: Option<u64>,     // NEW v3
     thick_capacity_in_use_in_kb: u64,         // in v3
-    thin_capacity_in_use_in_kb: u64,          // in v3
+    thin_capacity_in_use_in_kb: Option<u64>,          // deprecated, use netThinUserDataCapacityInKb * 2
+    net_thin_user_data_capacity_in_kb: Option<u64>, // use this value * 2 as thin_capacityInuseinKb 
     thin_capacity_allocated_in_km: u64,       // in v3
     total_changelog_records_to_destage: Option<u64>, // NEW V3
     #[serde(rename = "totalChecksumMigrationSizeInKB")]
@@ -609,10 +610,18 @@ impl IntoPoint for DeviceStatistics {
             "thick_capacity_in_use_in_kb",
             TsValue::Long(self.thick_capacity_in_use_in_kb),
         );
-        p.add_field(
-            "thin_capacity_in_use_in_kb",
-            TsValue::Long(self.thin_capacity_in_use_in_kb),
-        );
+        if let Some(thin_capacity_in_use_in_kb) = self.thin_capacity_in_use_in_kb {
+            p.add_field(
+                "thin_capacity_in_use_in_kb",
+                TsValue::Long(thin_capacity_in_use_in_kb),
+            );
+        }
+        else {
+            if let Some(net_thin_user_data_capacity_in_kb) = self.net_thin_user_data_capacity_in_kb {
+                p.add_field("thin_capacity_in_use_in_kb", TsValue::Long(net_thin_user_data_capacity_in_kb * 2))
+            }
+        }
+        
        
         p.add_field(
             "thin_capacity_allocated_in_km",
@@ -972,7 +981,9 @@ pub struct StoragePoolInfo {
     pub secondary_read_bwc: BWC,
     pub capacity_limit_in_kb: u64,
     pub thick_capacity_in_use_in_kb: u64,
-    pub thin_capacity_in_use_in_kb: u64,
+    // this attribute will be deleted in future versions of PowerFlex/SIO
+    pub thin_capacity_in_use_in_kb: Option<u64>, // deprecated, use net_thin_user_data_capacity_in_kb * 2
+    pub net_thin_user_data_capacity_in_kb: Option<u64>,
     pub thin_capacity_allocated_in_km: u64,
     pub total_write_bwc: BWC,
     pub total_read_bwc: BWC,
@@ -1431,7 +1442,8 @@ pub struct SdsStatistics {
     snap_capacity_in_use_occupied_in_kb: u64,
     thick_capacity_in_use_in_kb: u64,
     thin_capacity_allocated_in_km: u64,
-    thin_capacity_in_use_in_kb: u64,
+    thin_capacity_in_use_in_kb: Option<u64>, // Deprecated, use net_thin_user_data_capacity_in_kb instead
+    net_thin_user_data_capacity_in_kb: Option<u64>,
     total_read_bwc: BWC,
     total_write_bwc: BWC,
     unreachable_unused_capacity_in_kb: u64,
@@ -1744,7 +1756,8 @@ pub struct SystemStatistics {
     pub max_capacity_in_kb: u64,
     pub capacity_in_use_in_kb: u64,
     pub thick_capacity_in_use_in_kb: u64,
-    pub thin_capacity_in_use_in_kb: u64,
+    pub thin_capacity_in_use_in_kb: Option<u64>, //deprecated, use net_thin_user_data_capacity_in_kb * 2 instead
+    pub net_thin_user_data_capacity_in_kb: Option<u64>,
     pub snap_capacity_in_use_in_kb: u64,
     pub unreachable_unused_capacity_in_kb: u64,
     pub unused_capacity_in_kb: u64,
@@ -2018,10 +2031,17 @@ impl IntoPoint for SystemStatistics {
             "thick capacity_in_use_in_kb",
             TsValue::Long(self.thick_capacity_in_use_in_kb),
         );
-        p.add_field(
-            "thin_capacity_in_use_in_kb",
-            TsValue::Long(self.thin_capacity_in_use_in_kb),
-        );
+        if let Some(thin_capacity_in_use_in_kb) = self.thin_capacity_in_use_in_kb {
+            p.add_field(
+                "thin_capacity_in_use_in_kb",
+                TsValue::Long(thin_capacity_in_use_in_kb),
+            );
+        }
+        else {
+            if let Some(net_thin_user_data_capacity_in_kb) = self.net_thin_user_data_capacity_in_kb {
+                p.add_field("thin_capacity_in_use_in_kb", TsValue::Long(net_thin_user_data_capacity_in_kb * 2))
+            }
+        }
         p.add_field(
             "snap_capacity_in_use_in_kb",
             TsValue::Long(self.snap_capacity_in_use_in_kb),
@@ -2762,7 +2782,7 @@ impl Scaleio {
                     "numOfVolumes".into(),
                     "capacityLimitInKb".into(),
                     "thickCapacityInUseInKb".into(),
-                    "thinCapacityInUseInKb".into(),
+                    "netThinUserDataCapacityInKb".into(),// thinCapacityInUseInKb is deprecated"thinCapacityInUseInKb".into(),
                     "primaryReadBwc".into(),
                     "primaryWriteBwc".into(),
                     "secondaryReadBwc".into(),
