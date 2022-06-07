@@ -2079,10 +2079,13 @@ impl IntoPoint for SystemStatistics {
             "spare_capacity_in_kb",
             TsValue::Long(self.spare_capacity_in_kb),
         );
-        p.add_field(
-            "fixed_read_error_count",
-            TsValue::Long(self.fixed_read_error_count),
-        );
+        if let Some(fixed_read_error_count) = self.fixed_read_error_count{
+            p.add_field(
+                "fixed_read_error_count",
+                TsValue::Long(fixed_read_error_count),
+            );
+        }
+        
         p.add_field(
             "num_of_unmapped_volumes",
             TsValue::Long(self.num_of_unmapped_volumes),
