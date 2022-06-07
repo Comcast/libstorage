@@ -1829,7 +1829,7 @@ pub struct SystemStatistics {
     pub rebalance_wait_send_q_length: u64,
     pub rebuild_per_receive_job_net_throttling_in_kbps: u64,
     pub rebalance_per_receive_job_net_throttling_in_kbps: u64,
-    pub fixed_read_error_count: u64,
+    pub fixed_read_error_count: Option<u64>, // Optional Statistic
     #[serde(rename = "BackgroundScanCompareCount")]
     pub background_scan_compare_count: Option<u64>,
     #[serde(rename = "BackgroundScannedInMB")]
