@@ -1703,6 +1703,14 @@ fn test_system_response() {
 
     let i: Vec<System> = serde_json::from_str(&buff).unwrap();
     println!("result: {:#?}", i);
+
+    let mut f = File::open("tests/scaleio/system_v3.json").unwrap();
+    let mut buff = String::new();
+    f.read_to_string(&mut buff).unwrap();
+    println!("buff: {}", buff);
+
+    let i: Vec<System> = serde_json::from_str(&buff).unwrap();
+    println!("result: {:#?}", i);
 }
 
 #[derive(Debug, Deserialize, IntoPoint)]
@@ -1724,7 +1732,6 @@ pub struct System {
     pub tls_version: String,                            // in v3
     pub show_guid: bool,                                // in v3
     pub authentication_method: String,                  // in v3
-    pub mdm_to_sds_policy: Option<String>,                      // in v3
     pub mdm_cluster: MdmCluster,                        // in v3
     pub perf_profile: PerfProfile,                      // in v3
     pub install_id: String,                             // in v3
