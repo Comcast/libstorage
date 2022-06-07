@@ -177,8 +177,8 @@ pub struct OscillatingCounterWindow {
     pub capacity_in_use_in_kb: Option<u64>,
     pub thick_capacity_in_use_in_kb: Option<u64>,
     pub thin_capacity_in_use_in_kb: Option<u64>,
-    pub snap_capacity_in_use_in_kb: Option<u64>,
-    pub snap_capacity_in_use_occupied_in_kb: Option<u64>,
+    pub snap_capacity_in_use_in_kb: Option<u64>, //deprecated in v3.5.1.4, will eventually return 0 and then be removed
+    pub snap_capacity_in_use_occupied_in_kb: Option<u64>, //deprecated in v3.5.1.4, will eventually return 0 and then be removed
     pub unreachable_unused_capacity_in_kb: Option<u64>,
     pub protected_vac_in_kb: Option<u64>,
     pub degraded_healthy_vac_in_kb: Option<u64>,
@@ -511,8 +511,8 @@ pub struct DeviceStatistics {
     secondary_read_from_rmcache_bwc: BWC,     // in v3
     secondary_write_bwc: BWC,                 // in v3
     semi_protected_vac_in_kb: u64,            // in v3
-    snap_capacity_in_use_occupied_in_kb: u64, // in v3
-    snap_capacity_in_use_in_kb: u64,          //in v3
+    snap_capacity_in_use_occupied_in_kb: Option<u64>, //deprecated in v3.5.1.4, will eventually return 0 and then be removed
+    snap_capacity_in_use_in_kb: Option<u64>,          //deprecated in v3.5.1.4, will eventually return 0 and then be removed
     snapshot_capacity_in_kb: Option<u64>,     // NEW V3
     temp_capacity_vac_in_kb: Option<u64>,     // NEW v3
     thick_capacity_in_use_in_kb: u64,         // in v3
@@ -1438,8 +1438,8 @@ pub struct SdsStatistics {
     secondary_vac_in_kb: u64,
     secondary_write_bwc: BWC,
     semi_protected_vac_in_kb: u64,
-    snap_capacity_in_use_in_kb: u64,
-    snap_capacity_in_use_occupied_in_kb: u64,
+    snap_capacity_in_use_in_kb: Option<u64>, //deprecated in v3.5.1.4, will eventually return 0 and then be removed
+    snap_capacity_in_use_occupied_in_kb: Option<u64>, //deprecated in v3.5.1.4, will eventually return 0 and then be removed
     thick_capacity_in_use_in_kb: u64,
     thin_capacity_allocated_in_km: u64,
     thin_capacity_in_use_in_kb: Option<u64>, // Deprecated, use net_thin_user_data_capacity_in_kb instead
@@ -1765,10 +1765,10 @@ pub struct SystemStatistics {
     pub thick_capacity_in_use_in_kb: u64,
     pub thin_capacity_in_use_in_kb: Option<u64>, //deprecated, use net_thin_user_data_capacity_in_kb * 2 instead
     pub net_thin_user_data_capacity_in_kb: Option<u64>,
-    pub snap_capacity_in_use_in_kb: u64,
+    pub snap_capacity_in_use_in_kb: Option<u64>, //deprecated in v3.5.1.4, will eventually return 0 and then be removed
     pub unreachable_unused_capacity_in_kb: u64,
     pub unused_capacity_in_kb: u64,
-    pub snap_capacity_in_use_occupied_in_kb: u64,
+    pub snap_capacity_in_use_occupied_in_kb: Option<u64>, //deprecated in v3.5.1.4, will eventually return 0 and then be removed
     pub thin_capacity_allocated_in_kb: u64,
     pub rm_pending_allocated_in_kb: u64,
     pub rm_pending_thick_in_kb: Option<u64>,
