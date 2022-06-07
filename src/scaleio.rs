@@ -2049,10 +2049,13 @@ impl IntoPoint for SystemStatistics {
                 p.add_field("thin_capacity_in_use_in_kb", TsValue::Long(net_thin_user_data_capacity_in_kb * 2))
             }
         }
-        p.add_field(
-            "snap_capacity_in_use_in_kb",
-            TsValue::Long(self.snap_capacity_in_use_in_kb),
-        );
+        if let Some(snap_capacity_in_use_in_kb) = self.snap_capacity_in_use_in_kb {
+            p.add_field(
+                "snap_capacity_in_use_in_kb",
+                TsValue::Long(snap_capacity_in_use_in_kb),
+            );
+        }
+        
         p.add_field(
             "unreachable_unused_capacity_in_kb",
             TsValue::Long(self.unreachable_unused_capacity_in_kb),
@@ -2061,10 +2064,13 @@ impl IntoPoint for SystemStatistics {
             "unused_capacity_in_kb",
             TsValue::Long(self.unused_capacity_in_kb),
         );
-        p.add_field(
-            "snap_capacity_in_use_occupied_in_kb",
-            TsValue::Long(self.snap_capacity_in_use_occupied_in_kb),
-        );
+        if let Some(snap_capacity_in_use_in_kb) = self.snap_capacity_in_use_in_kb
+        {
+            p.add_field(
+                "snap_capacity_in_use_in_kb",
+                TsValue::Long(snap_capacity_in_use_in_kb),
+            );
+        }
         p.add_field(
             "thin_capacity_allocated_in_kb",
             TsValue::Long(self.thin_capacity_allocated_in_kb),
