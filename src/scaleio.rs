@@ -385,7 +385,7 @@ pub struct DeviceStatistics {
     avg_write_latency_in_microsec: u64,       // in v3
     avg_read_size_in_bytes: u64,              // in v3
     #[serde(rename = "BackgroundScanCompareCount")]
-    background_scan_compare_count: u64, // in v3
+    background_scan_compare_count: Option<u64>, // in v3
     #[serde(rename = "BackgroundScannedInMB")]
     background_scanned_in_mb: u64, // in v3
     bck_rebuild_write_bwc: BWC,               // in v3
@@ -1289,7 +1289,7 @@ pub struct SdsStatistics {
     active_moving_out_norm_rebuild_jobs: u64,
     active_moving_rebalance_jobs: u64,
     #[serde(rename = "BackgroundScanCompareCount")]
-    background_scan_compare_count: u64,
+    background_scan_compare_count: Option<u64>,
     #[serde(rename = "BackgroundScannedInMB")]
     background_scanned_in_mb: u64,
     bck_rebuild_read_bwc: BWC,
@@ -1831,7 +1831,7 @@ pub struct SystemStatistics {
     pub rebalance_per_receive_job_net_throttling_in_kbps: u64,
     pub fixed_read_error_count: u64,
     #[serde(rename = "BackgroundScanCompareCount")]
-    pub background_scan_compare_count: u64,
+    pub background_scan_compare_count: Option<u64>,
     #[serde(rename = "BackgroundScannedInMB")]
     pub background_scanned_in_mb: u64,
     pub primary_read_bwc: BWC,
