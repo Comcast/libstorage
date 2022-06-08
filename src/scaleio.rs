@@ -412,7 +412,7 @@ pub struct DeviceStatistics {
     fgl_spares_in_kb: Option<u64>,            // NEW V3
     fgl_migration_completion_percent: Option<u64>, // NEW V3
     fgl_user_data_capacity_in_kb: Option<u64>, // NEW V3
-    fixed_read_error_count: u64,              //in v3
+    fixed_read_error_count: Option<u64>,              //in v3
     fwd_rebuild_read_bwc: BWC,                // in v3
     fwd_rebuild_write_bwc: BWC,               // in v3
     in_maintenance_vac_in_kb: u64,            // in v3
@@ -1299,7 +1299,7 @@ pub struct SdsStatistics {
     degraded_failed_vac_in_kb: u64,
     degraded_healthy_vac_in_kb: u64,
     failed_vac_in_kb: u64,
-    fixed_read_error_count: u64,
+    fixed_read_error_count: Option<u64>,
     fwd_rebuild_read_bwc: BWC,
     fwd_rebuild_write_bwc: BWC,
     in_maintenance_vac_in_kb: u64,
