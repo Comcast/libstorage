@@ -216,7 +216,7 @@ pub struct OscillatingCounterWindow {
     pub background_scan_compare_count: Option<u64>,
     pub background_scanned_in_mb: Option<u64>,
     #[serde(flatten)]
-    pub thin_capacity_allocated_in_km: ThinCapacityAllocatedInKb,
+    pub thin_capacity_allocated_in_km: Option<ThinCapacityAllocatedInKb>, //This value is optional 
     pub rm_pending_allocated_in_kb: Option<u64>,
     pub semi_protected_vac_in_kb: Option<u64>,
     pub in_maintenance_vac_in_kb: Option<u64>,
