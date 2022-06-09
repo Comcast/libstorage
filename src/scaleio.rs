@@ -2789,7 +2789,7 @@ impl Scaleio {
     }
 
     pub fn get_pool_stats(&self) -> MetricsResult<ClusterSelectedStatisticsResponse> {
-        let version = self.get_version();
+        let version = self.get_version().parse::<f64>()?;
         if version >= 3.0 {
             let stats_req = SelectedStatisticsRequest {
                 selected_statistics_list: vec![StatsRequest {
@@ -2956,16 +2956,6 @@ impl Scaleio {
             points
         })?;
         Ok(systemstats)
-    }
-
-    /// Get the version number of the SIO API
-    pub fn get_version(&self) -> MetricsResult<f64> {
-        let version = get::<String>(
-            &self.client,
-            &self.config,
-            &format!("version"),
-        )?;
-        Ok(version.parse::<f64>()?);
     }
 
     pub fn get_system(&self, system_id: &str) -> MetricsResult<System> {
