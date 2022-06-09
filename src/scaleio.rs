@@ -2789,26 +2789,51 @@ impl Scaleio {
     }
 
     pub fn get_pool_stats(&self) -> MetricsResult<ClusterSelectedStatisticsResponse> {
-        let stats_req = SelectedStatisticsRequest {
-            selected_statistics_list: vec![StatsRequest {
-                req_type: StatsRequestType::StoragePool,
-                all_ids: vec![],
-                properties: vec![
-                    "numOfDevices".into(),
-                    "numOfVolumes".into(),
-                    "capacityLimitInKb".into(),
-                    "thickCapacityInUseInKb".into(),
-                    "netThinUserDataCapacityInKb".into(),// thinCapacityInUseInKb is deprecated"thinCapacityInUseInKb".into(),
-                    "primaryReadBwc".into(),
-                    "primaryWriteBwc".into(),
-                    "secondaryReadBwc".into(),
-                    "secondaryWriteBwc".into(),
-                    "totalReadBwc".into(),
-                    "totalWriteBwc".into(),
-                    "thinCapacityAllocatedInKm".into(),
-                ],
-            }],
-        };
+        let version = self.get_version();
+        if version >= 3.0 {
+            let stats_req = SelectedStatisticsRequest {
+                selected_statistics_list: vec![StatsRequest {
+                    req_type: StatsRequestType::StoragePool,
+                    all_ids: vec![],
+                    properties: vec![
+                        "numOfDevices".into(),
+                        "numOfVolumes".into(),
+                        "capacityLimitInKb".into(),
+                        "thickCapacityInUseInKb".into(),
+                        "netThinUserDataCapacityInKb".into(),// thinCapacityInUseInKb is deprecated"thinCapacityInUseInKb".into(),
+                        "primaryReadBwc".into(),
+                        "primaryWriteBwc".into(),
+                        "secondaryReadBwc".into(),
+                        "secondaryWriteBwc".into(),
+                        "totalReadBwc".into(),
+                        "totalWriteBwc".into(),
+                        "thinCapacityAllocatedInKm".into(),
+                    ],
+                }],
+            };
+        } else {
+            let stats_req = SelectedStatisticsRequest {
+                selected_statistics_list: vec![StatsRequest {
+                    req_type: StatsRequestType::StoragePool,
+                    all_ids: vec![],
+                    properties: vec![
+                        "numOfDevices".into(),
+                        "numOfVolumes".into(),
+                        "capacityLimitInKb".into(),
+                        "thickCapacityInUseInKb".into(),
+                        "thinCapacityInUseInKb".into(),
+                        "primaryReadBwc".into(),
+                        "primaryWriteBwc".into(),
+                        "secondaryReadBwc".into(),
+                        "secondaryWriteBwc".into(),
+                        "totalReadBwc".into(),
+                        "totalWriteBwc".into(),
+                        "thinCapacityAllocatedInKm".into(),
+                    ],
+                }],
+            };
+        }
+        
 
         // Contact scaleio metadata server and parse the results
         // back into json.  If the call isn't an http success result
@@ -2931,6 +2956,16 @@ impl Scaleio {
             points
         })?;
         Ok(systemstats)
+    }
+
+    /// Get the version number of the SIO API
+    pub fn get_version(&self) -> MetricsResult<f64> {
+        let version = get::<String>(
+            &self.client,
+            &self.config,
+            &format!("version"),
+        )?;
+        Ok(version.parse::<f64>()?);
     }
 
     pub fn get_system(&self, system_id: &str) -> MetricsResult<System> {
