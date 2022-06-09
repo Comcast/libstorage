@@ -2789,9 +2789,10 @@ impl Scaleio {
     }
 
     pub fn get_pool_stats(&self) -> MetricsResult<ClusterSelectedStatisticsResponse> {
-        let version = self.get_version().parse::<f64>()?;
+        let version = self.get_version()?.parse::<f64>()?;
+        let stats_req: SelectedStatisticsRequest;
         if version >= 3.0 {
-            let stats_req = SelectedStatisticsRequest {
+            stats_req = SelectedStatisticsRequest {
                 selected_statistics_list: vec![StatsRequest {
                     req_type: StatsRequestType::StoragePool,
                     all_ids: vec![],
@@ -2812,7 +2813,7 @@ impl Scaleio {
                 }],
             };
         } else {
-            let stats_req = SelectedStatisticsRequest {
+            stats_req = SelectedStatisticsRequest {
                 selected_statistics_list: vec![StatsRequest {
                     req_type: StatsRequestType::StoragePool,
                     all_ids: vec![],
