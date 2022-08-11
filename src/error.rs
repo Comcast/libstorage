@@ -33,6 +33,8 @@ use influx_db_client::error::Error as InfluxError;
 use isilon::apis::Error as IsilonError;
 use native_tls::Error as NativeTlsError;
 use quick_xml::Error as QuickXmlError;
+use quick_xml::events::attributes::AttrError as QuickXmlAttrError;
+
 use rayon::ThreadPoolBuildError;
 use reqwest::header::{InvalidHeaderName, InvalidHeaderValue, ToStrError};
 use reqwest::Error as ReqwestError;
@@ -67,6 +69,8 @@ pub enum StorageError {
     ToStrError(ToStrError),
     TreeXmlError(TreeXmlError),
     XmlEmitterError(XmlEmitterError),
+    QuickXmlError(QuickXmlError),
+    QuickXmlAttrError(QuickXmlAttrError),
 }
 
 impl fmt::Display for StorageError {
@@ -101,6 +105,8 @@ impl fmt::Display for StorageError {
             StorageError::TreeXmlError(ref e) => e.fmt(f),
             StorageError::ToStrError(ref e) => e.fmt(f),
             StorageError::XmlEmitterError(ref e) => e.fmt(f),
+            StorageError::QuickXmlError(ref e) => e.fmt(f),
+            StorageError::QuickXmlAttrError(ref e) => e.fmt(f),
         }
     }
 }
@@ -133,6 +139,8 @@ impl err for StorageError {
             StorageError::TreeXmlError(ref e) => e.source(),
             StorageError::ToStrError(ref e) => e.source(),
             StorageError::XmlEmitterError(ref e) => e.source(),
+            StorageError::QuickXmlError(ref e) => e.source(),
+            StorageError::QuickXmlAttrError(ref e) => e.source(),
         }
     }
 }
@@ -265,6 +273,12 @@ impl From<QuickXmlError> for StorageError {
     }
 }
 
+impl From<QuickXmlAttrError> for StorageError {
+    fn from(err: QuickXmlAttrError) -> StorageError {
+        StorageError::new(err.to_string())
+    }
+}
+
 impl From<ReqwestError> for StorageError {
     fn from(err: ReqwestError) -> StorageError {
         StorageError::HttpError(err)
@@ -276,3 +290,4 @@ impl From<XmlEmitterError> for StorageError {
         StorageError::XmlEmitterError(err)
     }
 }
+

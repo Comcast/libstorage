@@ -2526,7 +2526,7 @@ where
 
 // Connect to the metadata server and request a new api token
 pub fn get_api_token(client: &reqwest::blocking::Client, config: &ScaleioConfig) -> MetricsResult<String> {
-    let mut token = client
+    let token = client
         .get(&format!("https://{}/api/login", config.endpoint))
         .basic_auth(config.user.clone(), Some(config.password.clone()))
         .send()?
@@ -2714,7 +2714,7 @@ impl Scaleio {
         // Contact scaleio metadata server and parse the results
         // back into json.  If the call isn't an http success result
         // then return an error
-        let mut resp = self
+        let resp = self
             .client
             .post(&format!(
                 "https://{}/api/instances/querySelectedStatistics",
@@ -2777,7 +2777,7 @@ impl Scaleio {
         // Contact scaleio metadata server and parse the results
         // back into json.  If the call isn't an http success result
         // then return an error
-        let mut resp = self
+        let resp = self
             .client
             .post(&format!(
                 "https://{}/api/instances/querySelectedStatistics",
@@ -2805,7 +2805,7 @@ impl Scaleio {
                 ],
             }],
         };
-        let mut resp = self
+        let resp = self
             .client
             .post(&format!(
                 "https://{}/api/instances/querySelectedStatistics",
@@ -2991,7 +2991,7 @@ impl Scaleio {
             );
             // post a request to endpoint to create a volume. If call isn't
             // an http success result, return an error. Return is newly created volume ID
-            let mut vol_creation_resp = self
+            let vol_creation_resp = self
                 .client
                 .post(&format!(
                     "https://{}/api/types/Volume/instances",

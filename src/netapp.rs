@@ -701,7 +701,7 @@ where
     T: FromXml,
 {
     debug!("Sending: {}", String::from_utf8_lossy(&req));
-    let mut s = client
+    let s = client
         .post(&format!("http://{}/{}", config.endpoint, FILER_URL))
         .basic_auth(config.user.clone(), Some(config.password.clone()))
         .body(req)
