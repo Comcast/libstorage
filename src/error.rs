@@ -32,8 +32,8 @@ use influx_db_client::error::Error as InfluxError;
 #[cfg(feature = "isilon-library")]
 use isilon::apis::Error as IsilonError;
 use native_tls::Error as NativeTlsError;
-use quick_xml::Error as QuickXmlError;
 use quick_xml::events::attributes::AttrError as QuickXmlAttrError;
+use quick_xml::Error as QuickXmlError;
 
 use rayon::ThreadPoolBuildError;
 use reqwest::header::{InvalidHeaderName, InvalidHeaderValue, ToStrError};
@@ -149,7 +149,6 @@ impl StorageError {
     pub fn new(err: String) -> StorageError {
         StorageError::Error(err)
     }
-
 }
 
 impl From<CookieParseError> for StorageError {
@@ -290,4 +289,3 @@ impl From<XmlEmitterError> for StorageError {
         StorageError::XmlEmitterError(err)
     }
 }
-
