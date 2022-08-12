@@ -180,8 +180,8 @@ pub struct OscillatingCounterWindow {
     pub capacity_in_use_in_kb: Option<u64>,
     pub thick_capacity_in_use_in_kb: Option<u64>,
     pub thin_capacity_in_use_in_kb: Option<u64>,
-    pub snap_capacity_in_use_in_kb: Option<u64>,
-    pub snap_capacity_in_use_occupied_in_kb: Option<u64>,
+    pub snap_capacity_in_use_in_kb: Option<u64>, //deprecated in v3.5.1.4, will eventually return 0 and then be removed
+    pub snap_capacity_in_use_occupied_in_kb: Option<u64>, //deprecated in v3.5.1.4, will eventually return 0 and then be removed
     pub unreachable_unused_capacity_in_kb: Option<u64>,
     pub protected_vac_in_kb: Option<u64>,
     pub degraded_healthy_vac_in_kb: Option<u64>,
@@ -219,7 +219,7 @@ pub struct OscillatingCounterWindow {
     pub background_scan_compare_count: Option<u64>,
     pub background_scanned_in_mb: Option<u64>,
     #[serde(flatten)]
-    pub thin_capacity_allocated_in_km: ThinCapacityAllocatedInKb,
+    pub thin_capacity_allocated_in_km: Option<ThinCapacityAllocatedInKb>, //This value is optional 
     pub rm_pending_allocated_in_kb: Option<u64>,
     pub semi_protected_vac_in_kb: Option<u64>,
     pub in_maintenance_vac_in_kb: Option<u64>,
@@ -388,7 +388,7 @@ pub struct DeviceStatistics {
     avg_write_latency_in_microsec: u64,       // in v3
     avg_read_size_in_bytes: u64,              // in v3
     #[serde(rename = "BackgroundScanCompareCount")]
-    background_scan_compare_count: u64, // in v3
+    background_scan_compare_count: Option<u64>, // in v3
     #[serde(rename = "BackgroundScannedInMB")]
     background_scanned_in_mb: u64, // in v3
     bck_rebuild_write_bwc: BWC,               // in v3
@@ -416,7 +416,7 @@ pub struct DeviceStatistics {
     fgl_spares_in_kb: Option<u64>,            // NEW V3
     fgl_migration_completion_percent: Option<u64>, // NEW V3
     fgl_user_data_capacity_in_kb: Option<u64>, // NEW V3
-    fixed_read_error_count: u64,              //in v3
+    fixed_read_error_count: Option<u64>,              //in v3
     fwd_rebuild_read_bwc: BWC,                // in v3
     fwd_rebuild_write_bwc: BWC,               // in v3
     in_maintenance_vac_in_kb: u64,            // in v3
@@ -515,12 +515,13 @@ pub struct DeviceStatistics {
     secondary_read_from_rmcache_bwc: BWC,     // in v3
     secondary_write_bwc: BWC,                 // in v3
     semi_protected_vac_in_kb: u64,            // in v3
-    snap_capacity_in_use_occupied_in_kb: u64, // in v3
-    snap_capacity_in_use_in_kb: u64,          //in v3
+    snap_capacity_in_use_occupied_in_kb: Option<u64>, //deprecated in v3.5.1.4, will eventually return 0 and then be removed
+    snap_capacity_in_use_in_kb: Option<u64>,          //deprecated in v3.5.1.4, will eventually return 0 and then be removed
     snapshot_capacity_in_kb: Option<u64>,     // NEW V3
     temp_capacity_vac_in_kb: Option<u64>,     // NEW v3
     thick_capacity_in_use_in_kb: u64,         // in v3
-    thin_capacity_in_use_in_kb: u64,          // in v3
+    thin_capacity_in_use_in_kb: Option<u64>,          // deprecated, use netThinUserDataCapacityInKb * 2
+    net_thin_user_data_capacity_in_kb: Option<u64>, // use this value * 2 as thin_capacityInuseinKb 
     thin_capacity_allocated_in_km: u64,       // in v3
     total_changelog_records_to_destage: Option<u64>, // NEW V3
     #[serde(rename = "totalChecksumMigrationSizeInKB")]
@@ -613,10 +614,18 @@ impl IntoPoint for DeviceStatistics {
             "thick_capacity_in_use_in_kb",
             TsValue::Long(self.thick_capacity_in_use_in_kb),
         );
-        p.add_field(
-            "thin_capacity_in_use_in_kb",
-            TsValue::Long(self.thin_capacity_in_use_in_kb),
-        );
+
+        if let Some(thin_capacity_in_use_in_kb) = self.thin_capacity_in_use_in_kb {
+            p.add_field(
+                "thin_capacity_in_use_in_kb",
+                TsValue::Long(thin_capacity_in_use_in_kb),
+            );
+        }
+        else {
+            if let Some(net_thin_user_data_capacity_in_kb) = self.net_thin_user_data_capacity_in_kb {
+                p.add_field("thin_capacity_in_use_in_kb", TsValue::Long(net_thin_user_data_capacity_in_kb * 2))
+            }
+        }
 
         p.add_field(
             "thin_capacity_allocated_in_km",
@@ -975,7 +984,9 @@ pub struct StoragePoolInfo {
     pub secondary_read_bwc: BWC,
     pub capacity_limit_in_kb: u64,
     pub thick_capacity_in_use_in_kb: u64,
-    pub thin_capacity_in_use_in_kb: u64,
+    // this attribute will be deleted in future versions of PowerFlex/SIO
+    pub thin_capacity_in_use_in_kb: Option<u64>, // deprecated, use net_thin_user_data_capacity_in_kb * 2
+    pub net_thin_user_data_capacity_in_kb: Option<u64>,
     pub thin_capacity_allocated_in_km: u64,
     pub total_write_bwc: BWC,
     pub total_read_bwc: BWC,
@@ -1279,7 +1290,7 @@ pub struct SdsStatistics {
     active_moving_out_norm_rebuild_jobs: u64,
     active_moving_rebalance_jobs: u64,
     #[serde(rename = "BackgroundScanCompareCount")]
-    background_scan_compare_count: u64,
+    background_scan_compare_count: Option<u64>,
     #[serde(rename = "BackgroundScannedInMB")]
     background_scanned_in_mb: u64,
     bck_rebuild_read_bwc: BWC,
@@ -1289,7 +1300,7 @@ pub struct SdsStatistics {
     degraded_failed_vac_in_kb: u64,
     degraded_healthy_vac_in_kb: u64,
     failed_vac_in_kb: u64,
-    fixed_read_error_count: u64,
+    fixed_read_error_count: Option<u64>,
     fwd_rebuild_read_bwc: BWC,
     fwd_rebuild_write_bwc: BWC,
     in_maintenance_vac_in_kb: u64,
@@ -1428,11 +1439,12 @@ pub struct SdsStatistics {
     secondary_vac_in_kb: u64,
     secondary_write_bwc: BWC,
     semi_protected_vac_in_kb: u64,
-    snap_capacity_in_use_in_kb: u64,
-    snap_capacity_in_use_occupied_in_kb: u64,
+    snap_capacity_in_use_in_kb: Option<u64>, //deprecated in v3.5.1.4, will eventually return 0 and then be removed
+    snap_capacity_in_use_occupied_in_kb: Option<u64>, //deprecated in v3.5.1.4, will eventually return 0 and then be removed
     thick_capacity_in_use_in_kb: u64,
     thin_capacity_allocated_in_km: u64,
-    thin_capacity_in_use_in_kb: u64,
+    thin_capacity_in_use_in_kb: Option<u64>, // Deprecated, use net_thin_user_data_capacity_in_kb instead
+    net_thin_user_data_capacity_in_kb: Option<u64>,
     total_read_bwc: BWC,
     total_write_bwc: BWC,
     unreachable_unused_capacity_in_kb: u64,
@@ -1692,6 +1704,14 @@ fn test_system_response() {
 
     let i: Vec<System> = serde_json::from_str(&buff).unwrap();
     println!("result: {:#?}", i);
+
+    let mut f = File::open("tests/scaleio/system_v3.json").unwrap();
+    let mut buff = String::new();
+    f.read_to_string(&mut buff).unwrap();
+    println!("buff: {}", buff);
+
+    let i: Vec<System> = serde_json::from_str(&buff).unwrap();
+    println!("result: {:#?}", i);
 }
 
 #[derive(Debug, Deserialize, IntoPoint)]
@@ -1713,7 +1733,6 @@ pub struct System {
     pub tls_version: String,                            // in v3
     pub show_guid: bool,                                // in v3
     pub authentication_method: String,                  // in v3
-    pub mdm_to_sds_policy: String,                      // in v3
     pub mdm_cluster: MdmCluster,                        // in v3
     pub perf_profile: PerfProfile,                      // in v3
     pub install_id: String,                             // in v3
@@ -1760,11 +1779,12 @@ pub struct SystemStatistics {
     pub max_capacity_in_kb: u64,
     pub capacity_in_use_in_kb: u64,
     pub thick_capacity_in_use_in_kb: u64,
-    pub thin_capacity_in_use_in_kb: u64,
-    pub snap_capacity_in_use_in_kb: u64,
+    pub thin_capacity_in_use_in_kb: Option<u64>, //deprecated, use net_thin_user_data_capacity_in_kb * 2 instead
+    pub net_thin_user_data_capacity_in_kb: Option<u64>,
+    pub snap_capacity_in_use_in_kb: Option<u64>, //deprecated in v3.5.1.4, will eventually return 0 and then be removed
     pub unreachable_unused_capacity_in_kb: u64,
     pub unused_capacity_in_kb: u64,
-    pub snap_capacity_in_use_occupied_in_kb: u64,
+    pub snap_capacity_in_use_occupied_in_kb: Option<u64>, //deprecated in v3.5.1.4, will eventually return 0 and then be removed
     pub thin_capacity_allocated_in_kb: u64,
     pub rm_pending_allocated_in_kb: u64,
     pub rm_pending_thick_in_kb: Option<u64>,
@@ -1825,9 +1845,9 @@ pub struct SystemStatistics {
     pub rebalance_wait_send_q_length: u64,
     pub rebuild_per_receive_job_net_throttling_in_kbps: u64,
     pub rebalance_per_receive_job_net_throttling_in_kbps: u64,
-    pub fixed_read_error_count: u64,
+    pub fixed_read_error_count: Option<u64>, // Optional Statistic
     #[serde(rename = "BackgroundScanCompareCount")]
-    pub background_scan_compare_count: u64,
+    pub background_scan_compare_count: Option<u64>,
     #[serde(rename = "BackgroundScannedInMB")]
     pub background_scanned_in_mb: u64,
     pub primary_read_bwc: BWC,
@@ -2034,14 +2054,24 @@ impl IntoPoint for SystemStatistics {
             "thick capacity_in_use_in_kb",
             TsValue::Long(self.thick_capacity_in_use_in_kb),
         );
-        p.add_field(
-            "thin_capacity_in_use_in_kb",
-            TsValue::Long(self.thin_capacity_in_use_in_kb),
-        );
-        p.add_field(
-            "snap_capacity_in_use_in_kb",
-            TsValue::Long(self.snap_capacity_in_use_in_kb),
-        );
+        if let Some(thin_capacity_in_use_in_kb) = self.thin_capacity_in_use_in_kb {
+            p.add_field(
+                "thin_capacity_in_use_in_kb",
+                TsValue::Long(thin_capacity_in_use_in_kb),
+            );
+        }
+        else {
+            if let Some(net_thin_user_data_capacity_in_kb) = self.net_thin_user_data_capacity_in_kb {
+                p.add_field("thin_capacity_in_use_in_kb", TsValue::Long(net_thin_user_data_capacity_in_kb * 2))
+            }
+        }
+        if let Some(snap_capacity_in_use_in_kb) = self.snap_capacity_in_use_in_kb {
+            p.add_field(
+                "snap_capacity_in_use_in_kb",
+                TsValue::Long(snap_capacity_in_use_in_kb),
+            );
+        }
+        
         p.add_field(
             "unreachable_unused_capacity_in_kb",
             TsValue::Long(self.unreachable_unused_capacity_in_kb),
@@ -2050,10 +2080,13 @@ impl IntoPoint for SystemStatistics {
             "unused_capacity_in_kb",
             TsValue::Long(self.unused_capacity_in_kb),
         );
-        p.add_field(
-            "snap_capacity_in_use_occupied_in_kb",
-            TsValue::Long(self.snap_capacity_in_use_occupied_in_kb),
-        );
+        if let Some(snap_capacity_in_use_in_kb) = self.snap_capacity_in_use_in_kb
+        {
+            p.add_field(
+                "snap_capacity_in_use_in_kb",
+                TsValue::Long(snap_capacity_in_use_in_kb),
+            );
+        }
         p.add_field(
             "thin_capacity_allocated_in_kb",
             TsValue::Long(self.thin_capacity_allocated_in_kb),
@@ -2062,10 +2095,13 @@ impl IntoPoint for SystemStatistics {
             "spare_capacity_in_kb",
             TsValue::Long(self.spare_capacity_in_kb),
         );
-        p.add_field(
-            "fixed_read_error_count",
-            TsValue::Long(self.fixed_read_error_count),
-        );
+        if let Some(fixed_read_error_count) = self.fixed_read_error_count{
+            p.add_field(
+                "fixed_read_error_count",
+                TsValue::Long(fixed_read_error_count),
+            );
+        }
+        
         p.add_field(
             "num_of_unmapped_volumes",
             TsValue::Long(self.num_of_unmapped_volumes),
@@ -2777,26 +2813,52 @@ impl Scaleio {
     }
 
     pub fn get_pool_stats(&self) -> MetricsResult<ClusterSelectedStatisticsResponse> {
-        let stats_req = SelectedStatisticsRequest {
-            selected_statistics_list: vec![StatsRequest {
-                req_type: StatsRequestType::StoragePool,
-                all_ids: vec![],
-                properties: vec![
-                    "numOfDevices".into(),
-                    "numOfVolumes".into(),
-                    "capacityLimitInKb".into(),
-                    "thickCapacityInUseInKb".into(),
-                    "thinCapacityInUseInKb".into(),
-                    "primaryReadBwc".into(),
-                    "primaryWriteBwc".into(),
-                    "secondaryReadBwc".into(),
-                    "secondaryWriteBwc".into(),
-                    "totalReadBwc".into(),
-                    "totalWriteBwc".into(),
-                    "thinCapacityAllocatedInKm".into(),
-                ],
-            }],
-        };
+        let version = self.get_version()?;
+        let stats_req: SelectedStatisticsRequest;
+        if version >= "3.0".to_string() {
+            stats_req = SelectedStatisticsRequest {
+                selected_statistics_list: vec![StatsRequest {
+                    req_type: StatsRequestType::StoragePool,
+                    all_ids: vec![],
+                    properties: vec![
+                        "numOfDevices".into(),
+                        "numOfVolumes".into(),
+                        "capacityLimitInKb".into(),
+                        "thickCapacityInUseInKb".into(),
+                        "netThinUserDataCapacityInKb".into(),// thinCapacityInUseInKb is deprecated"thinCapacityInUseInKb".into(),
+                        "primaryReadBwc".into(),
+                        "primaryWriteBwc".into(),
+                        "secondaryReadBwc".into(),
+                        "secondaryWriteBwc".into(),
+                        "totalReadBwc".into(),
+                        "totalWriteBwc".into(),
+                        "thinCapacityAllocatedInKm".into(),
+                    ],
+                }],
+            };
+        } else {
+            stats_req = SelectedStatisticsRequest {
+                selected_statistics_list: vec![StatsRequest {
+                    req_type: StatsRequestType::StoragePool,
+                    all_ids: vec![],
+                    properties: vec![
+                        "numOfDevices".into(),
+                        "numOfVolumes".into(),
+                        "capacityLimitInKb".into(),
+                        "thickCapacityInUseInKb".into(),
+                        "thinCapacityInUseInKb".into(),
+                        "primaryReadBwc".into(),
+                        "primaryWriteBwc".into(),
+                        "secondaryReadBwc".into(),
+                        "secondaryWriteBwc".into(),
+                        "totalReadBwc".into(),
+                        "totalWriteBwc".into(),
+                        "thinCapacityAllocatedInKm".into(),
+                    ],
+                }],
+            };
+        }
+        
 
         // Contact scaleio metadata server and parse the results
         // back into json.  If the call isn't an http success result

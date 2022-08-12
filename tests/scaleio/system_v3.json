@@ -1,0 +1,250 @@
+[
+    {
+        "restrictedSdcModeEnabled": false,
+        "restrictedSdcMode": "None",
+        "enterpriseFeaturesEnabled": true,
+        "isInitialLicense": false,
+        "swid": "E",
+        "daysInstalled": 19,
+        "maxCapacityInGb": "2457600",
+        "capacityTimeLeftInDays": "Unlimited",
+        "installId": "1",
+        "systemVersionName": "DellEMC PowerFlex Version: R3_5.1500.105",
+        "perfProfile": "HighPerformance",
+        "authenticationMethod": "NativeAndLdap",
+        "capacityAlertHighThresholdPercent": 80,
+        "capacityAlertCriticalThresholdPercent": 90,
+        "upgradeState": "NoUpgrade",
+        "remoteReadOnlyLimitState": false,
+        "mdmManagementPort": 6611,
+        "mdmExternalPort": 7611,
+        "sdcMdmNetworkDisconnectionsCounterParameters": {
+            "shortWindow": {
+                "windowSizeInSec": 60,
+                "threshold": 10000
+            },
+            "mediumWindow": {
+                "windowSizeInSec": 3600,
+                "threshold": 100000
+            },
+            "longWindow": {
+                "windowSizeInSec": 86400,
+                "threshold": 1000000
+            }
+        },
+        "sdcSdsNetworkDisconnectionsCounterParameters": {
+            "shortWindow": {
+                "windowSizeInSec": 60,
+                "threshold": 300
+            },
+            "mediumWindow": {
+                "windowSizeInSec": 3600,
+                "threshold": 500
+            },
+            "longWindow": {
+                "windowSizeInSec": 86400,
+                "threshold": 700
+            }
+        },
+        "sdcMemoryAllocationFailuresCounterParameters": {
+            "shortWindow": {
+                "windowSizeInSec": 60,
+                "threshold": 300
+            },
+            "mediumWindow": {
+                "windowSizeInSec": 3600,
+                "threshold": 500
+            },
+            "longWindow": {
+                "windowSizeInSec": 86400,
+                "threshold": 700
+            }
+        },
+        "sdcSocketAllocationFailuresCounterParameters": {
+            "shortWindow": {
+                "windowSizeInSec": 60,
+                "threshold": 300
+            },
+            "mediumWindow": {
+                "windowSizeInSec": 3600,
+                "threshold": 500
+            },
+            "longWindow": {
+                "windowSizeInSec": 86400,
+                "threshold": 700
+            }
+        },
+        "sdcLongOperationsCounterParameters": {
+            "shortWindow": {
+                "windowSizeInSec": 60,
+                "threshold": 10000
+            },
+            "mediumWindow": {
+                "windowSizeInSec": 3600,
+                "threshold": 100000
+            },
+            "longWindow": {
+                "windowSizeInSec": 86400,
+                "threshold": 1000000
+            }
+        },
+        "cliPasswordAllowed": true,
+        "managementClientSecureCommunicationEnabled": true,
+        "tlsVersion": "TLSv1.2",
+        "showGuid": true,
+        "defragmentationEnabled": true,
+        "mdmSecurityPolicy": "None",
+        "mdmCluster": {
+            "tieBreakers": [
+                {
+                    "opensslVersion": "N/A",
+                    "managementIPs": [
+                        "5.5.5.5"
+                    ],
+                    "ips": [
+                        "5.5.5.5"
+                    ],
+                    "versionInfo": "R3_5.1500.0",
+                    "role": "TieBreaker",
+                    "status": "Normal",
+                    "name": "server1",
+                    "id": "1234",
+                    "port": 9011
+                },
+                {
+                    "opensslVersion": "N/A",
+                    "managementIPs": [
+                        "5.5.5.5"
+                    ],
+                    "ips": [
+                        "5.5.5.5"
+                    ],
+                    "versionInfo": "R3_5.1500.0",
+                    "role": "TieBreaker",
+                    "status": "Normal",
+                    "name": "server2",
+                    "id": "123",
+                    "port": 9011
+                }
+            ],
+            "goodNodesNum": 5,
+            "goodReplicasNum": 3,
+            "master": {
+                "virtualInterfaces": [],
+                "opensslVersion": "OpenSSL 1.0.2k-fips  26 Jan 2017",
+                "managementIPs": [
+                    "5.5.5.5"
+                ],
+                "ips": [
+                    "5.5.5.5"
+                ],
+                "versionInfo": "R3_5.1500.0",
+                "role": "Manager",
+                "status": "Normal",
+                "name": "server3",
+                "id": "111",
+                "port": 9011
+            },
+            "slaves": [
+                {
+                    "virtualInterfaces": [],
+                    "opensslVersion": "OpenSSL 1.0.2k-fips  26 Jan 2017",
+                    "managementIPs": [
+                        "5.5.5.5"
+                    ],
+                    "ips": [
+                        "5.5.5.5"
+                    ],
+                    "versionInfo": "R3_5.1500.0",
+                    "role": "Manager",
+                    "status": "Normal",
+                    "name": "server4",
+                    "id": "11111111",
+                    "port": 9011
+                },
+                {
+                    "virtualInterfaces": [],
+                    "opensslVersion": "OpenSSL 1.0.2k-fips  26 Jan 2017",
+                    "managementIPs": [
+                        "5.5.5.5"
+                    ],
+                    "ips": [
+                        "5.5.5.5"
+                    ],
+                    "versionInfo": "R3_5.1500.0",
+                    "role": "Manager",
+                    "status": "Normal",
+                    "name": "server5",
+                    "id": "0000000000",
+                    "port": 9011
+                }
+            ],
+            "clusterState": "ClusteredNormal",
+            "clusterMode": "FiveNodes",
+            "name": "NAME",
+            "id": "123468798"
+        },
+        "sdcSdsConnectivityInfo": {
+            "clientServerConnectivityStatus": "AllConnected",
+            "disconnectedClientId": null,
+            "disconnectedClientName": null,
+            "disconnectedServerId": null,
+            "disconnectedServerName": null,
+            "disconnectedServerIp": null
+        },
+        "addressSpaceUsage": "Normal",
+        "lastUpgradeTime": 1652892642,
+        "sdcSdrConnectivityInfo": {
+            "clientServerConnectivityStatus": "AllConnected",
+            "disconnectedClientId": null,
+            "disconnectedClientName": null,
+            "disconnectedServerId": null,
+            "disconnectedServerName": null,
+            "disconnectedServerIp": null
+        },
+        "sdrSdsConnectivityInfo": {
+            "clientServerConnectivityStatus": "AllConnected",
+            "disconnectedClientId": null,
+            "disconnectedClientName": null,
+            "disconnectedServerId": null,
+            "disconnectedServerName": null,
+            "disconnectedServerIp": null
+        },
+        "name": "SIOHOBLK01",
+        "id": "12347234",
+        "links": [
+            {
+                "rel": "self",
+                "href": "/api/instances/System::123545"
+            },
+            {
+                "rel": "/api/System/relationship/Statistics",
+                "href": "/api/instances/System::123545/relationships/Statistics"
+            },
+            {
+                "rel": "/api/System/relationship/Sdr",
+                "href": "/api/instances/System::123545/relationships/Sdr"
+            },
+            {
+                "rel": "/api/System/relationship/ProtectionDomain",
+                "href": "/api/instances/System::123545/relationships/ProtectionDomain"
+            },
+            {
+                "rel": "/api/System/relationship/Sdc",
+                "href": "/api/instances/System::123545/relationships/Sdc"
+            },
+            {
+                "rel": "/api/System/relationship/User",
+                "href": "/api/instances/System::123545/relationships/User"
+            },
+            {
+                "rel": "/api/System/relationship/SnapshotPolicy",
+                "href": "/api/instances/System::123545/relationships/SnapshotPolicy"
+            },
+            {
+                "rel": "/api/System/relationship/PeerMdm",
+                "href": "/api/instances/System::123545/relationships/PeerMdm"
+            }
+        ]
+    }
+]
