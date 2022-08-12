@@ -146,19 +146,22 @@ pub struct CertificateInfo {
 #[derive(Clone, Deserialize, Debug)]
 #[serde(untagged, rename_all = "camelCase")]
 pub enum ThinCapacityAllocatedInKb {
-    Km{ thin_capacity_allocated_in_km: u64},
-    Kb{ thin_capacity_allocated_in_kb: u64},
+    Km { thin_capacity_allocated_in_km: u64 },
+    Kb { thin_capacity_allocated_in_kb: u64 },
 }
 
 impl ThinCapacityAllocatedInKb {
     pub fn get_thin_capacity_allocated(self) -> u64 {
         match self {
-            ThinCapacityAllocatedInKb::Km{ thin_capacity_allocated_in_km} => thin_capacity_allocated_in_km,
-            ThinCapacityAllocatedInKb::Kb{ thin_capacity_allocated_in_kb} => thin_capacity_allocated_in_kb,
+            ThinCapacityAllocatedInKb::Km {
+                thin_capacity_allocated_in_km,
+            } => thin_capacity_allocated_in_km,
+            ThinCapacityAllocatedInKb::Kb {
+                thin_capacity_allocated_in_kb,
+            } => thin_capacity_allocated_in_kb,
         }
     }
 }
-
 
 #[derive(Clone, Deserialize, Debug, IntoPoint)]
 #[serde(rename_all = "camelCase")]
@@ -260,7 +263,7 @@ pub struct OscillatingCounterWindow {
     pub rfcache_write_pending: Option<u64>,
 }
 
-#[derive(Clone, Deserialize, Debug)] 
+#[derive(Clone, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct FailureCounter {
     pub short_window: Window,
@@ -399,7 +402,8 @@ pub struct DeviceStatistics {
     checksum_migration_completion_percent: Option<u64>, // NEW V3
     #[serde(flatten)]
     pub compressed_data_compression_ratio: CompressedDataCompressionRatio, // NEW V3
-    compression_ratio: Option<f64>,           // NEW V3
+    #[serde(flatten)]
+    pub compression_ratio: CompressionRatio,           // NEW V3
     #[serde(rename = "currentChecksumMigrationSizeInKB")]
     current_checksum_migration_size_in_kb: Option<u64>, // NEW V3
     current_checksum_protected_combs_num: Option<u64>, // NEW V3
@@ -610,6 +614,7 @@ impl IntoPoint for DeviceStatistics {
             "thick_capacity_in_use_in_kb",
             TsValue::Long(self.thick_capacity_in_use_in_kb),
         );
+
         if let Some(thin_capacity_in_use_in_kb) = self.thin_capacity_in_use_in_kb {
             p.add_field(
                 "thin_capacity_in_use_in_kb",
@@ -621,14 +626,12 @@ impl IntoPoint for DeviceStatistics {
                 p.add_field("thin_capacity_in_use_in_kb", TsValue::Long(net_thin_user_data_capacity_in_kb * 2))
             }
         }
-        
-       
+
         p.add_field(
             "thin_capacity_allocated_in_km",
             TsValue::Long(self.thin_capacity_allocated_in_km),
         );
 
-        
         p.add_field(
             "total_read_bwc",
             TsValue::Long(self.total_read_bwc.total_weight_in_kb),
@@ -1034,14 +1037,14 @@ pub struct Instance {
     pub device_original_path_name: String, // in v3
     pub rfcache_error_device_does_not_exist: bool,
     pub sds_id: String,
-    pub device_state: Option<DeviceState>,         // in v3
+    pub device_state: Option<DeviceState>, // in v3
     pub capacity_limit_in_kb: Option<u64>, // in v3
     pub max_capacity_in_kb: u64,           // in v3
-    pub storage_pool_id: Option<String>,           // in v3 ** required, however can still be null
+    pub storage_pool_id: Option<String>,   // in v3 ** required, however can still be null
     pub long_successful_ios: Option<Successfulio>,
-    pub error_state: Option<String>,  // in v3 (note this could be an enum)
-    pub name: Option<String>, // in v3
-    pub id: String,           // in v3
+    pub error_state: Option<String>, // in v3 (note this could be an enum)
+    pub name: Option<String>,        // in v3
+    pub id: String,                  // in v3
     pub links: Vec<Link>,
     pub update_configuration: Option<bool>,
     pub vendor_name: Option<String>,      // NEW V3
@@ -1203,7 +1206,6 @@ impl IntoPoint for SdsVolume {
                 TsValue::Boolean(mapping_to_all_sdcs_enabled.clone()),
             );
         }
-        
 
         // This is a 1:Many relationship so we're going to denormalize that here
         // and store the sdc_info is a separate table with the volume id so we can
@@ -1274,7 +1276,6 @@ fn test_sds_statistics() {
 
     let i: SdsStatistics = serde_json::from_str(&buff).unwrap();
     println!("result: {:#?}", i);
-
 }
 
 #[derive(Debug, Deserialize, IntoPoint)]
@@ -1752,8 +1753,23 @@ pub struct System {
 #[derive(Debug, Deserialize)]
 #[serde(untagged, rename_all = "camelCase")]
 pub enum CompressedDataCompressionRatio {
-    Null{compressed_data_compression_ratio: String}, // for "NaN" cases
-    Ratio { compressed_data_compression_ratio: Option<u64>},
+    Null {
+        compressed_data_compression_ratio: String,
+    }, // for "NaN" cases
+    Ratio {
+        compressed_data_compression_ratio: Option<u64>,
+    },
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(untagged, rename_all = "camelCase")]
+pub enum CompressionRatio {
+    Null {
+        compressed_ratio: String,
+    }, // for "NaN" cases
+    Ratio {
+        compressed_ratio: Option<f64>,
+    },
 }
 
 #[derive(Debug, Deserialize)]
@@ -2539,7 +2555,7 @@ pub struct TieBreaker {
     pub port: u16,
 }
 
-#[derive(Clone, Deserialize, Debug)] 
+#[derive(Clone, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Window {
     threshold: u64,
@@ -2561,8 +2577,11 @@ where
 }
 
 // Connect to the metadata server and request a new api token
-pub fn get_api_token(client: &reqwest::blocking::Client, config: &ScaleioConfig) -> MetricsResult<String> {
-    let mut token = client
+pub fn get_api_token(
+    client: &reqwest::blocking::Client,
+    config: &ScaleioConfig,
+) -> MetricsResult<String> {
+    let token = client
         .get(&format!("https://{}/api/login", config.endpoint))
         .basic_auth(config.user.clone(), Some(config.password.clone()))
         .send()?
@@ -2605,7 +2624,10 @@ named!(
 );
 
 impl Scaleio {
-    pub fn new(client: &reqwest::blocking::Client, mut config: ScaleioConfig) -> MetricsResult<Self> {
+    pub fn new(
+        client: &reqwest::blocking::Client,
+        mut config: ScaleioConfig,
+    ) -> MetricsResult<Self> {
         let token = get_api_token(client, &config)?;
         config.password = token;
         Ok(Scaleio {
@@ -2639,20 +2661,22 @@ impl Scaleio {
     }
 
     pub fn get_drive_ids(&self) -> MetricsResult<Vec<DriveId>> {
-        let instance_ids =
-            get::<Vec<Instance>>(&self.client, &self.config, "types/Device/instances").map(
-                |instances| {
-                    let ids = instances
-                        .iter()
-                        .map(|instance| DriveId {
-                            id: instance.id.clone(),
-                            sds_id: instance.sds_id.clone(),
-                            storage_pool_id: instance.storage_pool_id.clone().unwrap_or(String::new()),
-                        })
-                        .collect::<Vec<DriveId>>();
-                    ids
-                },
-            )?;
+        let instance_ids = get::<Vec<Instance>>(
+            &self.client,
+            &self.config,
+            "types/Device/instances",
+        )
+        .map(|instances| {
+            let ids = instances
+                .iter()
+                .map(|instance| DriveId {
+                    id: instance.id.clone(),
+                    sds_id: instance.sds_id.clone(),
+                    storage_pool_id: instance.storage_pool_id.clone().unwrap_or(String::new()),
+                })
+                .collect::<Vec<DriveId>>();
+            ids
+        })?;
         Ok(instance_ids)
     }
 
@@ -2702,7 +2726,7 @@ impl Scaleio {
         ids: &DriveId,
     ) -> MetricsResult<Vec<TsPoint>> {
         if ids.storage_pool_id == "NaN".to_string() || ids.storage_pool_id.is_empty() {
-            return Ok(vec![])
+            return Ok(vec![]);
         }
         let instance_statistics = get::<DeviceStatistics>(
             &self.client,
@@ -2750,7 +2774,7 @@ impl Scaleio {
         // Contact scaleio metadata server and parse the results
         // back into json.  If the call isn't an http success result
         // then return an error
-        let mut resp = self
+        let resp = self
             .client
             .post(&format!(
                 "https://{}/api/instances/querySelectedStatistics",
@@ -2839,7 +2863,7 @@ impl Scaleio {
         // Contact scaleio metadata server and parse the results
         // back into json.  If the call isn't an http success result
         // then return an error
-        let mut resp = self
+        let resp = self
             .client
             .post(&format!(
                 "https://{}/api/instances/querySelectedStatistics",
@@ -2867,7 +2891,7 @@ impl Scaleio {
                 ],
             }],
         };
-        let mut resp = self
+        let resp = self
             .client
             .post(&format!(
                 "https://{}/api/instances/querySelectedStatistics",
@@ -3053,7 +3077,7 @@ impl Scaleio {
             );
             // post a request to endpoint to create a volume. If call isn't
             // an http success result, return an error. Return is newly created volume ID
-            let mut vol_creation_resp = self
+            let vol_creation_resp = self
                 .client
                 .post(&format!(
                     "https://{}/api/types/Volume/instances",
