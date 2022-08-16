@@ -272,7 +272,6 @@ impl From<QuickXmlError> for StorageError {
     }
 }
 
-
 impl From<QuickXmlAttrError> for StorageError {
     fn from(err: QuickXmlAttrError) -> StorageError {
         StorageError::new(err.to_string())
