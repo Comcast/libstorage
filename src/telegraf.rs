@@ -15,7 +15,6 @@
 *
 * SPDX-License-Identifier: Apache-2.0
 */
-
 use crate::error::MetricsResult;
 use crate::ir::{TsPoint, TsValue};
 
@@ -100,8 +99,8 @@ fn parse_telegraf(output: &str, point_name: Option<&str>) -> MetricsResult<TsPoi
                 (counter_name, counter_value, Some(tags_text))
             }
             _ => {
-                 let parts: Vec<&str> = line.split_whitespace().collect();
-                 (parts[0], parts[1], None)
+                let parts: Vec<&str> = line.split_whitespace().collect();
+                (parts[0], parts[1], None)
             }
         };
 

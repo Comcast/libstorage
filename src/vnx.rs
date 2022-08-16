@@ -2588,7 +2588,7 @@ impl Vnx {
             }
         };
 
-        let mut s = self
+        let s = self
             .client
             .post(&format!(
                 "https://{}/servlets/CelerraManagementServices",

@@ -1759,6 +1759,7 @@ pub enum CompressedDataCompressionRatio {
     Ratio {
         compressed_data_compression_ratio: Option<u64>,
     },
+
 }
 
 #[derive(Debug, Deserialize)]
