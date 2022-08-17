@@ -26,8 +26,8 @@ use crate::ir::{TsPoint, TsValue};
 use chrono::offset::Utc;
 use chrono::DateTime;
 use log::debug;
-use reqwest::header::{HeaderValue, CONTENT_TYPE};
 use reqwest::blocking::Client;
+use reqwest::header::{HeaderValue, CONTENT_TYPE};
 use treexml::Document;
 use uuid::Uuid;
 use xml::writer::{EventWriter, XmlEvent};
@@ -701,7 +701,7 @@ where
     T: FromXml,
 {
     debug!("Sending: {}", String::from_utf8_lossy(&req));
-    let mut s = client
+    let s = client
         .post(&format!("http://{}/{}", config.endpoint, FILER_URL))
         .basic_auth(config.user.clone(), Some(config.password.clone()))
         .body(req)

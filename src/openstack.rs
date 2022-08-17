@@ -357,7 +357,7 @@ impl Openstack {
                 .send()
             {
                 Ok(status) => match status.error_for_status() {
-                    Ok(mut s) => break s.text(),
+                    Ok(s) => break s.text(),
                     Err(e) => match e.status() {
                         Some(reqwest::StatusCode::REQUEST_TIMEOUT) => {}
                         Some(reqwest::StatusCode::GATEWAY_TIMEOUT) => {}
