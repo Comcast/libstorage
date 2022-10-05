@@ -385,47 +385,44 @@ fn test_node_status() {
 }
 
 // Try to keep these public functions as futures as long as possible to prevent blocking
-pub fn get_cluster_usage<C: hyper::client::connect::Connect + 'static>(
+pub fn get_cluster_usage<C: hyper::client::connect::Connect + 'static + Clone + Sync + std::marker::Send>(
     rc_config: Rc<configuration::Configuration<C>>,
-) -> Box<dyn Future<Item = Vec<TsPoint>, Error = StorageError>> {
+) -> Result<Vec<TsPoint>, StorageError> {
     let cluster_api = isilon::apis::ClusterApiClient::new(rc_config.clone());
-    Box::new(
+    
         cluster_api
             .get_cluster_statfs()
             .map(|res| res.into_point(Some("isilon_usage"), true))
-            .map_err(|err| StorageError::from(err)),
-    )
+            .map_err(|err| StorageError::from(err))
+    
 }
 
-pub fn get_cluster_performance<C: hyper::client::connect::Connect + 'static>(
+pub fn get_cluster_performance<C: hyper::client::connect::Connect + 'static + Clone + Sync + std::marker::Send>(
     rc_config: Rc<configuration::Configuration<C>>,
-) -> Box<dyn Future<Item = Vec<TsPoint>, Error = StorageError>> {
+) -> Result<Vec<TsPoint>, StorageError> {
     let stats_api = isilon::apis::StatisticsApiClient::new(rc_config.clone());
-    Box::new(
+    
         stats_api
             .get_summary_protocol_stats(true, None, None, 600)
             .map(|res| res.into_point(Some("isilon_perf"), true))
-            .map_err(|err| StorageError::from(err)),
-    )
+            .map_err(|err| StorageError::from(err))
 }
 
-pub fn get_node_status<C: hyper::client::connect::Connect + 'static>(
+pub fn get_node_status<C: hyper::client::connect::Connect + 'static + Clone + Sync + std::marker::Send>(
     rc_config: Rc<configuration::Configuration<C>>,
-) -> Box<dyn Future<Item = Vec<TsPoint>, Error = StorageError>> {
+) -> Result<Vec<TsPoint>, StorageError> {
     let cluster_api = isilon::apis::ClusterNodesApiClient::new(rc_config.clone());
-    Box::new(
         cluster_api
             .get_node_status(None)
             .map(|res| res.into_point(Some("isilon_node_status"), true))
-            .map_err(|err| StorageError::from(err)),
-    )
+            .map_err(|err| StorageError::from(err))
+    
 }
 
-pub fn get_cluster_drives<C: hyper::client::connect::Connect + 'static>(
+pub fn get_cluster_drives<C: hyper::client::connect::Connect + 'static + Clone + Sync + std::marker::Send>(
     rc_config: Rc<configuration::Configuration<C>>,
-) -> Box<dyn Future<Item = Vec<TsPoint>, Error = StorageError>> {
+) -> Result<Vec<TsPoint>, StorageError> {
     let cluster_api = isilon::apis::ClusterApiClient::new(rc_config.clone());
-    Box::new(
         cluster_api
             .get_cluster_nodes(600.0)
             .map(|res| {
@@ -442,8 +439,8 @@ pub fn get_cluster_drives<C: hyper::client::connect::Connect + 'static>(
 
                 points
             })
-            .map_err(|err| StorageError::from(err)),
-    )
+            .map_err(|err| StorageError::from(err))
+    
 }
 
 /*
