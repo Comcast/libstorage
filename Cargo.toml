@@ -1,6 +1,6 @@
 [package]
 name = "libstorage"
-version = "0.4.92"
+version = "0.4.93"
 authors = ["Chris Holcombe <christopher_holcombe@comcast.com>", "Sravanthi Dandamudi <sravanthi_dandamudi@comcast.com>", "Rob Powers <comcastrp@gmail.com>"]
 description = "Storage helper functions"
 documentation = "https://github.com/Comcast/libstorage"
@@ -22,7 +22,7 @@ chrono = "~0.4"
 futures = "~0.3"
 hyper = "~0.14"
 influx_db_client = "~0.5"
-isilon = {version="~5.0", optional=true}
+isilon = {git = "https://github.com/cholcombe973/isilon.git", version = "~5.5", optional=true}
 log = "~0.4"
 native-tls = "~0.2"
 nom = "~3.2"
