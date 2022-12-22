@@ -2548,7 +2548,7 @@ pub struct TieBreaker {
     #[serde(rename = "managementIPs")]
     pub management_ips: Vec<String>,
     pub ips: Vec<String>,
-    pub version_info: String,
+    pub version_info: Option<String>,
     pub role: String,
     pub status: Option<String>,
     pub name: String,
