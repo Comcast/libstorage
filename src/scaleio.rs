@@ -2512,6 +2512,18 @@ impl IntoPoint for SystemStatistics {
             );
         }
 
+        if let Some(net_unused_capacity_in_kb) = &self.net_unused_capacity_in_kb {
+            p.add_field(
+                "net_unused_capacity_in_kb",
+                TsValue::Long(*net_unused_capacity_in_kb),
+            );
+        }
+
+        p.add_field(
+            "at_rest_capacity_in_kb",
+            TsValue::Long(self.at_rest_capacity_in_kb),
+        );
+
         points.push(p);
         points
     }
